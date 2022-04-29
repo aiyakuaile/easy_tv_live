@@ -18,7 +18,7 @@ import 'package:sp_util/sp_util.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Wakelock.enable();
-  LogUtil.init(isDebug: true,tag: 'EasyTV');
+  LogUtil.init(isDebug: false,tag: 'EasyTV');
   await SpUtil.getInstance();
   runApp(const MyApp());
   if (Platform.isAndroid) {
