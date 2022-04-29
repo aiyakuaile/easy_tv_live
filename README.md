@@ -1,16 +1,20 @@
-# easy_tv_live
+# 极简电视
 
 极简电视直播App，支持Android、iOS、web，欢迎下载体验！
 
-## Getting Started
+#### 功能
 
-This project is a starting point for a Flutter application.
+- 简易的直播源播放器
+- 可自主添加直播源链接
+- 干净简洁的UI交互
+- 自带国内直播源
 
-A few resources to get you started if this is your first Flutter project:
+#### 预览
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+![image_2](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_2.jpeg)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![image_1](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_1.jpeg)![image_3](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_3.jpeg)
+
+
+
+
