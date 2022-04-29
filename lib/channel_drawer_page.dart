@@ -153,8 +153,8 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                     return Builder(
                       builder: (context) {
                         return InkWell(
-                          onTap: () {
-                            Scrollable.ensureVisible(context,alignment: 0.5,duration: const Duration(milliseconds: 200));
+                          onTap: () async{
+                            await Scrollable.ensureVisible(context,alignment: 0.5,duration: const Duration(milliseconds: 200));
                             widget.onTapChannel
                                 ?.call(_keys[_groupIndex].toString(), name);
                           },

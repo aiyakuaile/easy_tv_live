@@ -35,12 +35,15 @@ dependencies:
   cupertino_icons: ^1.0.2
   video_player: ^2.3.0
   video_player_web_hls: ^0.1.11+4
-  http: ^0.13.4
   responsive_builder: ^0.4.2
   sticky_headers: ^0.2.0
   flutter_easyloading: ^3.0.3
   wakelock: ^0.6.1+2
   flutter_spinkit: ^5.1.0
+  dio: ^4.0.4
+  sp_util: ^2.0.3
+  url_launcher: ^6.0.20
+  volume_controller: ^2.0.3
 
 dev_dependencies:
   flutter_test:

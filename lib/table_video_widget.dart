@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:video_player/video_player.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 class TableVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
@@ -25,7 +26,6 @@ class TableVideoWidget extends StatefulWidget {
 
 class _TableVideoWidgetState extends State<TableVideoWidget> {
   bool _isShowMenuBar = true;
-  bool _isLock = false;
   late bool _isPlaying = widget.controller?.value.isPlaying ?? false;
 
   @override
@@ -34,57 +34,80 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant TableVideoWidget oldWidget) {
+    if (widget.controller?.value.isPlaying != _isPlaying) {
+      setState(() {
+        _isPlaying = widget.controller?.value.isPlaying ?? false;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          alignment: Alignment.center,
-          color: Colors.black,
-          child: widget.controller?.value.isInitialized ?? false
-              ? Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isShowMenuBar = !_isShowMenuBar;
-                        });
-                      },
-                      onDoubleTap: () {
-                        if (_isPlaying) {
-                          widget.controller?.pause();
-                        } else {
-                          widget.controller?.play();
-                        }
-                        _isPlaying = !_isPlaying;
-                        setState(() {});
-                      },
-                      child: AspectRatio(
+        GestureDetector(
+          onTap: widget.isLandscape
+              ? () {
+                  setState(() {
+                    _isShowMenuBar = !_isShowMenuBar;
+                  });
+                }
+              : null,
+          onDoubleTap: () {
+            if (_isPlaying) {
+              widget.controller?.pause();
+            } else {
+              widget.controller?.play();
+            }
+            _isPlaying = !_isPlaying;
+            setState(() {});
+          },
+          onVerticalDragUpdate: (DragUpdateDetails details){
+            double volume = 1.0 - details.localPosition.dy/(context.size?.height ?? 1.0);
+            if(volume <= 0){
+              volume = 0;
+            }else if(volume>1.0){
+              volume = 1.0;
+            }
+            debugPrint('details.delta.dy====$volume');
+            VolumeController().setVolume(volume,showSystemUI: true);
+
+          },
+          child: Container(
+            alignment: Alignment.center,
+            color: Colors.black,
+            child: widget.controller?.value.isInitialized ?? false
+                ? Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      AspectRatio(
                         aspectRatio: widget.controller!.value.aspectRatio,
                         child: VideoPlayer(widget.controller!),
                       ),
-                    ),
-                    if (!_isPlaying)
-                      GestureDetector(
-                          onTap: () {
-                            widget.controller?.play();
-                            setState(() {
-                              _isPlaying = true;
-                            });
-                          },
-                          child: const Icon(Icons.play_circle_outline,
-                              color: Colors.white, size: 50)),
-                    if (widget.isBuffering)
-                      const SpinKitSpinningLines(color: Colors.white)
-                  ],
-                )
-              : VideoHoldBg(toastString: widget.toastString),
+                      if (!_isPlaying)
+                        GestureDetector(
+                            onTap: () {
+                              widget.controller?.play();
+                              setState(() {
+                                _isPlaying = true;
+                              });
+                            },
+                            child: const Icon(Icons.play_circle_outline,
+                                color: Colors.white, size: 50)),
+                      if (widget.isBuffering)
+                        const SpinKitSpinningLines(color: Colors.white)
+                    ],
+                  )
+                : VideoHoldBg(toastString: widget.toastString),
+          ),
         ),
         if (widget.isLandscape)
           AnimatedPositioned(
               left: 20,
               right: 20,
-              bottom: _isShowMenuBar ? 20 : -50,
+              bottom: _isShowMenuBar || !_isPlaying ? 20 : -50,
               duration: const Duration(milliseconds: 100),
               child: Container(
                 height: 50,
@@ -114,38 +137,10 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                         ),
                         onPressed: widget.changeChannelSources),
                     const SizedBox(width: 20),
-                    OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                            backgroundColor: _isLock
-                                ? Colors.red.withOpacity(0.4)
-                                : Colors.black87,
-                            side: const BorderSide(color: Colors.white)),
-                        child: Text(
-                          _isLock ? '已锁定' : '锁定',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        onPressed: () {
-                          if (_isLock) {
-                            SystemChrome.setPreferredOrientations([
-                              DeviceOrientation.landscapeLeft,
-                              DeviceOrientation.landscapeRight,
-                              DeviceOrientation.portraitUp
-                            ]);
-                          } else {
-                            SystemChrome.setPreferredOrientations([
-                              DeviceOrientation.landscapeLeft,
-                              DeviceOrientation.landscapeRight
-                            ]);
-                          }
-                          setState(() {
-                            _isLock = !_isLock;
-                          });
-                        }),
-                    const SizedBox(width: 20),
                     GestureDetector(
                       onTap: () {
                         SystemChrome.setPreferredOrientations(
-                            [DeviceOrientation.portraitUp,DeviceOrientation.landscapeLeft,DeviceOrientation.landscapeRight]);
+                            [DeviceOrientation.portraitUp]);
                       },
                       child: Center(
                         child: Image.asset(
@@ -161,18 +156,22 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
               )),
         if (!widget.isLandscape)
           Positioned(
-              right: 15,
-              bottom: 15,
-              child: GestureDetector(
-                onTap: () {
-                  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft,DeviceOrientation.landscapeRight]);
-                },
-                child: Image.asset(
-                  'assets/images/video_fill.png',
-                  width: 30,
-                  gaplessPlayback: true,
-                ),
-              ))
+            right: 15,
+            bottom: 15,
+            child: GestureDetector(
+              onTap: () {
+                SystemChrome.setPreferredOrientations([
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight
+                ]);
+              },
+              child: Image.asset(
+                'assets/images/video_fill.png',
+                width: 30,
+                gaplessPlayback: true,
+              ),
+            ),
+          )
       ],
     );
   }
