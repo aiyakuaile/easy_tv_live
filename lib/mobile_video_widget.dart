@@ -11,12 +11,14 @@ class MobileVideoWidget extends StatefulWidget {
   final bool isLandscape;
   final Widget drawChild;
   final bool isBuffering;
+  final bool isPlaying;
   final GestureTapCallback onChangeSubSource;
   const MobileVideoWidget(
       {Key? key,
       required this.controller,
       required this.drawChild,
       required this.isBuffering,
+      required this.isPlaying,
       required this.onChangeSubSource,
       this.toastString,
       this.changeChannelSources,
@@ -68,6 +70,7 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
                   toastString: widget.toastString,
                   isLandscape: false,
                   isBuffering: widget.isBuffering,
+                  isPlaying:widget.isPlaying,
               )),
           Flexible(child: widget.drawChild)
         ],

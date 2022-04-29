@@ -65,6 +65,8 @@ class _HomePageState extends State<HomePage> {
 
   bool isBuffering = false;
 
+  bool isPlaying = false;
+
   _playVideo() async {
     setState(() {
       toastString = '正在播放：$_channel';
@@ -97,6 +99,12 @@ class _HomePageState extends State<HomePage> {
       if (isBuffering != _playerController!.value.isBuffering) {
         setState(() {
           isBuffering = _playerController!.value.isBuffering;
+        });
+      }
+
+      if(isPlaying != _playerController!.value.isPlaying){
+        setState(() {
+          isPlaying = _playerController!.value.isPlaying;
         });
       }
     });
@@ -143,6 +151,7 @@ class _HomePageState extends State<HomePage> {
             changeChannelSources: _changeChannelSources,
             isLandscape: false,
             isBuffering: isBuffering,
+            isPlaying:isPlaying,
             onChangeSubSource: _parseData,
             drawChild: ChannelDrawerPage(
                 videoMap: _videoMap,
@@ -175,6 +184,7 @@ class _HomePageState extends State<HomePage> {
                   toastString: toastString,
                   controller: _playerController,
                   isBuffering: isBuffering,
+                  isPlaying: isPlaying,
                   changeChannelSources: _changeChannelSources,
                   isLandscape: true),
             ),

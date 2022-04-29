@@ -211,48 +211,51 @@ class _SubScribePageState extends State<SubScribePage> {
         builder: (context) {
           final _textController = TextEditingController();
           return SingleChildScrollView(
-            child: AnimatedContainer(
-              height: 120 + MediaQuery.of(context).viewInsets.bottom,
-              duration: const Duration(milliseconds: 250),
-              child: Column(
-                children: [
-                  SizedBox.fromSize(
-                    size: const Size.fromHeight(44),
-                    child: AppBar(
-                      elevation: 0,
-                      backgroundColor: Colors.transparent,
-                      title: const Text('添加订阅源'),
-                      centerTitle: true,
-                      automaticallyImplyLeading: false,
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context, _textController.text);
-                            },
-                            child: const Text('确定'))
-                      ],
-                    ),
-                  ),
-                  Flexible(
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20),
-                      child: TextField(
-                        controller: _textController,
-                        autofocus: true,
-                        maxLines: null,
-                        decoration: const InputDecoration(
-                          hintText: '请输入或粘贴m3u格式的订阅源链接',
-                          border: InputBorder.none,
+            child: LayoutBuilder(
+              builder: (context,_) {
+                return SizedBox(
+                  height: 120 + MediaQuery.of(context).viewInsets.bottom,
+                  child: Column(
+                    children: [
+                      SizedBox.fromSize(
+                        size: const Size.fromHeight(44),
+                        child: AppBar(
+                          elevation: 0,
+                          backgroundColor: Colors.transparent,
+                          title: const Text('添加订阅源'),
+                          centerTitle: true,
+                          automaticallyImplyLeading: false,
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context, _textController.text);
+                                },
+                                child: const Text('确定'))
+                          ],
                         ),
                       ),
-                    ),
+                      Flexible(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
+                          child: TextField(
+                            controller: _textController,
+                            autofocus: true,
+                            maxLines: null,
+                            decoration: const InputDecoration(
+                              hintText: '请输入或粘贴m3u格式的订阅源链接',
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.bottom + 20,
+                      )
+                    ],
                   ),
-                  SizedBox(
-                    height: MediaQuery.of(context).padding.bottom + 20,
-                  )
-                ],
-              ),
+                );
+              }
             ),
           );
         });

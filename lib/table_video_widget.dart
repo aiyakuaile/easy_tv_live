@@ -11,10 +11,12 @@ class TableVideoWidget extends StatefulWidget {
   final String? toastString;
   final bool isLandscape;
   final bool isBuffering;
+  final bool isPlaying;
   const TableVideoWidget(
       {Key? key,
       required this.controller,
       required this.isBuffering,
+      required this.isPlaying,
       this.toastString,
       this.changeChannelSources,
       this.isLandscape = true})
@@ -24,23 +26,12 @@ class TableVideoWidget extends StatefulWidget {
   State<TableVideoWidget> createState() => _TableVideoWidgetState();
 }
 
-class _TableVideoWidgetState extends State<TableVideoWidget> {
+class _TableVideoWidgetState extends State<TableVideoWidget>{
   bool _isShowMenuBar = true;
-  late bool _isPlaying = widget.controller?.value.isPlaying ?? false;
 
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant TableVideoWidget oldWidget) {
-    if (widget.controller?.value.isPlaying != _isPlaying) {
-      setState(() {
-        _isPlaying = widget.controller?.value.isPlaying ?? false;
-      });
-    }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -56,13 +47,11 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                 }
               : null,
           onDoubleTap: () {
-            if (_isPlaying) {
+            if (widget.isPlaying) {
               widget.controller?.pause();
             } else {
               widget.controller?.play();
             }
-            _isPlaying = !_isPlaying;
-            setState(() {});
           },
           onVerticalDragUpdate: (DragUpdateDetails details){
             double volume = 1.0 - details.localPosition.dy/(context.size?.height ?? 1.0);
@@ -86,13 +75,10 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                         aspectRatio: widget.controller!.value.aspectRatio,
                         child: VideoPlayer(widget.controller!),
                       ),
-                      if (!_isPlaying)
+                      if (!widget.isPlaying)
                         GestureDetector(
                             onTap: () {
                               widget.controller?.play();
-                              setState(() {
-                                _isPlaying = true;
-                              });
                             },
                             child: const Icon(Icons.play_circle_outline,
                                 color: Colors.white, size: 50)),
@@ -107,7 +93,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
           AnimatedPositioned(
               left: 20,
               right: 20,
-              bottom: _isShowMenuBar || !_isPlaying ? 20 : -50,
+              bottom: _isShowMenuBar || !widget.isPlaying ? 20 : -50,
               duration: const Duration(milliseconds: 100),
               child: Container(
                 height: 50,
