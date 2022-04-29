@@ -9,6 +9,12 @@
 - 干净简洁的UI交互
 - 自带国内直播源
 
+#### 下载
+
+`安卓` [极简TV 1.0.0](https://github.com/aiyakuaile/easy_tv_live/releases)
+
+`ios 需要自行下载源码方可安装`
+
 #### 预览
 
 ![image_2](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_2.jpeg)
