@@ -85,9 +85,18 @@ class _HomePageState extends State<HomePage> {
             });
             _playerController!.play();
           }).catchError((e) {
-            setState(() {
-              toastString = '无法播放，请重试或切换其他信源重试';
-            });
+            final channels = _videoMap![_group][_channel];
+            _sourceIndex+=1;
+            if(_sourceIndex > channels.length - 1){
+              _sourceIndex = 0;
+              setState(() {
+                toastString = '此视频无法播放';
+              });
+            }else{
+              setState(() {
+                toastString = '尝试切换线路中...';
+              });
+            }
           });
     _playerController!.addListener(() {
       if(_playerController!.value.hasError){

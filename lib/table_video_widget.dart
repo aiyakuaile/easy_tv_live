@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:video_player/video_player.dart';
-import 'package:volume_controller/volume_controller.dart';
 
 class TableVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
@@ -52,17 +51,6 @@ class _TableVideoWidgetState extends State<TableVideoWidget>{
             } else {
               widget.controller?.play();
             }
-          },
-          onVerticalDragUpdate: (DragUpdateDetails details){
-            double volume = 1.0 - details.localPosition.dy/(context.size?.height ?? 1.0);
-            if(volume <= 0){
-              volume = 0;
-            }else if(volume>1.0){
-              volume = 1.0;
-            }
-            debugPrint('details.delta.dy====$volume');
-            VolumeController().setVolume(volume,showSystemUI: true);
-
           },
           child: Container(
             alignment: Alignment.center,

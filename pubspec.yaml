@@ -43,7 +43,6 @@ dependencies:
   dio: ^4.0.4
   sp_util: ^2.0.3
   url_launcher: ^6.0.20
-  volume_controller: ^2.0.3
 
 dev_dependencies:
   flutter_test:

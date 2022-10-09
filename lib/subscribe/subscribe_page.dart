@@ -39,17 +39,24 @@ class _SubScribePageState extends State<SubScribePage> {
     _isClickRefresh = true;
     final res = await M3uUtil.refreshM3uLink(
         model.link == 'default' ? M3uUtil.defaultM3u : model.link!);
+    late SubScribeModel sub;
     if (res.isNotEmpty) {
-      final sub = SubScribeModel(
+      sub = SubScribeModel(
+          time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
+          link: model.link,
+          result: res,
+          selected: model.selected);
+    } else {
+      sub = SubScribeModel(
           time: '当前链接无效，请删除',
           link: model.link,
           result: res,
           selected: model.selected);
-      _m3uList[index] = sub;
-      await M3uUtil.saveLocalData(_m3uList);
-      if (mounted) {
-        setState(() {});
-      }
+    }
+    _m3uList[index] = sub;
+    await M3uUtil.saveLocalData(_m3uList);
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -140,7 +147,8 @@ class _SubScribePageState extends State<SubScribePage> {
                                         }
                                       },
                                       child: const Text('删除')),
-                                if (model.selected != true && model.result != 'error')
+                                if (model.selected != true &&
+                                    model.result != 'error')
                                   TextButton(
                                       onPressed: () async {
                                         _isClickRefresh = true;
@@ -182,17 +190,18 @@ class _SubScribePageState extends State<SubScribePage> {
               style: TextStyle(color: Color(0xFF999999)),
             ),
             RichText(
-              text:  TextSpan(
-                  style: const TextStyle(color: Color(0xFF999999),fontFamily: 'Kaiti'),
+              text: TextSpan(
+                  style: const TextStyle(
+                      color: Color(0xFF999999), fontFamily: 'Kaiti'),
                   children: [
                     const TextSpan(text: '如需增加额外的iPTV直播源，'),
                     TextSpan(
                         text: '请前往Github>>',
-                        recognizer: TapGestureRecognizer()..onTap = ()async{
-                          await launch('https://github.com/iptv-org/iptv');
-                        },
-                        style:
-                            const TextStyle(color: Colors.blue)),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            await launch('https://github.com/iptv-org/iptv');
+                          },
+                        style: const TextStyle(color: Colors.blue)),
                   ]),
             ),
             SizedBox(height: MediaQuery.of(context).padding.bottom + 10)
@@ -211,52 +220,50 @@ class _SubScribePageState extends State<SubScribePage> {
         builder: (context) {
           final _textController = TextEditingController();
           return SingleChildScrollView(
-            child: LayoutBuilder(
-              builder: (context,_) {
-                return SizedBox(
-                  height: 120 + MediaQuery.of(context).viewInsets.bottom,
-                  child: Column(
-                    children: [
-                      SizedBox.fromSize(
-                        size: const Size.fromHeight(44),
-                        child: AppBar(
-                          elevation: 0,
-                          backgroundColor: Colors.transparent,
-                          title: const Text('添加订阅源'),
-                          centerTitle: true,
-                          automaticallyImplyLeading: false,
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context, _textController.text);
-                                },
-                                child: const Text('确定'))
-                          ],
-                        ),
+            child: LayoutBuilder(builder: (context, _) {
+              return SizedBox(
+                height: 120 + MediaQuery.of(context).viewInsets.bottom,
+                child: Column(
+                  children: [
+                    SizedBox.fromSize(
+                      size: const Size.fromHeight(44),
+                      child: AppBar(
+                        elevation: 0,
+                        backgroundColor: Colors.transparent,
+                        title: const Text('添加订阅源'),
+                        centerTitle: true,
+                        automaticallyImplyLeading: false,
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, _textController.text);
+                              },
+                              child: const Text('确定'))
+                        ],
                       ),
-                      Flexible(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 20),
-                          child: TextField(
-                            controller: _textController,
-                            autofocus: true,
-                            maxLines: null,
-                            decoration: const InputDecoration(
-                              hintText: '请输入或粘贴m3u格式的订阅源链接',
-                              border: InputBorder.none,
-                            ),
+                    ),
+                    Flexible(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                        child: TextField(
+                          controller: _textController,
+                          autofocus: true,
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            hintText: '请输入或粘贴m3u格式的订阅源链接',
+                            border: InputBorder.none,
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: MediaQuery.of(context).padding.bottom + 20,
-                      )
-                    ],
-                  ),
-                );
-              }
-            ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.bottom + 20,
+                    )
+                  ],
+                ),
+              );
+            }),
           );
         });
     if (res == null || res == '') return;
@@ -268,7 +275,7 @@ class _SubScribePageState extends State<SubScribePage> {
       LogUtil.v('添加：$res');
       final m3uRes = await M3uUtil.refreshM3uLink(res, isAdd: true);
       if (m3uRes.isNotEmpty) {
-        if(m3uRes == 'error') return;
+        if (m3uRes == 'error') return;
         final sub = SubScribeModel(
             time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
             link: res,
@@ -278,12 +285,9 @@ class _SubScribePageState extends State<SubScribePage> {
         await M3uUtil.saveLocalData(_m3uList);
         _isClickRefresh = true;
         setState(() {});
-      }else{
+      } else {
         final sub = SubScribeModel(
-            time: '请刷新重试',
-            link: res,
-            result: '',
-            selected: false);
+            time: '请刷新重试', link: res, result: '', selected: false);
         _m3uList.add(sub);
         await M3uUtil.saveLocalData(_m3uList);
         setState(() {});

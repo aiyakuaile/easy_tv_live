@@ -4,13 +4,14 @@ import 'package:easy_tv_live/subscribe/subScribe_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sp_util/sp_util.dart';
 
 class M3uUtil {
   M3uUtil._();
 
-  static String defaultM3u = 'https://raw.githubusercontent.com/zbefine/iptv/main/iptv.m3u';
+  static String defaultM3u = 'https://gcore.jsdelivr.net/gh/zbefine/iptv/iptv.m3u';
 
   // 获取默认的m3u文件
   static Future<Map<String, dynamic>> getDefaultM3uData() async {
@@ -65,6 +66,7 @@ class M3uUtil {
   // 刷新m3u文件
   static Future<String> refreshM3uLink(String link,{bool isAdd = false}) async {
     final res = await HttpUtil().getRequest(link);
+    debugPrint('res=======$res');
     if (res == null) {
       return '';
     } else {
