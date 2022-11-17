@@ -7,6 +7,7 @@ import 'package:easy_tv_live/table_video_widget.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
+import 'package:easy_tv_live/vip_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
@@ -39,20 +40,60 @@ class MyApp extends StatelessWidget {
       routes: {
         'subScribe': (BuildContext context) => const SubScribePage()
       },
-      home: const HomePage(),
+      home: const MainPage(),
       builder: EasyLoading.init(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MainPageState extends State<MainPage> {
+
+  late final _pageController = PageController(initialPage: 1);
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView(
+      controller: _pageController,
+      children: [
+         VipHomePage(onLiveTap: (){
+          _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+        },),
+        LiveHomePage(
+          onVipTap:(){
+            _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+          }
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+}
+
+
+
+
+class LiveHomePage extends StatefulWidget {
+  final GestureTapCallback? onVipTap;
+  const LiveHomePage({Key? key,this.onVipTap}) : super(key: key);
+
+  @override
+  State<LiveHomePage> createState() => _LiveHomePageState();
+}
+
+class _LiveHomePageState extends State<LiveHomePage> {
   String toastString = '正在加载';
 
   Map<String, dynamic>? _videoMap;
@@ -162,6 +203,7 @@ class _HomePageState extends State<HomePage> {
             isBuffering: isBuffering,
             isPlaying:isPlaying,
             onChangeSubSource: _parseData,
+            onVipTap: widget.onVipTap,
             drawChild: ChannelDrawerPage(
                 videoMap: _videoMap,
                 channelName: _channel,

@@ -13,6 +13,7 @@ class MobileVideoWidget extends StatefulWidget {
   final bool isBuffering;
   final bool isPlaying;
   final GestureTapCallback onChangeSubSource;
+  final GestureTapCallback? onVipTap;
   const MobileVideoWidget(
       {Key? key,
       required this.controller,
@@ -22,7 +23,8 @@ class MobileVideoWidget extends StatefulWidget {
       required this.onChangeSubSource,
       this.toastString,
       this.changeChannelSources,
-      this.isLandscape = true
+      this.isLandscape = true,
+        this.onVipTap
       })
       : super(key: key);
 
@@ -41,7 +43,13 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('极简TV'),
+        leading: TextButton(
+          child: const Text('VIP解析'),
+          onPressed: widget.onVipTap,
+        ),
+        leadingWidth: 80,
         actions: [
           TextButton(onPressed: ()async{
            final isPlayer =  widget.controller?.value.isPlaying ?? false;
