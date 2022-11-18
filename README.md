@@ -23,7 +23,7 @@
 ---|---
 
 #### VIP视频解析
-[image_1](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_4.jpeg) 
+[image_4](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_4.jpeg) 
 
 
 
