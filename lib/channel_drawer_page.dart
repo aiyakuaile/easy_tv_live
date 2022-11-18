@@ -1,8 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:sticky_headers/sticky_headers.dart';
 
 double lastTimeOffset = 0.0;
 double lastTimeChannelOffset = 0.0;
@@ -106,7 +103,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                     builder: (context) {
                       return InkWell(
                         onTap: () {
-                          Scrollable.ensureVisible(context,alignment: 0.5,duration: const Duration(milliseconds: 200));
+                          if(!widget.isLandscape) Scrollable.ensureVisible(context,alignment: 0.5,duration: const Duration(milliseconds: 200));
                           _scrollChannelController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.linear);
                           setState(() {
                             _groupIndex = index;
@@ -154,7 +151,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                       builder: (context) {
                         return InkWell(
                           onTap: () async{
-                            await Scrollable.ensureVisible(context,alignment: 0.5,duration: const Duration(milliseconds: 200));
+                            if(!widget.isLandscape) await Scrollable.ensureVisible(context,alignment: 0.5,duration: const Duration(milliseconds: 200));
                             widget.onTapChannel
                                 ?.call(_keys[_groupIndex].toString(), name);
                           },

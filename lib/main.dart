@@ -61,6 +61,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return PageView(
+      physics: const NeverScrollableScrollPhysics(),
       controller: _pageController,
       children: [
          VipHomePage(onLiveTap: (){

@@ -11,7 +11,7 @@
 
 #### 下载
 
-`安卓` [极简TV 1.0.0](https://github.com/aiyakuaile/easy_tv_live/releases)
+`安卓` [极简TV 1.2.0](https://github.com/aiyakuaile/easy_tv_live/releases)
 
 `ios 需要自行下载源码方可安装`
 
@@ -21,6 +21,9 @@
 
 ![image_1](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_1.jpeg) | ![image_3](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_3.jpeg)
 ---|---
+
+#### VIP视频解析
+[image_1](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_4.jpeg) 
 
 
 

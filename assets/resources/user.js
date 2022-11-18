@@ -68,7 +68,7 @@
     if(isMobile){
 
         let playLine = [
-            {"name":"纯净1","url":"https://z1.m1907.top/?jx="},
+            {"name":"纯净1","url":"https://im1907.top/?jx="},
             {"name":"B站1","url":"https://jx.bozrc.com:4433/player/?url="},
             {"name":"爱豆","url":"https://jx.aidouer.net/?url="},
             {"name":"CHok","url":"https://www.gai4.com/?url="},
@@ -335,11 +335,13 @@
 
                             if(nowWebNode){
 
-                                nowWebNode.innerHTML = playJxHtml;
-
-                                let playIframe = document.querySelector('#playIframe');
-
-                                playIframe.src= item.getAttribute('url')+location.href;
+                                  let url = item.getAttribute('url')+location.href;
+                                  window.flutterVideo.postMessage(url);
+//                                nowWebNode.innerHTML = playJxHtml;
+//
+//                                let playIframe = document.querySelector('#playIframe');
+//
+//                                playIframe.src= item.getAttribute('url')+location.href;
 
                             }else{
 

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_tv_live/web_video_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -67,20 +68,36 @@ class _EasyWebPageState extends State<EasyWebPage> {
 
         body: WebView(
           initialUrl: widget.videoUrl,
-          allowsInlineMediaPlayback: false,
+          allowsInlineMediaPlayback: true,
+          initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
           zoomEnabled: false,
-          gestureNavigationEnabled: true,
+          gestureNavigationEnabled: false,
           javascriptMode:JavascriptMode.unrestricted,
+          javascriptChannels: <JavascriptChannel>{
+            JavascriptChannel(
+              name: 'flutterVideo',
+              onMessageReceived: (JavascriptMessage message)async{
+                await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context){
+                    return WebVideoPage(videoUrl: message.message);
+                  },fullscreenDialog: true)
+                );
+                _webViewController?.reload();
+              }
+            )
+          },
           onWebViewCreated: (controller){
             _webViewController = controller;
           },
           onPageFinished: (url)async{
             if(_javaScriptString == null) return;
             final res = await _webViewController?.runJavascriptReturningResult(_javaScriptString!);
-            'onPageFinished========$res';
           },
           navigationDelegate: (request)async{
             debugPrint('request======${request.url}');
+            if(!request.url.startsWith('http')){
+              return NavigationDecision.prevent;
+            }
             return NavigationDecision.navigate;
           },
         ),
