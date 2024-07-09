@@ -11,7 +11,8 @@ import 'package:sp_util/sp_util.dart';
 class M3uUtil {
   M3uUtil._();
 
-  static String defaultM3u = 'https://gcore.jsdelivr.net/gh/zbefine/iptv/iptv.m3u';
+  static String defaultM3u =
+      'https://ghproxy.net/https://raw.githubusercontent.com/ssili126/tv/main/itvlist.txt';
 
   // 获取默认的m3u文件
   static Future<Map<String, dynamic>> getDefaultM3uData() async {
@@ -24,13 +25,12 @@ class M3uUtil {
             time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
             link: 'default',
             result: m3uData,
-            selected: true
-        )
+            selected: true)
       ]);
     } else {
       // LogUtil.v('models===${models.map((e) => e.toJson())}');
       final subScribeModel =
-          models.firstWhere((element) => element.selected == true,orElse: ()=>models.first);
+          models.firstWhere((element) => element.selected == true, orElse: () => models.first);
       m3uData = subScribeModel.result!;
     }
     return _parseM3u(m3uData);
@@ -39,8 +39,7 @@ class M3uUtil {
   // 获取本地m3u数据
   static Future<List<SubScribeModel>> getLocalData() async {
     Completer completer = Completer();
-    List<SubScribeModel> m3uList = SpUtil.getObjList(
-        'local_m3u', (v) => SubScribeModel.fromJson(v),
+    List<SubScribeModel> m3uList = SpUtil.getObjList('local_m3u', (v) => SubScribeModel.fromJson(v),
         defValue: <SubScribeModel>[])!;
     completer.complete(m3uList);
     final res = await completer.future;
@@ -49,33 +48,27 @@ class M3uUtil {
 
   // 保存本地m3u数据
   static Future<bool> saveLocalData(List<SubScribeModel> models) async {
-    final res = await SpUtil.putObjectList(
-        'local_m3u', models.map((e) => e.toJson()).toList());
+    final res = await SpUtil.putObjectList('local_m3u', models.map((e) => e.toJson()).toList());
     return res ?? false;
   }
 
   static Future<String> _fetchData() async {
     final res = await HttpUtil().getRequest(defaultM3u);
     if (res == null) {
-      return rootBundle.loadString('assets/resources/default.m3u');
+      return rootBundle.loadString('assets/resources/default.txt');
     } else {
       return res;
     }
   }
 
   // 刷新m3u文件
-  static Future<String> refreshM3uLink(String link,{bool isAdd = false}) async {
+  static Future<String> refreshM3uLink(String link, {bool isAdd = false}) async {
     final res = await HttpUtil().getRequest(link);
     debugPrint('res=======$res');
     if (res == null) {
+      EasyLoading.showToast('请添加.m3u或者.txt文件链接');
       return '';
     } else {
-      if(res.startsWith('#EXTM3U')){
-        EasyLoading.showToast(isAdd?'添加成功':'刷新成功');
-      }else{
-        EasyLoading.showToast('此链接不包含任何直播源');
-        return 'error';
-      }
       return res;
     }
   }
@@ -84,31 +77,57 @@ class M3uUtil {
   static Future<Map<String, dynamic>> _parseM3u(String m3u) async {
     final lines = m3u.split('\n');
     final result = <String, dynamic>{};
-    for (int i = 0; i < lines.length - 1; i++) {
-      final line = lines[i];
-      if (line.startsWith('#EXTINF:')) {
-        final lineList = line.split(',');
-        List<String> params = lineList.first.replaceAll('"', '').split(' ');
-        final groupStr = params.firstWhere(
-            (element) => element.startsWith('group-title='),
-            orElse: () => '');
-        if (groupStr.isNotEmpty) {
-          final groupTitle = groupStr.split('=').last;
-          final channelName = lineList.last;
-          Map group = result[groupTitle] ?? {};
-          List groupList = group[channelName] ?? [];
-          final lineNext = lines[i + 1];
-          if (lineNext.startsWith('http')) {
-            groupList.add(lineNext);
-            group[channelName] = groupList;
-            result[groupTitle] = group;
-            i += 1;
-          } else if (lines[i + 2].startsWith('http')) {
-            groupList.add(lines[i + 2].toString());
-            group[channelName] = groupList;
-            result[groupTitle] = group;
-            i += 2;
+    if (m3u.startsWith('#EXTM3U')) {
+      for (int i = 0; i < lines.length - 1; i++) {
+        final line = lines[i];
+        if (line.startsWith('#EXTINF:')) {
+          final lineList = line.split(',');
+          List<String> params = lineList.first.replaceAll('"', '').split(' ');
+          final groupStr =
+              params.firstWhere((element) => element.startsWith('group-title='), orElse: () => '');
+          if (groupStr.isNotEmpty) {
+            final groupTitle = groupStr.split('=').last;
+            final channelName = lineList.last;
+            Map group = result[groupTitle] ?? {};
+            List groupList = group[channelName] ?? [];
+            final lineNext = lines[i + 1];
+            if (lineNext.startsWith('http')) {
+              groupList.add(lineNext);
+              group[channelName] = groupList;
+              result[groupTitle] = group;
+              i += 1;
+            } else if (lines[i + 2].startsWith('http')) {
+              groupList.add(lines[i + 2].toString());
+              group[channelName] = groupList;
+              result[groupTitle] = group;
+              i += 2;
+            }
           }
+        }
+      }
+    } else {
+      String tempGroup = '默认';
+      for (int i = 0; i < lines.length - 1; i++) {
+        final line = lines[i];
+        final lineList = line.split(',');
+        if (lineList.length >= 2) {
+          final groupTitle = lineList[0];
+          final channelLink = lineList[1];
+          if (!channelLink.startsWith('http')) {
+            tempGroup = groupTitle;
+            if (result[groupTitle] == null) {
+              result[groupTitle] = <String, List<String>>{};
+            }
+          } else {
+            Map<String, List<String>> group = result[tempGroup] ?? <String, List<String>>{};
+            List<String> chanelList = group[groupTitle] ?? <String>[];
+            chanelList.add(channelLink);
+            group[groupTitle] = chanelList;
+            result[tempGroup] = group;
+          }
+        } else {
+          EasyLoading.showToast('解析数据源出错了');
+          return result;
         }
       }
     }
