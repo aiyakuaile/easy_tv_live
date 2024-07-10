@@ -200,7 +200,7 @@ class DateUtil {
   static bool isToday(int? milliseconds, {bool isUtc = false, int? locMs}) {
     if (milliseconds == null || milliseconds == 0) return false;
     DateTime old =
-    DateTime.fromMillisecondsSinceEpoch(milliseconds, isUtc: isUtc);
+        DateTime.fromMillisecondsSinceEpoch(milliseconds, isUtc: isUtc);
     DateTime now;
     if (locMs != null) {
       now = DateUtil.getDateTimeByMs(locMs);
@@ -247,9 +247,9 @@ class DateUtil {
     }
 
     DateTime old =
-    _now.millisecondsSinceEpoch > _old.millisecondsSinceEpoch ? _old : _now;
+        _now.millisecondsSinceEpoch > _old.millisecondsSinceEpoch ? _old : _now;
     DateTime now =
-    _now.millisecondsSinceEpoch > _old.millisecondsSinceEpoch ? _now : _old;
+        _now.millisecondsSinceEpoch > _old.millisecondsSinceEpoch ? _now : _old;
     return (now.weekday >= old.weekday) &&
         (now.millisecondsSinceEpoch - old.millisecondsSinceEpoch <=
             7 * 24 * 60 * 60 * 1000);

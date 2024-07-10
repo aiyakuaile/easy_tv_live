@@ -40,17 +40,20 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
     _values = widget.videoMap?.values.toList().cast<Map>() ?? <Map>[];
     _groupIndex = _keys.indexWhere((element) => element == widget.groupName);
     if (_groupIndex != -1) {
-      _channelIndex =
-          _values[_groupIndex].keys.toList().indexWhere((element) => element == widget.channelName);
+      _channelIndex = _values[_groupIndex]
+          .keys
+          .toList()
+          .indexWhere((element) => element == widget.channelName);
     }
     _scrollController = ScrollController(initialScrollOffset: lastTimeOffset)
       ..addListener(() {
         lastTimeOffset = _scrollController.offset;
       });
-    _scrollChannelController = ScrollController(initialScrollOffset: lastTimeChannelOffset)
-      ..addListener(() {
-        lastTimeChannelOffset = _scrollChannelController.offset;
-      });
+    _scrollChannelController =
+        ScrollController(initialScrollOffset: lastTimeChannelOffset)
+          ..addListener(() {
+            lastTimeChannelOffset = _scrollChannelController.offset;
+          });
     super.initState();
   }
 
@@ -102,10 +105,12 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                       onTap: () {
                         if (!widget.isLandscape) {
                           Scrollable.ensureVisible(context,
-                              alignment: 0.5, duration: const Duration(milliseconds: 200));
+                              alignment: 0.5,
+                              duration: const Duration(milliseconds: 200));
                         }
                         _scrollChannelController.animateTo(0,
-                            duration: const Duration(milliseconds: 200), curve: Curves.linear);
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.linear);
                         setState(() {
                           _groupIndex = index;
                         });
@@ -126,8 +131,10 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                           alignment: Alignment.center,
                           child: Text(
                             title,
-                            style:
-                                TextStyle(color: _groupIndex == index ? Colors.red : Colors.white),
+                            style: TextStyle(
+                                color: _groupIndex == index
+                                    ? Colors.red
+                                    : Colors.white),
                           ),
                         ),
                       ),
@@ -143,15 +150,18 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
               child: ListView.builder(
                   controller: _scrollChannelController,
                   itemBuilder: (context, index) {
-                    final name = _values[_groupIndex].keys.toList()[index].toString();
+                    final name =
+                        _values[_groupIndex].keys.toList()[index].toString();
                     return Builder(builder: (context) {
                       return InkWell(
                         onTap: () async {
                           if (!widget.isLandscape) {
                             await Scrollable.ensureVisible(context,
-                                alignment: 0.5, duration: const Duration(milliseconds: 200));
+                                alignment: 0.5,
+                                duration: const Duration(milliseconds: 200));
                           }
-                          widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
+                          widget.onTapChannel
+                              ?.call(_keys[_groupIndex].toString(), name);
                         },
                         splashColor: Colors.white.withOpacity(0.1),
                         child: Ink(
@@ -160,8 +170,10 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
                             gradient: widget.channelName == name
-                                ? LinearGradient(
-                                    colors: [Colors.red.withOpacity(0.3), Colors.transparent])
+                                ? LinearGradient(colors: [
+                                    Colors.red.withOpacity(0.3),
+                                    Colors.transparent
+                                  ])
                                 : null,
                           ),
                           child: Row(
@@ -170,12 +182,15 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                                 child: Text(
                                   name,
                                   style: TextStyle(
-                                      color:
-                                          widget.channelName == name ? Colors.red : Colors.white),
+                                      color: widget.channelName == name
+                                          ? Colors.red
+                                          : Colors.white),
                                 ),
                               ),
                               if (widget.channelName == name)
-                                SpinKitWave(size: 20, color: Colors.red.withOpacity(0.4))
+                                SpinKitWave(
+                                    size: 20,
+                                    color: Colors.red.withOpacity(0.4))
                             ],
                           ),
                         ),

@@ -1,10 +1,5 @@
 class SubScribeModel {
-  SubScribeModel({
-      this.time, 
-      this.link, 
-      this.result,
-      this.selected = false
-  });
+  SubScribeModel({this.time, this.link, this.result, this.selected = false});
 
   SubScribeModel.fromJson(dynamic json) {
     time = json['time'];
@@ -25,5 +20,4 @@ class SubScribeModel {
     map['selected'] = selected ?? false;
     return map;
   }
-
 }

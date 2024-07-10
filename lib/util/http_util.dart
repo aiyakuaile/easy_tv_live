@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:easy_tv_live/util/log_util.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class HttpUtil {
   static final HttpUtil _instance = HttpUtil._();
   late Dio _dio;
   BaseOptions options = BaseOptions(
-      connectTimeout: const Duration(seconds: 5), receiveTimeout: const Duration(seconds: 8));
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 8));
 
   CancelToken cancelToken = CancelToken();
 
@@ -16,8 +18,8 @@ class HttpUtil {
 
   HttpUtil._() {
     _dio = Dio(options)
-      ..interceptors
-          .add(LogInterceptor(requestBody: true, responseBody: true, logPrint: LogUtil.v));
+      ..interceptors.add(LogInterceptor(
+          requestBody: true, responseBody: true, logPrint: LogUtil.v));
   }
 
   Future<T?> getRequest<T>(String path,
@@ -43,6 +45,7 @@ class HttpUtil {
 }
 
 void formatError(DioException e) {
+  debugPrint('DioException>>>>>$e');
   if (e.type == DioExceptionType.connectionTimeout) {
     EasyLoading.showToast("连接超时");
   } else if (e.type == DioExceptionType.sendTimeout) {
@@ -50,7 +53,7 @@ void formatError(DioException e) {
   } else if (e.type == DioExceptionType.receiveTimeout) {
     EasyLoading.showToast("响应超时");
   } else if (e.type == DioExceptionType.badResponse) {
-    EasyLoading.showToast("出现异常");
+    EasyLoading.showToast("出现异常${e.response?.statusCode}");
   } else if (e.type == DioExceptionType.cancel) {
     EasyLoading.showToast("请求取消");
   } else {

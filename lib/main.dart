@@ -34,7 +34,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '极简TV',
-      theme: ThemeData(brightness: Brightness.dark, fontFamily: 'Kaiti', useMaterial3: true),
+      theme: ThemeData(
+          brightness: Brightness.dark, fontFamily: 'Kaiti', useMaterial3: true),
       routes: {'subScribe': (BuildContext context) => const SubScribePage()},
       home: const LiveHomePage(),
       builder: EasyLoading.init(),
@@ -79,10 +80,10 @@ class _LiveHomePageState extends State<LiveHomePage> {
     _playerController = VideoPlayerController.networkUrl(Uri.parse(url),
         formatHint: VideoFormat.hls,
         videoPlayerOptions: VideoPlayerOptions(
-          allowBackgroundPlayback: true,
-          mixWithOthers: true,
-          webOptions:
-              const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
+          allowBackgroundPlayback: false,
+          mixWithOthers: false,
+          webOptions: const VideoPlayerWebOptions(
+              controls: VideoPlayerWebOptionsControls.enabled()),
         ))
       ..setVolume(1.0);
 
@@ -138,6 +139,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
   @override
   void initState() {
     super.initState();
+    EasyLoading.instance
+      ..loadingStyle = EasyLoadingStyle.custom
+      ..indicatorColor = Colors.black
+      ..textColor = Colors.black
+      ..backgroundColor = Colors.white70;
     _parseData();
   }
 
@@ -223,7 +229,8 @@ class _LiveHomePageState extends State<LiveHomePage> {
         builder: (BuildContext context) {
           return Container(
             width: double.infinity,
-            padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 40),
+            padding:
+                const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 40),
             color: Colors.transparent,
             child: Wrap(
                 spacing: 15,
@@ -231,11 +238,15 @@ class _LiveHomePageState extends State<LiveHomePage> {
                 children: List.generate(sources.length, (index) {
                   return OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                          backgroundColor:
-                              _sourceIndex != index ? Colors.black45 : Colors.red.withOpacity(0.1)),
+                          backgroundColor: _sourceIndex != index
+                              ? Colors.black45
+                              : Colors.red.withOpacity(0.1)),
                       child: Text(
                         '信源${index + 1}',
-                        style: TextStyle(color: _sourceIndex == index ? Colors.red : Colors.white),
+                        style: TextStyle(
+                            color: _sourceIndex == index
+                                ? Colors.red
+                                : Colors.white),
                       ),
                       onPressed: () {
                         Navigator.pop(context, index);

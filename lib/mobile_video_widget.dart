@@ -1,6 +1,8 @@
 import 'package:easy_tv_live/channel_drawer_page.dart';
+import 'package:easy_tv_live/setting_page.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
 import 'package:easy_tv_live/util/log_util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -41,8 +43,24 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
         centerTitle: true,
         title: const Text('极简TV'),
+        leading: IconButton(
+            onPressed: () {
+              widget.controller?.pause();
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) {
+                    return const SettingPage();
+                  },
+                ),
+              );
+            },
+            icon: Image.asset(
+              'assets/images/github.png',
+              width: 30,
+            )),
         actions: [
           TextButton(
               onPressed: () async {

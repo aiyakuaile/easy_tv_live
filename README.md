@@ -10,12 +10,13 @@
 - 自带国内直播源
 - 增加对.m3u文件的解析支持
 - 增加对.txt文件的解析支持(v1.5.0新增)
+- 纯黑主题(v1.5.0新增)
 
 #### 下载
 
-`安卓` [极简TV 1.5.0](https://github.com/aiyakuaile/easy_tv_live/releases)
+`安卓` [极简TV 1.5.0](https://github.com/aiyakuaile/easy_tv_live/releases/1.5.0/)
 
-`ios 需要自行下载源码方可安装`
+`ios 下载ipa后需要自行签名安装，例如：爱思助手`[极简TV 1.5.0](https://github.com/aiyakuaile/easy_tv_live/releases/1.5.0)
 
 #### 预览
 

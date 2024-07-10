@@ -34,8 +34,8 @@ class _SubScribePageState extends State<SubScribePage> {
 
   _refreshData(SubScribeModel model, int index) async {
     _isClickRefresh = true;
-    final res =
-        await M3uUtil.refreshM3uLink(model.link == 'default' ? M3uUtil.defaultM3u : model.link!);
+    final res = await M3uUtil.refreshM3uLink(
+        model.link == 'default' ? M3uUtil.defaultM3u : model.link!);
     late SubScribeModel sub;
     if (res.isNotEmpty) {
       sub = SubScribeModel(
@@ -45,7 +45,10 @@ class _SubScribePageState extends State<SubScribePage> {
           selected: model.selected);
     } else {
       sub = SubScribeModel(
-          time: '当前链接无效，请删除', link: model.link, result: res, selected: model.selected);
+          time: '当前链接无效，请删除',
+          link: model.link,
+          result: res,
+          selected: model.selected);
     }
     _m3uList[index] = sub;
     await M3uUtil.saveLocalData(_m3uList);
@@ -82,9 +85,10 @@ class _SubScribePageState extends State<SubScribePage> {
                     return Card(
                       color: model.selected == true
                           ? Colors.redAccent.withOpacity(0.8)
-                          : Colors.transparent,
+                          : const Color(0xFF2B2D30),
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 20, left: 20, right: 10),
+                        padding:
+                            const EdgeInsets.only(top: 20, left: 20, right: 10),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,29 +102,35 @@ class _SubScribePageState extends State<SubScribePage> {
                             const SizedBox(height: 20),
                             Text(
                               '上次刷新：${model.time}',
-                              style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                              style: TextStyle(
+                                  color: Colors.white.withOpacity(0.5),
+                                  fontSize: 12),
                             ),
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Spacer(),
-                                if (model.selected != true && model.link != 'default')
+                                if (model.selected != true &&
+                                    model.link != 'default')
                                   TextButton(
                                       onPressed: () async {
                                         final isDelete = await showDialog(
                                             context: context,
                                             builder: (context) {
                                               return AlertDialog(
-                                                content: const Text('确定删除此订阅吗？'),
+                                                content:
+                                                    const Text('确定删除此订阅吗？'),
                                                 actions: [
                                                   TextButton(
                                                       onPressed: () {
-                                                        Navigator.pop(context, false);
+                                                        Navigator.pop(
+                                                            context, false);
                                                       },
                                                       child: const Text('取消')),
                                                   TextButton(
                                                       onPressed: () {
-                                                        Navigator.pop(context, true);
+                                                        Navigator.pop(
+                                                            context, true);
                                                       },
                                                       child: const Text('确定')),
                                                 ],
@@ -134,11 +144,13 @@ class _SubScribePageState extends State<SubScribePage> {
                                         }
                                       },
                                       child: const Text('删除')),
-                                if (model.selected != true && model.result != 'error')
+                                if (model.selected != true &&
+                                    model.result != 'error')
                                   TextButton(
                                       onPressed: () async {
                                         _isClickRefresh = true;
-                                        if (model.result == null || model.result == '') {
+                                        if (model.result == null ||
+                                            model.result == '') {
                                           EasyLoading.showToast('请刷新成功后再试');
                                           return;
                                         }
@@ -176,14 +188,16 @@ class _SubScribePageState extends State<SubScribePage> {
             ),
             RichText(
               text: TextSpan(
-                  style: const TextStyle(color: Color(0xFF999999), fontFamily: 'Kaiti'),
+                  style: const TextStyle(
+                      color: Color(0xFF999999), fontFamily: 'Kaiti'),
                   children: [
                     const TextSpan(text: '如需增加额外的iPTV直播源，'),
                     TextSpan(
                         text: '请前往Github>>',
                         recognizer: TapGestureRecognizer()
                           ..onTap = () async {
-                            await launchUrl(Uri.parse('https://github.com/iptv-org/iptv'));
+                            await launchUrl(
+                                Uri.parse('https://github.com/iptv-org/iptv'));
                           },
                         style: const TextStyle(color: Colors.blue)),
                   ]),
@@ -228,7 +242,8 @@ class _SubScribePageState extends State<SubScribePage> {
                     ),
                     Flexible(
                       child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
                         child: TextField(
                           controller: _textController,
                           autofocus: true,
@@ -269,7 +284,8 @@ class _SubScribePageState extends State<SubScribePage> {
         _isClickRefresh = true;
         setState(() {});
       } else {
-        final sub = SubScribeModel(time: '请刷新重试', link: res, result: '', selected: false);
+        final sub = SubScribeModel(
+            time: '请刷新重试', link: res, result: '', selected: false);
         _m3uList.add(sub);
         await M3uUtil.saveLocalData(_m3uList);
         setState(() {});

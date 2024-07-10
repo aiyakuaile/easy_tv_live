@@ -77,7 +77,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
           child: Container(
             alignment: Alignment.center,
             color: Colors.black,
-            child: widget.controller!.value.isInitialized
+            child: widget.controller?.value.isInitialized ?? false
                 ? Stack(
                     alignment: Alignment.center,
                     children: [
@@ -95,7 +95,8 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                             },
                             child: const Icon(Icons.play_circle_outline,
                                 color: Colors.white, size: 50)),
-                      if (widget.isBuffering) const SpinKitSpinningLines(color: Colors.white)
+                      if (widget.isBuffering)
+                        const SpinKitSpinningLines(color: Colors.white)
                     ],
                   )
                 : VideoHoldBg(toastString: widget.toastString),
@@ -159,7 +160,8 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                                     max: 1.0,
                                     min: .0,
                                     onChanged: (value) {
-                                      ScreenBrightness().setScreenBrightness(value);
+                                      ScreenBrightness()
+                                          .setScreenBrightness(value);
                                       setState(() {
                                         _brightness = value;
                                       });
@@ -212,7 +214,8 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                     IconButton(
                       tooltip: '退出全屏',
                       onPressed: () {
-                        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+                        SystemChrome.setPreferredOrientations(
+                            [DeviceOrientation.portraitUp]);
                       },
                       style: IconButton.styleFrom(
                           backgroundColor: Colors.black87,
@@ -231,8 +234,10 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
             bottom: 15,
             child: GestureDetector(
               onTap: () {
-                SystemChrome.setPreferredOrientations(
-                    [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+                SystemChrome.setPreferredOrientations([
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight
+                ]);
               },
               child: Image.asset(
                 'assets/images/video_fill.png',
