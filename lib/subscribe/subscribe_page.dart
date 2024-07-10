@@ -196,13 +196,13 @@ class _SubScribePageState extends State<SubScribePage> {
   }
 
   _addM3uSource() async {
+    final _textController = TextEditingController();
     final res = await showModalBottomSheet<String>(
         context: context,
         isScrollControlled: true,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         builder: (context) {
-          final _textController = TextEditingController();
           return SingleChildScrollView(
             child: LayoutBuilder(builder: (context, _) {
               return SizedBox(
@@ -232,7 +232,7 @@ class _SubScribePageState extends State<SubScribePage> {
                         child: TextField(
                           controller: _textController,
                           autofocus: true,
-                          maxLines: null,
+                          maxLines: 1,
                           decoration: const InputDecoration(
                             hintText: '请输入或粘贴.m3u或.txt格式的订阅源链接',
                             border: InputBorder.none,

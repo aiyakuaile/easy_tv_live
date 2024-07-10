@@ -12,6 +12,7 @@ class MobileVideoWidget extends StatefulWidget {
   final Widget drawChild;
   final bool isBuffering;
   final bool isPlaying;
+  final double aspectRatio;
   final GestureTapCallback onChangeSubSource;
   const MobileVideoWidget({
     Key? key,
@@ -19,6 +20,7 @@ class MobileVideoWidget extends StatefulWidget {
     required this.drawChild,
     required this.isBuffering,
     required this.isPlaying,
+    required this.aspectRatio,
     required this.onChangeSubSource,
     this.toastString,
     this.changeChannelSources,
@@ -65,14 +67,16 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
       body: Column(
         children: [
           AspectRatio(
-              aspectRatio: 16 / 9,
-              child: TableVideoWidget(
-                controller: widget.controller,
-                toastString: widget.toastString,
-                isLandscape: false,
-                isBuffering: widget.isBuffering,
-                isPlaying: widget.isPlaying,
-              )),
+            aspectRatio: widget.aspectRatio,
+            child: TableVideoWidget(
+              controller: widget.controller,
+              toastString: widget.toastString,
+              isLandscape: false,
+              aspectRatio: widget.aspectRatio,
+              isBuffering: widget.isBuffering,
+              isPlaying: widget.isPlaying,
+            ),
+          ),
           Flexible(child: widget.drawChild)
         ],
       ),

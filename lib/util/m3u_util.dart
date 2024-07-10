@@ -12,7 +12,7 @@ class M3uUtil {
   M3uUtil._();
 
   static String defaultM3u =
-      'https://ghproxy.net/https://raw.githubusercontent.com/ssili126/tv/main/itvlist.txt';
+      'https://mirror.ghproxy.com/raw.githubusercontent.com/joevess/IPTV/main/sources/iptv_sources.m3u8';
 
   // 获取默认的m3u文件
   static Future<Map<String, dynamic>> getDefaultM3uData() async {
@@ -55,7 +55,7 @@ class M3uUtil {
   static Future<String> _fetchData() async {
     final res = await HttpUtil().getRequest(defaultM3u);
     if (res == null) {
-      return rootBundle.loadString('assets/resources/default.txt');
+      return rootBundle.loadString('assets/resources/default.m3u8');
     } else {
       return res;
     }
@@ -63,6 +63,7 @@ class M3uUtil {
 
   // 刷新m3u文件
   static Future<String> refreshM3uLink(String link, {bool isAdd = false}) async {
+    debugPrint('refreshM3uLink=======$link');
     final res = await HttpUtil().getRequest(link);
     debugPrint('res=======$res');
     if (res == null) {

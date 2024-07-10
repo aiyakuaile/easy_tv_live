@@ -13,11 +13,13 @@ class TableVideoWidget extends StatefulWidget {
   final bool isLandscape;
   final bool isBuffering;
   final bool isPlaying;
+  final double aspectRatio;
   const TableVideoWidget(
       {Key? key,
       required this.controller,
       required this.isBuffering,
       required this.isPlaying,
+      required this.aspectRatio,
       this.toastString,
       this.changeChannelSources,
       this.isLandscape = true})
@@ -75,13 +77,16 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
           child: Container(
             alignment: Alignment.center,
             color: Colors.black,
-            child: widget.controller?.value.isInitialized ?? false
+            child: widget.controller!.value.isInitialized
                 ? Stack(
                     alignment: Alignment.center,
                     children: [
                       AspectRatio(
-                        aspectRatio: widget.controller!.value.aspectRatio,
-                        child: VideoPlayer(widget.controller!),
+                        aspectRatio: widget.aspectRatio,
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: VideoPlayer(widget.controller!),
+                        ),
                       ),
                       if (!widget.isPlaying)
                         GestureDetector(

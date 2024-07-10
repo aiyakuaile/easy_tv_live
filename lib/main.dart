@@ -63,6 +63,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   bool isBuffering = false;
 
   bool isPlaying = false;
+  double aspectRatio = 1.7777777777777777;
 
   _playVideo() async {
     setState(() {
@@ -83,26 +84,29 @@ class _LiveHomePageState extends State<LiveHomePage> {
           webOptions:
               const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
         ))
-      ..initialize()
-      ..setVolume(1.0).then((value) {
-        setState(() {
-          toastString = '正在加载';
-        });
-        _playerController!.play();
-      }).catchError((e) {
-        final channels = _videoMap![_group][_channel];
-        _sourceIndex += 1;
-        if (_sourceIndex > channels.length - 1) {
-          _sourceIndex = 0;
-          setState(() {
-            toastString = '此视频无法播放';
-          });
-        } else {
-          setState(() {
-            toastString = '尝试切换线路中...';
-          });
-        }
+      ..setVolume(1.0);
+
+    try {
+      await _playerController!.initialize();
+      _playerController!.play();
+      setState(() {
+        toastString = '正在加载';
+        aspectRatio = _playerController!.value.aspectRatio;
       });
+    } catch (e) {
+      final channels = _videoMap![_group][_channel];
+      _sourceIndex += 1;
+      if (_sourceIndex > channels.length - 1) {
+        _sourceIndex = 0;
+        setState(() {
+          toastString = '此视频无法播放';
+        });
+      } else {
+        setState(() {
+          toastString = '尝试切换线路中...';
+        });
+      }
+    }
     _playerController!.addListener(() {
       if (_playerController!.value.hasError) {
         setState(() {
@@ -166,6 +170,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
             isLandscape: false,
             isBuffering: isBuffering,
             isPlaying: isPlaying,
+            aspectRatio: aspectRatio,
             onChangeSubSource: _parseData,
             drawChild: ChannelDrawerPage(
                 videoMap: _videoMap,
@@ -199,6 +204,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                   controller: _playerController,
                   isBuffering: isBuffering,
                   isPlaying: isPlaying,
+                  aspectRatio: aspectRatio,
                   changeChannelSources: _changeChannelSources,
                   isLandscape: true),
             ),
