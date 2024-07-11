@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const version = '1.5.0';
+const version = '1.5.1';
 const downloadLink = 'https://github.com/aiyakuaile/easy_tv_live/releases/download';
 
 class SettingPage extends StatefulWidget {
@@ -40,7 +40,7 @@ class _SettingPageState extends State<SettingPage> {
                 },
               ));
       if (res != null) {
-        final latestVersion = res['tag_name'] as String;
+        final latestVersion = res['tag_name'] as String?;
         if (latestVersion != null && latestVersion.compareTo(version) > 0) {
           setState(() {
             _latestVersion = latestVersion;

@@ -34,8 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '极简TV',
-      theme: ThemeData(
-          brightness: Brightness.dark, fontFamily: 'Kaiti', useMaterial3: true),
+      theme: ThemeData(brightness: Brightness.dark, fontFamily: 'Kaiti', useMaterial3: true),
       routes: {'subScribe': (BuildContext context) => const SubScribePage()},
       home: const LiveHomePage(),
       builder: EasyLoading.init(),
@@ -82,8 +81,8 @@ class _LiveHomePageState extends State<LiveHomePage> {
         videoPlayerOptions: VideoPlayerOptions(
           allowBackgroundPlayback: false,
           mixWithOthers: false,
-          webOptions: const VideoPlayerWebOptions(
-              controls: VideoPlayerWebOptionsControls.enabled()),
+          webOptions:
+              const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
         ))
       ..setVolume(1.0);
 
@@ -104,16 +103,28 @@ class _LiveHomePageState extends State<LiveHomePage> {
         });
       } else {
         setState(() {
-          toastString = '尝试切换线路中...';
+          toastString = '尝试切换线路${_sourceIndex + 1}...';
         });
+        Future.delayed(const Duration(seconds: 2), () => _playVideo());
+        return;
       }
     }
     _playerController!.addListener(() {
       if (_playerController!.value.hasError) {
-        setState(() {
-          toastString = '正在尝试重连......';
-        });
-        Future.delayed(const Duration(seconds: 2), () => _playVideo());
+        final channels = _videoMap![_group][_channel];
+        _sourceIndex += 1;
+        if (_sourceIndex > channels.length - 1) {
+          setState(() {
+            toastString = '此视频无法播放，请更换其它频道';
+          });
+          return;
+        } else {
+          setState(() {
+            toastString = '切换线路${_sourceIndex + 1}...';
+          });
+          Future.delayed(const Duration(seconds: 2), () => _playVideo());
+          return;
+        }
       }
       if (isBuffering != _playerController!.value.isBuffering) {
         setState(() {
@@ -227,36 +238,36 @@ class _LiveHomePageState extends State<LiveHomePage> {
         barrierColor: Colors.transparent,
         backgroundColor: Colors.black87,
         builder: (BuildContext context) {
-          return Container(
-            width: double.infinity,
-            padding:
-                const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 40),
-            color: Colors.transparent,
-            child: Wrap(
-                spacing: 15,
-                runSpacing: 20,
-                children: List.generate(sources.length, (index) {
-                  return OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                          backgroundColor: _sourceIndex != index
-                              ? Colors.black45
-                              : Colors.red.withOpacity(0.1)),
-                      child: Text(
-                        '信源${index + 1}',
-                        style: TextStyle(
-                            color: _sourceIndex == index
-                                ? Colors.red
-                                : Colors.white),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context, index);
-                      });
-                })),
+          return SingleChildScrollView(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 40),
+              color: Colors.transparent,
+              child: Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: List.generate(sources.length, (index) {
+                    return OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            side: BorderSide(
+                                color: _sourceIndex == index ? Colors.red : Colors.white)),
+                        child: Text(
+                          '线路${index + 1}',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: _sourceIndex == index ? Colors.red : Colors.white),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context, index);
+                        });
+                  })),
+            ),
           );
         });
     if (selectedIndex != null) {
       _sourceIndex = selectedIndex;
-      debugPrint('切换信号源:====$_sourceIndex');
+      debugPrint('切换线路:====线路${_sourceIndex + 1}');
       _playVideo();
     }
   }

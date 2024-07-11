@@ -29,9 +29,8 @@ class M3uUtil {
       ]);
     } else {
       // LogUtil.v('models===${models.map((e) => e.toJson())}');
-      final subScribeModel = models.firstWhere(
-          (element) => element.selected == true,
-          orElse: () => models.first);
+      final subScribeModel =
+          models.firstWhere((element) => element.selected == true, orElse: () => models.first);
       m3uData = subScribeModel.result!;
     }
     return _parseM3u(m3uData);
@@ -40,8 +39,7 @@ class M3uUtil {
   // 获取本地m3u数据
   static Future<List<SubScribeModel>> getLocalData() async {
     Completer completer = Completer();
-    List<SubScribeModel> m3uList = SpUtil.getObjList(
-        'local_m3u', (v) => SubScribeModel.fromJson(v),
+    List<SubScribeModel> m3uList = SpUtil.getObjList('local_m3u', (v) => SubScribeModel.fromJson(v),
         defValue: <SubScribeModel>[])!;
     completer.complete(m3uList);
     final res = await completer.future;
@@ -50,8 +48,7 @@ class M3uUtil {
 
   // 保存本地m3u数据
   static Future<bool> saveLocalData(List<SubScribeModel> models) async {
-    final res = await SpUtil.putObjectList(
-        'local_m3u', models.map((e) => e.toJson()).toList());
+    final res = await SpUtil.putObjectList('local_m3u', models.map((e) => e.toJson()).toList());
     return res ?? false;
   }
 
@@ -65,8 +62,7 @@ class M3uUtil {
   }
 
   // 刷新m3u文件
-  static Future<String> refreshM3uLink(String link,
-      {bool isAdd = false}) async {
+  static Future<String> refreshM3uLink(String link, {bool isAdd = false}) async {
     debugPrint('refreshM3uLink=======$link');
     final res = await HttpUtil().getRequest(link);
     if (res == null) {
@@ -87,9 +83,8 @@ class M3uUtil {
         if (line.startsWith('#EXTINF:')) {
           final lineList = line.split(',');
           List<String> params = lineList.first.replaceAll('"', '').split(' ');
-          final groupStr = params.firstWhere(
-              (element) => element.startsWith('group-title='),
-              orElse: () => '');
+          final groupStr =
+              params.firstWhere((element) => element.startsWith('group-title='), orElse: () => '');
           if (groupStr.isNotEmpty) {
             final groupTitle = groupStr.split('=').last;
             final channelName = lineList.last;
@@ -119,24 +114,25 @@ class M3uUtil {
           final groupTitle = lineList[0];
           final channelLink = lineList[1];
           if (!channelLink.startsWith('http')) {
-            tempGroup = groupTitle;
-            if (result[groupTitle] == null) {
-              result[groupTitle] = <String, List<String>>{};
+            tempGroup = groupTitle == '' ? '默认${i + 1}' : groupTitle;
+            if (result[tempGroup] == null) {
+              result[tempGroup] = <String, List<String>>{};
             }
           } else {
-            Map<String, List<String>> group =
-                result[tempGroup] ?? <String, List<String>>{};
+            Map<String, List<String>> group = result[tempGroup] ?? <String, List<String>>{};
             List<String> chanelList = group[groupTitle] ?? <String>[];
             chanelList.add(channelLink);
             group[groupTitle] = chanelList;
             result[tempGroup] = group;
           }
-        } else {
-          EasyLoading.showToast('解析数据源出错了');
-          return result;
         }
       }
     }
+
+    if (result.isEmpty) {
+      EasyLoading.showError('解析数据源失败');
+    }
+
     return result;
   }
 }

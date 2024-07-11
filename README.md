@@ -12,11 +12,13 @@
 - 增加对.txt文件的解析支持(v1.5.0新增)
 - 纯黑主题(v1.5.0新增)
 
-#### 下载
+#### [Release](https://github.com/aiyakuaile/easy_tv_live/releases)
 
-`安卓` [极简TV 1.5.0](https://github.com/aiyakuaile/easy_tv_live/releases/1.5.0/)
+`安卓` [极简TV 1.5.1](https://github.com/aiyakuaile/easy_tv_live/releases/download/1.5.1/easyTV-1.5.1.apk)
 
-`ios 下载ipa后需要自行签名安装，例如：爱思助手`[极简TV 1.5.0](https://github.com/aiyakuaile/easy_tv_live/releases/1.5.0)
+`ios12+` [极简TV 1.5.1](https://github.com/aiyakuaile/easy_tv_live/releases/download/1.5.1/easyTV-1.5.1.ipa)
+
+> ios 下载ipa后需要自行签名安装，例如：爱思助手,轻松签,巨魔等
 
 #### 预览
 
