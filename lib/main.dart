@@ -4,6 +4,7 @@ import 'package:easy_tv_live/channel_drawer_page.dart';
 import 'package:easy_tv_live/mobile_video_widget.dart';
 import 'package:easy_tv_live/subscribe/subscribe_page.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
+import 'package:easy_tv_live/tv/tv_page.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +52,8 @@ class LiveHomePage extends StatefulWidget {
 
 class _LiveHomePageState extends State<LiveHomePage> {
   String toastString = '正在加载';
+
+  String _sourceName = '默认数据源';
 
   Map<String, dynamic>? _videoMap;
 
@@ -166,7 +169,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   _parseData() async {
-    final resMap = await M3uUtil.getDefaultM3uData();
+    final resMap = await M3uUtil.getDefaultM3uData((String sourceName) {
+      _sourceName = sourceName;
+    });
     _videoMap = resMap;
     _group = _videoMap!.keys.first.toString();
     _channel = Map.from(_videoMap![_group]).keys.first;
@@ -176,59 +181,87 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: OrientationLayoutBuilder(
-        portrait: (context) {
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-          return MobileVideoWidget(
-            toastString: toastString,
-            controller: _playerController,
-            changeChannelSources: _changeChannelSources,
-            isLandscape: false,
-            isBuffering: isBuffering,
-            isPlaying: isPlaying,
-            aspectRatio: aspectRatio,
-            onChangeSubSource: _parseData,
-            drawChild: ChannelDrawerPage(
+    return ResponsiveBuilder(builder: (context, sizingInformation) {
+      if (sizingInformation.refinedSize == RefinedSize.large ||
+          sizingInformation.refinedSize == RefinedSize.extraLarge) {
+        return TvPage(
+          videoMap: _videoMap,
+          channelName: _channel,
+          groupName: _group,
+          onTapChannel: _onTapChannel,
+          sourceName: _sourceName,
+          toastString: toastString,
+          controller: _playerController,
+          isBuffering: isBuffering,
+          isPlaying: isPlaying,
+          aspectRatio: aspectRatio,
+          changeChannelSources: _changeChannelSources,
+        );
+      }
+
+      return Material(
+        child: OrientationLayoutBuilder(
+          portrait: (context) {
+            SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+            return MobileVideoWidget(
+              toastString: toastString,
+              controller: _playerController,
+              changeChannelSources: _changeChannelSources,
+              isLandscape: false,
+              isBuffering: isBuffering,
+              isPlaying: isPlaying,
+              aspectRatio: aspectRatio,
+              onChangeSubSource: _parseData,
+              drawChild: ChannelDrawerPage(
                 videoMap: _videoMap,
                 channelName: _channel,
                 groupName: _group,
                 onTapChannel: _onTapChannel,
-                isLandscape: false),
-          );
-        },
-        landscape: (context) {
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-          return WillPopScope(
-            onWillPop: () async {
-              SystemChrome.setPreferredOrientations([
-                DeviceOrientation.portraitUp,
-                DeviceOrientation.landscapeLeft,
-                DeviceOrientation.landscapeRight
-              ]);
-              return false;
-            },
-            child: Scaffold(
-              drawer: ChannelDrawerPage(
-                  videoMap: _videoMap,
-                  channelName: _channel,
-                  groupName: _group,
-                  onTapChannel: _onTapChannel,
-                  isLandscape: true),
-              drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
-              body: TableVideoWidget(
-                  toastString: toastString,
-                  controller: _playerController,
-                  isBuffering: isBuffering,
-                  isPlaying: isPlaying,
-                  aspectRatio: aspectRatio,
-                  changeChannelSources: _changeChannelSources,
-                  isLandscape: true),
-            ),
-          );
-        },
-      ),
-    );
+                isLandscape: false,
+              ),
+            );
+          },
+          landscape: (context) {
+            return ResponsiveBuilder(builder: (context, sizingInformation) {
+              debugPrint('sizingInformation::::${sizingInformation.deviceScreenType.name}');
+              if (sizingInformation.isDesktop) {
+                return const TvPage();
+              } else {
+                SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+                return WillPopScope(
+                  onWillPop: () async {
+                    SystemChrome.setPreferredOrientations([
+                      DeviceOrientation.portraitUp,
+                      DeviceOrientation.landscapeLeft,
+                      DeviceOrientation.landscapeRight
+                    ]);
+                    return false;
+                  },
+                  child: Scaffold(
+                    drawer: ChannelDrawerPage(
+                        videoMap: _videoMap,
+                        channelName: _channel,
+                        groupName: _group,
+                        onTapChannel: _onTapChannel,
+                        isLandscape: true),
+                    drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
+                    drawerScrimColor: Colors.transparent,
+                    body: TableVideoWidget(
+                        toastString: toastString,
+                        controller: _playerController,
+                        isBuffering: isBuffering,
+                        isPlaying: isPlaying,
+                        aspectRatio: aspectRatio,
+                        changeChannelSources: _changeChannelSources,
+                        isLandscape: true),
+                  ),
+                );
+              }
+            });
+          },
+        ),
+      );
+    });
   }
 
   _changeChannelSources() async {
@@ -248,6 +281,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                   runSpacing: 10,
                   children: List.generate(sources.length, (index) {
                     return OutlinedButton(
+                        autofocus: _sourceIndex == index,
                         style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.zero,
                             side: BorderSide(

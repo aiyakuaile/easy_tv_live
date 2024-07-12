@@ -15,7 +15,8 @@ class M3uUtil {
       'https://mirror.ghproxy.com/raw.githubusercontent.com/joevess/IPTV/main/sources/iptv_sources.m3u8';
 
   // 获取默认的m3u文件
-  static Future<Map<String, dynamic>> getDefaultM3uData() async {
+  static Future<Map<String, dynamic>> getDefaultM3uData(
+      Function(String sourceName) sourceNameCallback) async {
     String m3uData = '';
     final models = await getLocalData();
     if (models.isEmpty) {
@@ -27,11 +28,13 @@ class M3uUtil {
             result: m3uData,
             selected: true)
       ]);
+      sourceNameCallback('默认数据源');
     } else {
       // LogUtil.v('models===${models.map((e) => e.toJson())}');
       final subScribeModel =
           models.firstWhere((element) => element.selected == true, orElse: () => models.first);
       m3uData = subScribeModel.result!;
+      sourceNameCallback(subScribeModel.link?.split('/').last ?? '默认数据源');
     }
     return _parseM3u(m3uData);
   }
