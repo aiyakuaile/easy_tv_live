@@ -66,11 +66,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
   bool isBuffering = false;
 
   bool isPlaying = false;
-  double aspectRatio = 1.7777777777777777;
+  double aspectRatio = 1.78;
 
   _playVideo() async {
     setState(() {
-      toastString = '正在播放：$_channel';
+      toastString = '线路${_sourceIndex+1}-正在播放：$_channel';
     });
     final url = _videoMap![_group][_channel][_sourceIndex].toString();
     debugPrint('正在播放:::$url');
@@ -102,11 +102,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
       if (_sourceIndex > channels.length - 1) {
         _sourceIndex = 0;
         setState(() {
-          toastString = '此视频无法播放';
+          toastString = '此视频无法播放，请更换其它频道';
         });
       } else {
         setState(() {
-          toastString = '尝试切换线路${_sourceIndex + 1}...';
+          toastString = '切换线路${_sourceIndex + 1}...';
         });
         Future.delayed(const Duration(seconds: 2), () => _playVideo());
         return;
@@ -117,17 +117,17 @@ class _LiveHomePageState extends State<LiveHomePage> {
         final channels = _videoMap![_group][_channel];
         _sourceIndex += 1;
         if (_sourceIndex > channels.length - 1) {
+          _sourceIndex = 0;
           setState(() {
-            toastString = '此视频无法播放，请更换其它频道';
+            toastString = '出错了，尝试重新连接...';
           });
-          return;
         } else {
           setState(() {
             toastString = '切换线路${_sourceIndex + 1}...';
           });
-          Future.delayed(const Duration(seconds: 2), () => _playVideo());
-          return;
         }
+        Future.delayed(const Duration(seconds: 2), () => _playVideo());
+        return;
       }
       if (isBuffering != _playerController!.value.isBuffering) {
         setState(() {
@@ -182,8 +182,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(builder: (context, sizingInformation) {
-      if (sizingInformation.refinedSize == RefinedSize.large ||
-          sizingInformation.refinedSize == RefinedSize.extraLarge) {
+      // if (sizingInformation.refinedSize == RefinedSize.large ||
+      //     sizingInformation.refinedSize == RefinedSize.extraLarge) {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
         return TvPage(
           videoMap: _videoMap,
           channelName: _channel,
@@ -197,7 +198,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
           aspectRatio: aspectRatio,
           changeChannelSources: _changeChannelSources,
         );
-      }
+      // }
 
       return Material(
         child: OrientationLayoutBuilder(
@@ -264,10 +265,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
     });
   }
 
-  _changeChannelSources() async {
+   Future<void> _changeChannelSources() async {
     List sources = _videoMap![_group][_channel];
     final selectedIndex = await showModalBottomSheet(
         context: context,
+        useRootNavigator: true,
         barrierColor: Colors.transparent,
         backgroundColor: Colors.black87,
         builder: (BuildContext context) {
@@ -290,8 +292,13 @@ class _LiveHomePageState extends State<LiveHomePage> {
                           '线路${index + 1}',
                           style: TextStyle(
                               fontSize: 12,
-                              color: _sourceIndex == index ? Colors.red : Colors.white),
+                              color: _sourceIndex == index  ? Colors.red : Colors.white),
                         ),
+                        onFocusChange: (focus){
+                          if(focus && _sourceIndex != index){
+                            Future.delayed(const Duration(microseconds: 300),()=>Navigator.pop(context, index));
+                          }
+                        },
                         onPressed: () {
                           Navigator.pop(context, index);
                         });
@@ -299,9 +306,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
             ),
           );
         });
-    if (selectedIndex != null) {
-      _sourceIndex = selectedIndex;
+    if (selectedIndex != null && _sourceIndex != selectedIndex) {
       debugPrint('切换线路:====线路${_sourceIndex + 1}');
+      _sourceIndex = selectedIndex;
       _playVideo();
     }
   }

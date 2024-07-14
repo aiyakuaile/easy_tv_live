@@ -101,7 +101,6 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                   return Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      autofocus: index == _groupIndex,
                       onTap: () {
                         if (_groupIndex != index) {
                           setState(() {
@@ -114,10 +113,10 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                       },
                       onFocusChange: (focus) async {
                         if (focus) {
-                          if (widget.groupName != title) {
+                          if (widget.groupName == title) return;
                             final name = _values[index].keys.toList()[0].toString();
                             widget.onTapChannel?.call(_keys[index].toString(), name);
-                          }
+
                           _scrollChannelController.animateTo(0,
                               duration: const Duration(milliseconds: 200), curve: Curves.linear);
                           setState(() {
@@ -178,7 +177,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                               alignment: 0.5, duration: const Duration(milliseconds: 500));
                         },
                         onFocusChange: (focus) async {
-                          if (focus) {
+                          if (focus && widget.channelName != name) {
                             widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
                             Scrollable.ensureVisible(context,
                                 alignment: 0.5, duration: const Duration(milliseconds: 500));

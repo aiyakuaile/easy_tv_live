@@ -1,3 +1,4 @@
+import 'package:easy_tv_live/subscribe/subscribe_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -14,7 +15,7 @@ class TvPage extends StatefulWidget {
   final Function(String group, String channel)? onTapChannel;
 
   final VideoPlayerController? controller;
-  final GestureTapCallback? changeChannelSources;
+  final Future<void> Function()? changeChannelSources;
   final String? toastString;
   final bool isLandscape;
   final bool isBuffering;
@@ -42,9 +43,36 @@ class TvPage extends StatefulWidget {
 }
 
 class _TvPageState extends State<TvPage> {
+
   final _videoNode = FocusNode();
 
-  _focusEventHandle(BuildContext context, KeyEvent e) {
+  Future<bool?> _openAddSource()async{
+    return Navigator.push<bool>(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return const SubScribePage(isTV: true,);
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = const Offset(0.0, -1.0);
+          var end = Offset.zero;
+          var curve = Curves.ease;
+
+          var tween = Tween(begin: begin, end: end).chain(
+            CurveTween(curve: curve),
+          );
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+
+
+  _focusEventHandle(BuildContext context, KeyEvent e) async {
     final isUpKey = e is KeyUpEvent;
     if (!isUpKey) return;
     switch (e.logicalKey) {
@@ -56,10 +84,17 @@ class _TvPageState extends State<TvPage> {
         break;
       case LogicalKeyboardKey.arrowUp:
         print('按了上键');
-        widget.changeChannelSources?.call();
+        _videoNode.unfocus();
+        await widget.changeChannelSources?.call();
+        Future.delayed(const Duration(seconds: 1),()=>_videoNode.requestFocus());
         break;
       case LogicalKeyboardKey.arrowDown:
         print('按了下键');
+        widget.controller?.pause();
+        _videoNode.unfocus();
+        await _openAddSource();
+        widget.controller?.play();
+        Future.delayed(const Duration(seconds: 1),()=>_videoNode.requestFocus());
         break;
       case LogicalKeyboardKey.select:
         print('按了确认键');
@@ -91,6 +126,12 @@ class _TvPageState extends State<TvPage> {
   }
 
   @override
+  void initState() {
+    Future.delayed(Duration(seconds: 3),_openAddSource);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.greenAccent,
@@ -119,7 +160,7 @@ class _TvPageState extends State<TvPage> {
                         aspectRatio: widget.aspectRatio,
                         child: SizedBox(
                             width: double.infinity,
-                            child: Text('hahah') //VideoPlayer(widget.controller!),
+                            child: VideoPlayer(widget.controller!),
                             ),
                       ),
                       if (!widget.isPlaying)
