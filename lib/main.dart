@@ -5,6 +5,7 @@ import 'package:easy_tv_live/mobile_video_widget.dart';
 import 'package:easy_tv_live/subscribe/subscribe_page.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
 import 'package:easy_tv_live/tv/tv_page.dart';
+import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +71,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   _playVideo() async {
     setState(() {
-      toastString = '线路${_sourceIndex+1}-正在播放：$_channel';
+      toastString = '线路${_sourceIndex + 1}-正在播放：$_channel';
     });
     final url = _videoMap![_group][_channel][_sourceIndex].toString();
     debugPrint('正在播放:::$url');
@@ -181,91 +182,87 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBuilder(builder: (context, sizingInformation) {
-      // if (sizingInformation.refinedSize == RefinedSize.large ||
-      //     sizingInformation.refinedSize == RefinedSize.extraLarge) {
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-        return TvPage(
-          videoMap: _videoMap,
-          channelName: _channel,
-          groupName: _group,
-          onTapChannel: _onTapChannel,
-          sourceName: _sourceName,
-          toastString: toastString,
-          controller: _playerController,
-          isBuffering: isBuffering,
-          isPlaying: isPlaying,
-          aspectRatio: aspectRatio,
-          changeChannelSources: _changeChannelSources,
-        );
-      // }
-
-      return Material(
-        child: OrientationLayoutBuilder(
-          portrait: (context) {
-            SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-            return MobileVideoWidget(
-              toastString: toastString,
-              controller: _playerController,
-              changeChannelSources: _changeChannelSources,
-              isLandscape: false,
-              isBuffering: isBuffering,
-              isPlaying: isPlaying,
-              aspectRatio: aspectRatio,
-              onChangeSubSource: _parseData,
-              drawChild: ChannelDrawerPage(
-                videoMap: _videoMap,
-                channelName: _channel,
-                groupName: _group,
-                onTapChannel: _onTapChannel,
-                isLandscape: false,
-              ),
-            );
-          },
-          landscape: (context) {
-            return ResponsiveBuilder(builder: (context, sizingInformation) {
-              debugPrint('sizingInformation::::${sizingInformation.deviceScreenType.name}');
-              if (sizingInformation.isDesktop) {
-                return const TvPage();
-              } else {
-                SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-                return WillPopScope(
-                  onWillPop: () async {
-                    SystemChrome.setPreferredOrientations([
-                      DeviceOrientation.portraitUp,
-                      DeviceOrientation.landscapeLeft,
-                      DeviceOrientation.landscapeRight
-                    ]);
-                    return false;
-                  },
-                  child: Scaffold(
-                    drawer: ChannelDrawerPage(
-                        videoMap: _videoMap,
-                        channelName: _channel,
-                        groupName: _group,
-                        onTapChannel: _onTapChannel,
-                        isLandscape: true),
-                    drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
-                    drawerScrimColor: Colors.transparent,
-                    body: TableVideoWidget(
-                        toastString: toastString,
-                        controller: _playerController,
-                        isBuffering: isBuffering,
-                        isPlaying: isPlaying,
-                        aspectRatio: aspectRatio,
-                        changeChannelSources: _changeChannelSources,
-                        isLandscape: true),
-                  ),
-                );
-              }
-            });
-          },
-        ),
+    if (EnvUtil.isTV()) {
+      return TvPage(
+        videoMap: _videoMap,
+        channelName: _channel,
+        groupName: _group,
+        onTapChannel: _onTapChannel,
+        sourceName: _sourceName,
+        toastString: toastString,
+        controller: _playerController,
+        isBuffering: isBuffering,
+        isPlaying: isPlaying,
+        aspectRatio: aspectRatio,
+        onChangeSubSource: _parseData,
+        changeChannelSources: _changeChannelSources,
       );
-    });
+    }
+    return Material(
+      child: OrientationLayoutBuilder(
+        portrait: (context) {
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+          return MobileVideoWidget(
+            toastString: toastString,
+            controller: _playerController,
+            changeChannelSources: _changeChannelSources,
+            isLandscape: false,
+            isBuffering: isBuffering,
+            isPlaying: isPlaying,
+            aspectRatio: aspectRatio,
+            onChangeSubSource: _parseData,
+            drawChild: ChannelDrawerPage(
+              videoMap: _videoMap,
+              channelName: _channel,
+              groupName: _group,
+              onTapChannel: _onTapChannel,
+              isLandscape: false,
+            ),
+          );
+        },
+        landscape: (context) {
+          return ResponsiveBuilder(builder: (context, sizingInformation) {
+            debugPrint('sizingInformation::::${sizingInformation.deviceScreenType.name}');
+            if (sizingInformation.isDesktop) {
+              return const TvPage();
+            } else {
+              SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+              return WillPopScope(
+                onWillPop: () async {
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.portraitUp,
+                    DeviceOrientation.landscapeLeft,
+                    DeviceOrientation.landscapeRight
+                  ]);
+                  return false;
+                },
+                child: Scaffold(
+                  drawer: ChannelDrawerPage(
+                      videoMap: _videoMap,
+                      channelName: _channel,
+                      groupName: _group,
+                      onTapChannel: _onTapChannel,
+                      isLandscape: true),
+                  drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
+                  drawerScrimColor: Colors.transparent,
+                  body: TableVideoWidget(
+                      toastString: toastString,
+                      controller: _playerController,
+                      isBuffering: isBuffering,
+                      isPlaying: isPlaying,
+                      aspectRatio: aspectRatio,
+                      changeChannelSources: _changeChannelSources,
+                      isLandscape: true),
+                ),
+              );
+            }
+          });
+        },
+      ),
+    );
   }
 
-   Future<void> _changeChannelSources() async {
+  Future<void> _changeChannelSources() async {
     List sources = _videoMap![_group][_channel];
     final selectedIndex = await showModalBottomSheet(
         context: context,
@@ -292,11 +289,12 @@ class _LiveHomePageState extends State<LiveHomePage> {
                           '线路${index + 1}',
                           style: TextStyle(
                               fontSize: 12,
-                              color: _sourceIndex == index  ? Colors.red : Colors.white),
+                              color: _sourceIndex == index ? Colors.red : Colors.white),
                         ),
-                        onFocusChange: (focus){
-                          if(focus && _sourceIndex != index){
-                            Future.delayed(const Duration(microseconds: 300),()=>Navigator.pop(context, index));
+                        onFocusChange: (focus) {
+                          if (focus && _sourceIndex != index) {
+                            Future.delayed(const Duration(microseconds: 300),
+                                () => Navigator.pop(context, index));
                           }
                         },
                         onPressed: () {

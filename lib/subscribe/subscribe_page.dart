@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:easy_tv_live/subscribe/subScribe_model.dart';
 import 'package:easy_tv_live/tv/html_string.dart';
@@ -10,12 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:io';
-
 
 class SubScribePage extends StatefulWidget {
   final bool isTV;
-  const SubScribePage({Key? key,this.isTV = false}) : super(key: key);
+  const SubScribePage({Key? key, this.isTV = false}) : super(key: key);
 
   @override
   State<SubScribePage> createState() => _SubScribePageState();
@@ -39,27 +38,28 @@ class _SubScribePageState extends State<SubScribePage> {
     _localNet();
   }
 
-  _localNet()async{
+  _localNet() async {
     _ip = await getCurrentIP();
+    debugPrint('_ip::::$_ip');
     _server = await HttpServer.bind(_ip, _port);
     _address = 'http://$_ip:$_port';
-    setState(() { });
+    setState(() {});
     await for (var request in _server!) {
-      if(request.method == 'GET'){
+      if (request.method == 'GET') {
         request.response
           ..headers.contentType = ContentType.html
           ..write(getHtmlString(_address!))
           ..close();
-      }else if (request.method == 'POST') {
+      } else if (request.method == 'POST') {
         String content = await utf8.decoder.bind(request).join();
         Map<String, dynamic> data = jsonDecode(content);
         String rMsg = '参数错误';
         if (data.containsKey('url')) {
           final url = data['url'] as String?;
-          if(url == '' || url == null || !url.startsWith('http')){
+          if (url == '' || url == null || !url.startsWith('http')) {
             EasyLoading.showError('请推送正确的链接');
             rMsg = '请推送正确的链接';
-          }else{
+          } else {
             rMsg = '推送成功';
             _pareUrl(url);
           }
@@ -67,27 +67,21 @@ class _SubScribePageState extends State<SubScribePage> {
           debugPrint('Missing parameters');
         }
 
-        final responseData = {
-          'message': rMsg
-        };
+        final responseData = {'message': rMsg};
 
         request.response
           ..statusCode = HttpStatus.ok
           ..headers.contentType = ContentType.json
           ..write(json.encode(responseData))
           ..close();
-
       } else {
-
         request.response
           ..statusCode = HttpStatus.methodNotAllowed
           ..write('Unsupported request: ${request.method}. Only POST requests are allowed.')
           ..close();
-
       }
     }
   }
-
 
   _getData() async {
     final res = await M3uUtil.getLocalData();
@@ -101,11 +95,10 @@ class _SubScribePageState extends State<SubScribePage> {
     try {
       for (var interface in await NetworkInterface.list()) {
         for (var addr in interface.addresses) {
-          print(
+          debugPrint(
               'Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
 
-          if (addr.type == InternetAddressType.IPv4 &&
-              addr.address.startsWith('192')) {
+          if (addr.type == InternetAddressType.IPv4 && addr.address.startsWith('192')) {
             currentIP = addr.address;
           }
         }
@@ -155,12 +148,14 @@ class _SubScribePageState extends State<SubScribePage> {
         appBar: AppBar(
           title: const Text('订阅'),
           centerTitle: true,
-          actions: widget.isTV?null:[
-            TextButton(
-              onPressed: _addM3uSource,
-              child: const Text('添加'),
-            )
-          ],
+          actions: widget.isTV
+              ? null
+              : [
+                  TextButton(
+                    onPressed: _addM3uSource,
+                    child: const Text('添加'),
+                  )
+                ],
         ),
         body: Column(
           children: [
@@ -168,7 +163,9 @@ class _SubScribePageState extends State<SubScribePage> {
               child: Row(
                 children: [
                   SizedBox(
-                    width: widget.isTV?MediaQuery.of(context).size.width*0.3:MediaQuery.of(context).size.width,
+                    width: widget.isTV
+                        ? MediaQuery.of(context).size.width * 0.3
+                        : MediaQuery.of(context).size.width,
                     child: ListView.separated(
                         padding: const EdgeInsets.all(10),
                         itemBuilder: (context, index) {
@@ -192,7 +189,8 @@ class _SubScribePageState extends State<SubScribePage> {
                                   const SizedBox(height: 20),
                                   Text(
                                     '上次刷新：${model.time}',
-                                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                                    style: TextStyle(
+                                        color: Colors.white.withOpacity(0.5), fontSize: 12),
                                   ),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -205,18 +203,29 @@ class _SubScribePageState extends State<SubScribePage> {
                                                   context: context,
                                                   builder: (context) {
                                                     return AlertDialog(
-                                                      content: const Text('确定删除此订阅吗？'),
+                                                      shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(8)),
+                                                      backgroundColor: const Color(0xFF393B40),
+                                                      content: const Text(
+                                                        '确定删除此订阅吗？',
+                                                        style: TextStyle(
+                                                            color: Colors.white, fontSize: 20),
+                                                      ),
                                                       actions: [
                                                         TextButton(
                                                             onPressed: () {
                                                               Navigator.pop(context, false);
                                                             },
-                                                            child: const Text('取消')),
+                                                            child: const Text(
+                                                              '取消',
+                                                              style: TextStyle(fontSize: 17),
+                                                            )),
                                                         TextButton(
                                                             onPressed: () {
                                                               Navigator.pop(context, true);
                                                             },
-                                                            child: const Text('确定')),
+                                                            child: const Text('确定',
+                                                                style: TextStyle(fontSize: 17))),
                                                       ],
                                                     );
                                                   });
@@ -264,57 +273,66 @@ class _SubScribePageState extends State<SubScribePage> {
                         },
                         itemCount: _m3uList.length),
                   ),
-                  if(widget.isTV) const VerticalDivider(),
-                 if(widget.isTV) Expanded(child: Container(
-                   padding: const EdgeInsets.all(30.0),
-                   child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text('扫码添加订阅源',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                        Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white
+                  if (widget.isTV) const VerticalDivider(),
+                  if (widget.isTV)
+                    Expanded(
+                        child: Container(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            '扫码添加订阅源',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          margin: const EdgeInsets.all(15),
-                          padding: const EdgeInsets.all(15),
-                          width: 100,
-                          child: _address == null?null:PrettyQrView.data(
-                            data: _address!,
-                            decoration: const PrettyQrDecoration(
-                              image: PrettyQrDecorationImage(
-                                image: AssetImage('assets/images/logo.png'),
-                              ),
-                            ),
+                          Container(
+                            decoration: const BoxDecoration(color: Colors.white),
+                            margin: const EdgeInsets.all(15),
+                            padding: const EdgeInsets.all(15),
+                            width: 100,
+                            child: _address == null
+                                ? null
+                                : PrettyQrView.data(
+                                    data: _address!,
+                                    decoration: const PrettyQrDecoration(
+                                      image: PrettyQrDecorationImage(
+                                        image: AssetImage('assets/images/logo.png'),
+                                      ),
+                                    ),
+                                  ),
                           ),
-                        ),
-                        if(_address != null) Container(margin: const EdgeInsets.only(bottom: 20),child: Text('推送地址：$_address')),
-                        const Text('在扫码结果页，添加新的订阅源，点击页面中的推送即可添加成功'),
-                      ],
-                    ),
-                 ))
+                          if (_address != null)
+                            Container(
+                                margin: const EdgeInsets.only(bottom: 20),
+                                child: Text('推送地址：$_address')),
+                          const Text('在扫码结果页，添加新的订阅源，点击页面中的推送即可添加成功'),
+                        ],
+                      ),
+                    ))
                 ],
               ),
             ),
-            if(widget.isTV)  const Divider(),
-           const Text(
+            if (widget.isTV) const Divider(),
+            const Text(
               '如遇视频源失效，请刷新对应的订阅的链接',
               style: TextStyle(color: Color(0xFF999999)),
-           ),
-           if(!widget.isTV)  RichText(
-              text: TextSpan(
-                  style: const TextStyle(color: Color(0xFF999999), fontFamily: 'Kaiti'),
-                  children: [
-                    const TextSpan(text: '如需增加额外的iPTV直播源，'),
-                    TextSpan(
-                        text: '请前往Github>>',
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () async {
-                            await launchUrl(Uri.parse('https://github.com/iptv-org/iptv'));
-                          },
-                        style: const TextStyle(color: Colors.blue)),
-                  ]),
             ),
+            if (!widget.isTV)
+              RichText(
+                text: TextSpan(
+                    style: const TextStyle(color: Color(0xFF999999), fontFamily: 'Kaiti'),
+                    children: [
+                      const TextSpan(text: '如需增加额外的iPTV直播源，'),
+                      TextSpan(
+                          text: '请前往Github>>',
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              await launchUrl(Uri.parse('https://github.com/iptv-org/iptv'));
+                            },
+                          style: const TextStyle(color: Colors.blue)),
+                    ]),
+              ),
             SizedBox(height: MediaQuery.of(context).padding.bottom + 10)
           ],
         ),
@@ -377,7 +395,7 @@ class _SubScribePageState extends State<SubScribePage> {
           );
         });
     if (res == null || res == '') return;
-     _pareUrl(res);
+    _pareUrl(res);
   }
 
   _pareUrl(String res) async {

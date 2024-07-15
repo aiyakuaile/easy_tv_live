@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_tv_live/subscribe/subscribe_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +18,7 @@ class TvPage extends StatefulWidget {
 
   final VideoPlayerController? controller;
   final Future<void> Function()? changeChannelSources;
+  final GestureTapCallback? onChangeSubSource;
   final String? toastString;
   final bool isLandscape;
   final bool isBuffering;
@@ -31,6 +34,7 @@ class TvPage extends StatefulWidget {
     this.onTapChannel,
     this.controller,
     this.changeChannelSources,
+    this.onChangeSubSource,
     this.toastString,
     this.isLandscape = false,
     this.isBuffering = false,
@@ -43,15 +47,19 @@ class TvPage extends StatefulWidget {
 }
 
 class _TvPageState extends State<TvPage> {
-
   final _videoNode = FocusNode();
 
-  Future<bool?> _openAddSource()async{
+  bool _debounce = true;
+  Timer? _timer;
+
+  Future<bool?> _openAddSource() async {
     return Navigator.push<bool>(
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
-          return const SubScribePage(isTV: true,);
+          return const SubScribePage(
+            isTV: true,
+          );
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           var begin = const Offset(0.0, -1.0);
@@ -71,33 +79,44 @@ class _TvPageState extends State<TvPage> {
     );
   }
 
-
   _focusEventHandle(BuildContext context, KeyEvent e) async {
     final isUpKey = e is KeyUpEvent;
     if (!isUpKey) return;
+    if (!_debounce) return;
+    _debounce = false;
+    _timer = Timer(const Duration(milliseconds: 500), () {
+      _debounce = true;
+      _timer?.cancel();
+      _timer = null;
+    });
+
     switch (e.logicalKey) {
       case LogicalKeyboardKey.arrowRight:
-        print('按了右键');
+        debugPrint('按了右键');
         break;
       case LogicalKeyboardKey.arrowLeft:
-        print('按了左键');
+        debugPrint('按了左键');
         break;
       case LogicalKeyboardKey.arrowUp:
-        print('按了上键');
+        debugPrint('按了上键');
         _videoNode.unfocus();
         await widget.changeChannelSources?.call();
-        Future.delayed(const Duration(seconds: 1),()=>_videoNode.requestFocus());
+        Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
         break;
       case LogicalKeyboardKey.arrowDown:
-        print('按了下键');
+        debugPrint('按了下键');
         widget.controller?.pause();
         _videoNode.unfocus();
-        await _openAddSource();
-        widget.controller?.play();
-        Future.delayed(const Duration(seconds: 1),()=>_videoNode.requestFocus());
+        final isChangeSource = await _openAddSource();
+        if (isChangeSource == true) {
+          widget.onChangeSubSource?.call();
+        } else {
+          widget.controller?.play();
+        }
+        Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
         break;
       case LogicalKeyboardKey.select:
-        print('按了确认键');
+        debugPrint('按了确认键');
         if (!widget.isPlaying) {
           widget.controller?.play();
           return;
@@ -107,28 +126,32 @@ class _TvPageState extends State<TvPage> {
         }
         break;
       case LogicalKeyboardKey.goBack:
-        print('按了返回键');
+        debugPrint('按了返回键');
         break;
       case LogicalKeyboardKey.contextMenu:
-        print('按了菜单键');
+        debugPrint('按了菜单键');
+        if (!Scaffold.of(context).isDrawerOpen) {
+          Scaffold.of(context).openDrawer();
+        }
         break;
       case LogicalKeyboardKey.audioVolumeUp:
-        print('按了音量加键');
+        debugPrint('按了音量加键');
         break;
       case LogicalKeyboardKey.audioVolumeDown:
-        print('按了音量减键');
+        debugPrint('按了音量减键');
         break;
       case LogicalKeyboardKey.f5:
-        // 不同品牌的可能不一样
-        print('按了语音键');
+        debugPrint('按了语音键');
         break;
     }
   }
 
   @override
-  void initState() {
-    Future.delayed(Duration(seconds: 3),_openAddSource);
-    super.initState();
+  void dispose() {
+    _timer?.cancel();
+    _timer = null;
+    _videoNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -159,9 +182,9 @@ class _TvPageState extends State<TvPage> {
                       AspectRatio(
                         aspectRatio: widget.aspectRatio,
                         child: SizedBox(
-                            width: double.infinity,
-                            child: VideoPlayer(widget.controller!),
-                            ),
+                          width: double.infinity,
+                          child: VideoPlayer(widget.controller!),
+                        ),
                       ),
                       if (!widget.isPlaying)
                         GestureDetector(

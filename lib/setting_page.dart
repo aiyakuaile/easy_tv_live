@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const version = '1.5.1';
-const downloadLink = 'https://github.com/aiyakuaile/easy_tv_live/releases/download';
+const version = '2.0.0';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -18,15 +18,22 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   String? _latestVersion;
+  final downloadLink = EnvUtil.sourceDownloadHost();
+  final releaseLink = EnvUtil.sourceReleaseHost();
+  final homeLink = EnvUtil.sourceHomeHost();
+
+  _launchUrl(String url) async {
+    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  }
 
   _checkUpdate() async {
     if (_latestVersion != null) {
       if (Platform.isIOS) {
-        launchUrl(Uri.parse('$downloadLink/$_latestVersion/easyTV-$_latestVersion.ipa'));
+        _launchUrl('$downloadLink/$_latestVersion/easyTV-$_latestVersion.ipa');
       } else if (Platform.isAndroid) {
-        launchUrl(Uri.parse('$downloadLink/$_latestVersion/easyTV-$_latestVersion.apk'));
+        _launchUrl('$downloadLink/$_latestVersion/easyTV-$_latestVersion.apk');
       } else {
-        launchUrl(Uri.parse('https://github.com/aiyakuaile/easy_tv_live/releases'));
+        _launchUrl(releaseLink);
       }
       return;
     }
@@ -100,7 +107,7 @@ class _SettingPageState extends State<SettingPage> {
             leading: const Icon(Icons.home_filled),
             trailing: const Icon(Icons.arrow_right),
             onTap: () {
-              launchUrl(Uri.parse('https://github.com/aiyakuaile/easy_tv_live'));
+              _launchUrl(homeLink);
             },
           ),
           ListTile(
@@ -108,7 +115,7 @@ class _SettingPageState extends State<SettingPage> {
             leading: const Icon(Icons.history),
             trailing: const Icon(Icons.arrow_right),
             onTap: () {
-              launchUrl(Uri.parse('https://github.com/aiyakuaile/easy_tv_live/releases'));
+              _launchUrl(releaseLink);
             },
           ),
           ListTile(

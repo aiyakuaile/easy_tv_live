@@ -64,12 +64,12 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
         actions: [
           TextButton(
               onPressed: () async {
-                final isPlayer = widget.controller?.value.isPlaying ?? false;
-                if (isPlayer) {
+                final isPlaying = widget.controller?.value.isPlaying ?? false;
+                if (isPlaying) {
                   widget.controller!.pause();
                 }
                 final res = await Navigator.of(context).pushNamed('subScribe');
-                if (isPlayer) {
+                if (!isPlaying) {
                   widget.controller!.play();
                 }
                 LogUtil.v('刷新======$res');
