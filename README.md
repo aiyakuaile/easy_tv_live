@@ -2,7 +2,7 @@
 
 # 极简电视
 
-极简电视直播App，简洁易用的iPTV播放器，支持Android、iOS欢迎下载体验！
+极简电视直播App，简洁易用的iPTV播放器，支持Android、iOS、电视大屏欢迎下载体验！
 
 #### 功能
 
@@ -13,6 +13,14 @@
 - 增加对.m3u文件的解析支持
 - 增加对.txt文件的解析支持(v1.5.0新增)
 - 纯黑主题(v1.5.0新增)
+- 支持Android TV(v2.0.0新增，支持AndroidOS 5.0+)
+
+#### TV版交互
+
+上键：切换线路
+下键：修改或添加订阅源
+ok键：确认操作、显示频道列表
+
 
 #### [查看国外Github已发布的版本](https://github.com/aiyakuaile/easy_tv_live/releases)
 #### [查看国内Gitee已发布的版本](https://gitee.com/AMuMuSir/easy_tv_live/releases)
@@ -22,15 +30,19 @@
 
 ### Github下载
 
-`安卓` [极简TV 1.5.1](https://github.com/aiyakuaile/easy_tv_live/releases/download/1.5.1/easyTV-1.5.1.apk)
+`安卓手机版` [极简TV 2.0.0](https://github.com/aiyakuaile/easy_tv_live/releases/download/2.0.0/easyTV-2.0.0.apk)
 
-`ios12+` [极简TV 1.5.1](https://github.com/aiyakuaile/easy_tv_live/releases/download/1.5.1/easyTV-1.5.1.ipa)
+`安卓TV版本5.0+` [极简TV 2.0.0](https://github.com/aiyakuaile/easy_tv_live/releases/download/2.0.0/easyTV-2.0.0-tv.apk)
+
+`ios12+` [极简TV 2.0.0](https://github.com/aiyakuaile/easy_tv_live/releases/download/2.0.0/easyTV-2.0.0.ipa)
 
 ### Gitee码云国内加速下载
 
-`安卓` [极简TV 1.5.1](https://gitee.com/AMuMuSir/easy_tv_live/releases/download/1.5.1/easyTV-1.5.1.apk)
+`安卓手机版` [极简TV 2.0.0](https://gitee.com/AMuMuSir/easy_tv_live/releases/download/2.0.0/easyTV-2.0.0.apk)
 
-`ios12+` [极简TV 1.5.1](https://gitee.com/AMuMuSir/easy_tv_live/releases/download/1.5.1/easyTV-1.5.1.ipa)
+`安卓TV版本` [极简TV 2.0.0](https://gitee.com/AMuMuSir/easy_tv_live/releases/download/2.0.0/easyTV-2.0.0-tv.apk)
+
+`ios12+` [极简TV 2.0.0](https://gitee.com/AMuMuSir/easy_tv_live/releases/download/2.0.0/easyTV-2.0.0.ipa)
 
 > ios 下载ipa后需要自行签名安装，例如：爱思助手,轻松签,巨魔等
 
