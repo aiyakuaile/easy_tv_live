@@ -57,7 +57,7 @@ ok键：确认操作、显示频道列表
 ## 赞助
 如果觉得此项目有用，可以考虑赞助我喝杯咖啡❤
 
-<a href="https://buymeacoffee.com/aiyakuaile" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a
+<a href="https://buymeacoffee.com/aiyakuaile" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 
 ![微信支付](https://fastly.jsdelivr.net/gh/aiyakuaile/images/wxpay.png) | ![支付宝支付](https://fastly.jsdelivr.net/gh/aiyakuaile/images/Alipay.png)
