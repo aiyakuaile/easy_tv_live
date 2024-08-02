@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const version = '2.0.0';
+const version = '2.0.1';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -39,13 +39,12 @@ class _SettingPageState extends State<SettingPage> {
     }
     const githubToken = String.fromEnvironment('github');
     try {
-      final res = await HttpUtil()
-          .getRequest('https://api.github.com/repos/aiyakuaile/easy_tv_live/releases/latest',
-              options: Options(
-                headers: {
-                  'Authorization': 'Bearer $githubToken',
-                },
-              ));
+      final res = await HttpUtil().getRequest('https://api.github.com/repos/aiyakuaile/easy_tv_live/releases/latest',
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $githubToken',
+            },
+          ));
       if (res != null) {
         final latestVersion = res['tag_name'] as String?;
         if (latestVersion != null && latestVersion.compareTo(version) > 0) {
@@ -94,8 +93,7 @@ class _SettingPageState extends State<SettingPage> {
                     right: -45,
                     child: Text(
                       'v$version',
-                      style: TextStyle(
-                          fontSize: 12, color: Colors.redAccent, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 12, color: Colors.redAccent, fontWeight: FontWeight.bold),
                     ),
                   )
                 ],
@@ -127,8 +125,7 @@ class _SettingPageState extends State<SettingPage> {
                 if (_latestVersion != null)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                        color: Colors.redAccent, borderRadius: BorderRadius.circular(30)),
+                    decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(30)),
                     child: Text(
                       '立即下载v$_latestVersion',
                       style: const TextStyle(fontSize: 12, color: Colors.white),
