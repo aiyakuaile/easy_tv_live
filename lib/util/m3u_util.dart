@@ -83,7 +83,7 @@ class M3uUtil {
             Map group = result[groupTitle] ?? {};
             List groupList = group[channelName] ?? [];
             final lineNext = lines[i + 1];
-            if (lineNext.startsWith('http')) {
+            if (lineNext.startsWith('http') || lineNext.startsWith('rt')) {
               groupList.add(lineNext);
               group[channelName] = groupList;
               result[groupTitle] = group;
@@ -105,17 +105,17 @@ class M3uUtil {
         if (lineList.length >= 2) {
           final groupTitle = lineList[0];
           final channelLink = lineList[1];
-          if (!channelLink.startsWith('http')) {
-            tempGroup = groupTitle == '' ? '默认${i + 1}' : groupTitle;
-            if (result[tempGroup] == null) {
-              result[tempGroup] = <String, List<String>>{};
-            }
-          } else {
+          if (channelLink.startsWith('http') || channelLink.startsWith('rt')) {
             Map<String, List<String>> group = result[tempGroup] ?? <String, List<String>>{};
             List<String> chanelList = group[groupTitle] ?? <String>[];
             chanelList.add(channelLink);
             group[groupTitle] = chanelList;
             result[tempGroup] = group;
+          } else {
+            tempGroup = groupTitle == '' ? '默认${i + 1}' : groupTitle;
+            if (result[tempGroup] == null) {
+              result[tempGroup] = <String, List<String>>{};
+            }
           }
         }
       }
