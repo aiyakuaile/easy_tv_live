@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:easy_tv_live/subscribe/subScribe_model.dart';
 import 'package:easy_tv_live/tv/html_string.dart';
 import 'package:easy_tv_live/util/date_util.dart';
+import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:flutter/gestures.dart';
@@ -95,8 +96,7 @@ class _SubScribePageState extends State<SubScribePage> {
     try {
       for (var interface in await NetworkInterface.list()) {
         for (var addr in interface.addresses) {
-          debugPrint(
-              'Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
+          debugPrint('Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
 
           if (addr.type == InternetAddressType.IPv4 && addr.address.startsWith('192')) {
             currentIP = addr.address;
@@ -111,18 +111,13 @@ class _SubScribePageState extends State<SubScribePage> {
 
   _refreshData(SubScribeModel model, int index) async {
     _isClickRefresh = true;
-    final res =
-        await M3uUtil.refreshM3uLink(model.link == 'default' ? M3uUtil.defaultM3u : model.link!);
+    final res = await M3uUtil.refreshM3uLink(model.link == 'default' ? EnvUtil.videoDefaultChannelHost() : model.link!);
     late SubScribeModel sub;
     if (res.isNotEmpty) {
       sub = SubScribeModel(
-          time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
-          link: model.link,
-          result: res,
-          selected: model.selected);
+          time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: model.link, result: res, selected: model.selected);
     } else {
-      sub = SubScribeModel(
-          time: '获取数据失败，请重新刷新试试', link: model.link, result: res, selected: model.selected);
+      sub = SubScribeModel(time: '获取数据失败，请重新刷新试试', link: model.link, result: res, selected: model.selected);
     }
     _m3uList[index] = sub;
     await M3uUtil.saveLocalData(_m3uList);
@@ -163,17 +158,13 @@ class _SubScribePageState extends State<SubScribePage> {
               child: Row(
                 children: [
                   SizedBox(
-                    width: widget.isTV
-                        ? MediaQuery.of(context).size.width * 0.3
-                        : MediaQuery.of(context).size.width,
+                    width: widget.isTV ? MediaQuery.of(context).size.width * 0.3 : MediaQuery.of(context).size.width,
                     child: ListView.separated(
                         padding: const EdgeInsets.all(10),
                         itemBuilder: (context, index) {
                           final model = _m3uList[index];
                           return Card(
-                            color: model.selected == true
-                                ? Colors.redAccent.withOpacity(0.8)
-                                : const Color(0xFF2B2D30),
+                            color: model.selected == true ? Colors.redAccent.withOpacity(0.8) : const Color(0xFF2B2D30),
                             child: Padding(
                               padding: const EdgeInsets.only(top: 20, left: 20, right: 10),
                               child: Column(
@@ -181,16 +172,13 @@ class _SubScribePageState extends State<SubScribePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    model.link == 'default'
-                                        ? model.link!
-                                        : model.link!.split('/').last.toString(),
+                                    model.link == 'default' ? model.link! : model.link!.split('/').last.toString(),
                                     style: const TextStyle(fontSize: 20),
                                   ),
                                   const SizedBox(height: 20),
                                   Text(
                                     '上次刷新：${model.time}',
-                                    style: TextStyle(
-                                        color: Colors.white.withOpacity(0.5), fontSize: 12),
+                                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
                                   ),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -203,13 +191,11 @@ class _SubScribePageState extends State<SubScribePage> {
                                                   context: context,
                                                   builder: (context) {
                                                     return AlertDialog(
-                                                      shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(8)),
+                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                                       backgroundColor: const Color(0xFF393B40),
                                                       content: const Text(
                                                         '确定删除此订阅吗？',
-                                                        style: TextStyle(
-                                                            color: Colors.white, fontSize: 20),
+                                                        style: TextStyle(color: Colors.white, fontSize: 20),
                                                       ),
                                                       actions: [
                                                         TextButton(
@@ -224,8 +210,7 @@ class _SubScribePageState extends State<SubScribePage> {
                                                             onPressed: () {
                                                               Navigator.pop(context, true);
                                                             },
-                                                            child: const Text('确定',
-                                                                style: TextStyle(fontSize: 17))),
+                                                            child: const Text('确定', style: TextStyle(fontSize: 17))),
                                                       ],
                                                     );
                                                   });
@@ -302,10 +287,7 @@ class _SubScribePageState extends State<SubScribePage> {
                                     ),
                                   ),
                           ),
-                          if (_address != null)
-                            Container(
-                                margin: const EdgeInsets.only(bottom: 20),
-                                child: Text('推送地址：$_address')),
+                          if (_address != null) Container(margin: const EdgeInsets.only(bottom: 20), child: Text('推送地址：$_address')),
                           const Text('在扫码结果页，添加新的订阅源，点击页面中的推送即可添加成功'),
                         ],
                       ),
@@ -320,18 +302,16 @@ class _SubScribePageState extends State<SubScribePage> {
             ),
             if (!widget.isTV)
               RichText(
-                text: TextSpan(
-                    style: const TextStyle(color: Color(0xFF999999), fontFamily: 'Kaiti'),
-                    children: [
-                      const TextSpan(text: '如需增加额外的iPTV直播源，'),
-                      TextSpan(
-                          text: '请前往Github>>',
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () async {
-                              await launchUrl(Uri.parse('https://github.com/iptv-org/iptv'));
-                            },
-                          style: const TextStyle(color: Colors.blue)),
-                    ]),
+                text: TextSpan(style: const TextStyle(color: Color(0xFF999999), fontFamily: 'Kaiti'), children: [
+                  const TextSpan(text: '如需增加额外的iPTV直播源，'),
+                  TextSpan(
+                      text: '请前往Github>>',
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          await launchUrl(Uri.parse('https://github.com/iptv-org/iptv'));
+                        },
+                      style: const TextStyle(color: Colors.blue)),
+                ]),
               ),
             SizedBox(height: MediaQuery.of(context).padding.bottom + 10)
           ],
@@ -345,8 +325,7 @@ class _SubScribePageState extends State<SubScribePage> {
     final res = await showModalBottomSheet<String>(
         context: context,
         isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         builder: (context) {
           return SingleChildScrollView(
             child: LayoutBuilder(builder: (context, _) {
@@ -408,11 +387,7 @@ class _SubScribePageState extends State<SubScribePage> {
       final m3uRes = await M3uUtil.refreshM3uLink(res, isAdd: true);
       if (m3uRes.isNotEmpty) {
         if (m3uRes == 'error') return;
-        final sub = SubScribeModel(
-            time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
-            link: res,
-            result: m3uRes,
-            selected: false);
+        final sub = SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: res, result: m3uRes, selected: false);
         _m3uList.add(sub);
         await M3uUtil.saveLocalData(_m3uList);
         _isClickRefresh = true;

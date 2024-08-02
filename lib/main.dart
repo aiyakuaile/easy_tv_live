@@ -23,8 +23,7 @@ void main() async {
   await SpUtil.getInstance();
   runApp(const MyApp());
   if (Platform.isAndroid) {
-    SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   }
 }
 
@@ -71,7 +70,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   _playVideo() async {
     setState(() {
-      toastString = '线路${_sourceIndex + 1}-正在播放：$_channel';
+      toastString = '线路${_sourceIndex + 1}播放：$_channel';
     });
     final url = _videoMap![_group][_channel][_sourceIndex].toString();
     debugPrint('正在播放:::$url');
@@ -81,12 +80,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
       setState(() {});
     }
     _playerController = VideoPlayerController.networkUrl(Uri.parse(url),
-        formatHint: VideoFormat.hls,
+        // formatHint: VideoFormat.hls,
         videoPlayerOptions: VideoPlayerOptions(
           allowBackgroundPlayback: false,
           mixWithOthers: false,
-          webOptions:
-              const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
+          webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
         ))
       ..setVolume(1.0);
 
@@ -229,20 +227,13 @@ class _LiveHomePageState extends State<LiveHomePage> {
               SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
               return WillPopScope(
                 onWillPop: () async {
-                  SystemChrome.setPreferredOrientations([
-                    DeviceOrientation.portraitUp,
-                    DeviceOrientation.landscapeLeft,
-                    DeviceOrientation.landscapeRight
-                  ]);
+                  SystemChrome.setPreferredOrientations(
+                      [DeviceOrientation.portraitUp, DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
                   return false;
                 },
                 child: Scaffold(
                   drawer: ChannelDrawerPage(
-                      videoMap: _videoMap,
-                      channelName: _channel,
-                      groupName: _group,
-                      onTapChannel: _onTapChannel,
-                      isLandscape: true),
+                      videoMap: _videoMap, channelName: _channel, groupName: _group, onTapChannel: _onTapChannel, isLandscape: true),
                   drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
                   drawerScrimColor: Colors.transparent,
                   body: TableVideoWidget(
@@ -282,19 +273,14 @@ class _LiveHomePageState extends State<LiveHomePage> {
                     return OutlinedButton(
                         autofocus: _sourceIndex == index,
                         style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            side: BorderSide(
-                                color: _sourceIndex == index ? Colors.red : Colors.white)),
+                            padding: EdgeInsets.zero, side: BorderSide(color: _sourceIndex == index ? Colors.red : Colors.white)),
                         child: Text(
                           '线路${index + 1}',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: _sourceIndex == index ? Colors.red : Colors.white),
+                          style: TextStyle(fontSize: 12, color: _sourceIndex == index ? Colors.red : Colors.white),
                         ),
                         onFocusChange: (focus) {
                           if (focus && _sourceIndex != index) {
-                            Future.delayed(const Duration(microseconds: 300),
-                                () => Navigator.pop(context, index));
+                            Future.delayed(const Duration(microseconds: 300), () => Navigator.pop(context, index));
                           }
                         },
                         onPressed: () {

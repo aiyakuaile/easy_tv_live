@@ -2,17 +2,14 @@ import 'dart:async';
 
 import 'package:easy_tv_live/subscribe/subScribe_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
+import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sp_util/sp_util.dart';
 
 class M3uUtil {
   M3uUtil._();
-
-  static String defaultM3u = 'https://mirror.ghproxy.com/raw.githubusercontent.com/joevess/IPTV/main/sources/iptv_sources.m3u8';
-
   // 获取默认的m3u文件
   static Future<Map<String, dynamic>> getDefaultM3uData(Function(String sourceName) sourceNameCallback) async {
     String m3uData = '';
@@ -47,9 +44,11 @@ class M3uUtil {
   }
 
   static Future<String> _fetchData() async {
+    final defaultM3u = EnvUtil.videoDefaultChannelHost();
     final res = await HttpUtil().getRequest(defaultM3u);
     if (res == null) {
-      return rootBundle.loadString('assets/resources/default.m3u8');
+      EasyLoading.showToast('获取默认数据源失败');
+      return '';
     } else {
       return res;
     }

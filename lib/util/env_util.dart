@@ -38,4 +38,12 @@ class EnvUtil {
       return 'https://github.com/aiyakuaile/easy_tv_live';
     }
   }
+
+  static String videoDefaultChannelHost() {
+    if (isChinese()) {
+      return 'https://gitee.com/AMuMuSir/easy_tv_live/raw/main/temp';
+    } else {
+      return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/temp';
+    }
+  }
 }
