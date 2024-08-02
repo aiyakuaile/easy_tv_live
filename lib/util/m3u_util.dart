@@ -11,28 +11,20 @@ import 'package:sp_util/sp_util.dart';
 class M3uUtil {
   M3uUtil._();
 
-  static String defaultM3u =
-      'https://mirror.ghproxy.com/raw.githubusercontent.com/joevess/IPTV/main/sources/iptv_sources.m3u8';
+  static String defaultM3u = 'https://mirror.ghproxy.com/raw.githubusercontent.com/joevess/IPTV/main/sources/iptv_sources.m3u8';
 
   // 获取默认的m3u文件
-  static Future<Map<String, dynamic>> getDefaultM3uData(
-      Function(String sourceName) sourceNameCallback) async {
+  static Future<Map<String, dynamic>> getDefaultM3uData(Function(String sourceName) sourceNameCallback) async {
     String m3uData = '';
     final models = await getLocalData();
     if (models.isEmpty) {
       m3uData = await _fetchData();
-      await saveLocalData([
-        SubScribeModel(
-            time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
-            link: 'default',
-            result: m3uData,
-            selected: true)
-      ]);
+      await saveLocalData(
+          [SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: 'default', result: m3uData, selected: true)]);
       sourceNameCallback('默认数据源');
     } else {
       // LogUtil.v('models===${models.map((e) => e.toJson())}');
-      final subScribeModel =
-          models.firstWhere((element) => element.selected == true, orElse: () => models.first);
+      final subScribeModel = models.firstWhere((element) => element.selected == true, orElse: () => models.first);
       m3uData = subScribeModel.result!;
       sourceNameCallback(subScribeModel.link?.split('/').last ?? '默认数据源');
     }
@@ -42,8 +34,7 @@ class M3uUtil {
   // 获取本地m3u数据
   static Future<List<SubScribeModel>> getLocalData() async {
     Completer completer = Completer();
-    List<SubScribeModel> m3uList = SpUtil.getObjList('local_m3u', (v) => SubScribeModel.fromJson(v),
-        defValue: <SubScribeModel>[])!;
+    List<SubScribeModel> m3uList = SpUtil.getObjList('local_m3u', (v) => SubScribeModel.fromJson(v), defValue: <SubScribeModel>[])!;
     completer.complete(m3uList);
     final res = await completer.future;
     return res;
@@ -86,8 +77,7 @@ class M3uUtil {
         if (line.startsWith('#EXTINF:')) {
           final lineList = line.split(',');
           List<String> params = lineList.first.replaceAll('"', '').split(' ');
-          final groupStr =
-              params.firstWhere((element) => element.startsWith('group-title='), orElse: () => '');
+          final groupStr = params.firstWhere((element) => element.startsWith('group-title='), orElse: () => 'group-title=默认');
           if (groupStr.isNotEmpty) {
             final groupTitle = groupStr.split('=').last;
             final channelName = lineList.last;

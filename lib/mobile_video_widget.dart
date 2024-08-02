@@ -1,7 +1,6 @@
 import 'package:easy_tv_live/channel_drawer_page.dart';
 import 'package:easy_tv_live/setting_page.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
-import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -69,10 +68,7 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
                   widget.controller!.pause();
                 }
                 final res = await Navigator.of(context).pushNamed('subScribe');
-                if (!isPlaying) {
-                  widget.controller!.play();
-                }
-                LogUtil.v('刷新======$res');
+                widget.controller!.play();
                 if (res == true) {
                   lastTimeOffset = 0;
                   lastTimeChannelOffset = 0;
