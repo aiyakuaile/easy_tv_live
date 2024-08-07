@@ -54,6 +54,14 @@ class M3uUtil {
     }
   }
 
+  static bool isLiveLink(String link) {
+    final tLink = link.toLowerCase();
+    if (tLink.startsWith('http') || tLink.startsWith('r') || tLink.startsWith('p') || tLink.startsWith('s') || tLink.startsWith('w')) {
+      return true;
+    }
+    return false;
+  }
+
   // 刷新m3u文件
   static Future<String> refreshM3uLink(String link, {bool isAdd = false}) async {
     debugPrint('refreshM3uLink=======$link');
@@ -71,6 +79,8 @@ class M3uUtil {
     final lines = m3u.split('\n');
     final result = <String, dynamic>{};
     if (m3u.startsWith('#EXTM3U')) {
+      String tempGroupTitle = '';
+      String tempChannelName = '';
       for (int i = 0; i < lines.length - 1; i++) {
         final line = lines[i];
         if (line.startsWith('#EXTINF:')) {
@@ -78,23 +88,29 @@ class M3uUtil {
           List<String> params = lineList.first.replaceAll('"', '').split(' ');
           final groupStr = params.firstWhere((element) => element.startsWith('group-title='), orElse: () => 'group-title=默认');
           if (groupStr.isNotEmpty) {
-            final groupTitle = groupStr.split('=').last;
-            final channelName = lineList.last;
-            Map group = result[groupTitle] ?? {};
-            List groupList = group[channelName] ?? [];
+            tempGroupTitle = groupStr.split('=').last;
+            tempChannelName = lineList.last;
+            Map group = result[tempGroupTitle] ?? {};
+            List groupList = group[tempChannelName] ?? [];
             final lineNext = lines[i + 1];
-            if (lineNext.startsWith('http') || lineNext.startsWith('rt')) {
+            if (isLiveLink(lineNext)) {
               groupList.add(lineNext);
-              group[channelName] = groupList;
-              result[groupTitle] = group;
+              group[tempChannelName] = groupList;
+              result[tempGroupTitle] = group;
               i += 1;
-            } else if (lines[i + 2].startsWith('http')) {
+            } else if (isLiveLink(lines[i + 2])) {
               groupList.add(lines[i + 2].toString());
-              group[channelName] = groupList;
-              result[groupTitle] = group;
+              group[tempChannelName] = groupList;
+              result[tempGroupTitle] = group;
               i += 2;
             }
           }
+        } else if (isLiveLink(line)) {
+          Map group = result[tempGroupTitle] ?? {};
+          List groupList = group[tempChannelName] ?? [];
+          groupList.add(line);
+          group[tempChannelName] = groupList;
+          result[tempGroupTitle] = group;
         }
       }
     } else {
@@ -105,7 +121,7 @@ class M3uUtil {
         if (lineList.length >= 2) {
           final groupTitle = lineList[0];
           final channelLink = lineList[1];
-          if (channelLink.startsWith('http') || channelLink.startsWith('rt')) {
+          if (isLiveLink(channelLink)) {
             Map<String, List<String>> group = result[tempGroup] ?? <String, List<String>>{};
             List<String> chanelList = group[groupTitle] ?? <String>[];
             chanelList.add(channelLink);
