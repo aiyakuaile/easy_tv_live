@@ -46,4 +46,12 @@ class EnvUtil {
       return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/temp';
     }
   }
+
+  static String checkVersionHost() {
+    if (isChinese()) {
+      return 'https://gitee.com/api/v5/repos/AMuMuSir/easy_tv_live/releases/latest';
+    } else {
+      return 'https://api.github.com/repos/aiyakuaile/easy_tv_live/releases/latest';
+    }
+  }
 }

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +20,7 @@ class _SettingPageState extends State<SettingPage> {
   final downloadLink = EnvUtil.sourceDownloadHost();
   final releaseLink = EnvUtil.sourceReleaseHost();
   final homeLink = EnvUtil.sourceHomeHost();
+  final versionLink = EnvUtil.checkVersionHost();
 
   _launchUrl(String url) async {
     launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
@@ -37,14 +37,8 @@ class _SettingPageState extends State<SettingPage> {
       }
       return;
     }
-    const githubToken = String.fromEnvironment('github');
     try {
-      final res = await HttpUtil().getRequest('https://api.github.com/repos/aiyakuaile/easy_tv_live/releases/latest',
-          options: Options(
-            headers: {
-              'Authorization': 'Bearer $githubToken',
-            },
-          ));
+      final res = await HttpUtil().getRequest(versionLink);
       if (res != null) {
         final latestVersion = res['tag_name'] as String?;
         if (latestVersion != null && latestVersion.compareTo(version) > 0) {
