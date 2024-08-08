@@ -36,11 +36,11 @@ class EnvUtil {
   }
 
   static String videoDefaultChannelHost() {
-    // if (isChinese()) {
-    return 'https://gitee.com/AMuMuSir/easy_tv_live/raw/main/temp';
-    // } else {
-    //   return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/temp';
-    // }
+    if (isChinese()) {
+      return 'https://gitee.com/AMuMuSir/easy_tv_live/raw/main/temp';
+    } else {
+      return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/temp';
+    }
   }
 
   static String checkVersionHost() {
