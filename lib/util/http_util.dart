@@ -24,6 +24,7 @@ class HttpUtil {
       CancelToken? cancelToken,
       ProgressCallback? onReceiveProgress,
       bool isShowLoading = true}) async {
+    debugPrint('GetRequest::::::$path');
     if (isShowLoading) EasyLoading.show();
     Response? response;
     try {

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:easy_tv_live/channel_drawer_page.dart';
+import 'package:easy_tv_live/empty_page.dart';
 import 'package:easy_tv_live/mobile_video_widget.dart';
 import 'package:easy_tv_live/subscribe/subscribe_page.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
@@ -52,8 +53,6 @@ class LiveHomePage extends StatefulWidget {
 
 class _LiveHomePageState extends State<LiveHomePage> {
   String toastString = '正在加载';
-
-  String _sourceName = '默认数据源';
 
   Map<String, dynamic>? _videoMap;
 
@@ -168,14 +167,22 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   _parseData() async {
-    final resMap = await M3uUtil.getDefaultM3uData((String sourceName) {
-      _sourceName = sourceName;
-    });
+    final resMap = await M3uUtil.getDefaultM3uData();
+    debugPrint('_parseData:::::$resMap');
     _videoMap = resMap;
-    _group = _videoMap!.keys.first.toString();
-    _channel = Map.from(_videoMap![_group]).keys.first;
     _sourceIndex = 0;
-    _playVideo();
+    if (_videoMap?.isNotEmpty ?? false) {
+      _group = _videoMap!.keys.first.toString();
+      _channel = Map.from(_videoMap![_group]).keys.first;
+      _playVideo();
+    } else {
+      _group = '';
+      _channel = '';
+      _playerController?.dispose();
+      _playerController = null;
+      toastString = 'UNKNOWN';
+    }
+    setState(() {});
   }
 
   @override
@@ -186,7 +193,6 @@ class _LiveHomePageState extends State<LiveHomePage> {
         channelName: _channel,
         groupName: _group,
         onTapChannel: _onTapChannel,
-        sourceName: _sourceName,
         toastString: toastString,
         controller: _playerController,
         isBuffering: isBuffering,
@@ -219,24 +225,28 @@ class _LiveHomePageState extends State<LiveHomePage> {
           );
         },
         landscape: (context) {
-          return ResponsiveBuilder(builder: (context, sizingInformation) {
-            debugPrint('sizingInformation::::${sizingInformation.deviceScreenType.name}');
-            if (sizingInformation.isDesktop) {
-              return const TvPage();
-            } else {
-              SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-              return WillPopScope(
-                onWillPop: () async {
-                  SystemChrome.setPreferredOrientations(
-                      [DeviceOrientation.portraitUp, DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-                  return false;
-                },
-                child: Scaffold(
-                  drawer: ChannelDrawerPage(
-                      videoMap: _videoMap, channelName: _channel, groupName: _group, onTapChannel: _onTapChannel, isLandscape: true),
-                  drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
-                  drawerScrimColor: Colors.transparent,
-                  body: TableVideoWidget(
+          // return ResponsiveBuilder(builder: (context, sizingInformation) {
+          //   debugPrint('sizingInformation::::${sizingInformation.deviceScreenType.name}');
+          //   if (sizingInformation.isDesktop) {
+          //     return const TvPage();
+          //   } else {
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+          return PopScope(
+            canPop: false,
+            onPopInvoked: (didPop) {
+              if (!didPop) {
+                SystemChrome.setPreferredOrientations(
+                    [DeviceOrientation.portraitUp, DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+              }
+            },
+            child: Scaffold(
+              drawer:
+                  ChannelDrawerPage(videoMap: _videoMap, channelName: _channel, groupName: _group, onTapChannel: _onTapChannel, isLandscape: true),
+              drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
+              drawerScrimColor: Colors.transparent,
+              body: toastString == 'UNKNOWN'
+                  ? EmptyPage(onRefresh: _parseData)
+                  : TableVideoWidget(
                       toastString: toastString,
                       controller: _playerController,
                       isBuffering: isBuffering,
@@ -244,10 +254,10 @@ class _LiveHomePageState extends State<LiveHomePage> {
                       aspectRatio: aspectRatio,
                       changeChannelSources: _changeChannelSources,
                       isLandscape: true),
-                ),
-              );
-            }
-          });
+            ),
+          );
+          //   }
+          // });
         },
       ),
     );

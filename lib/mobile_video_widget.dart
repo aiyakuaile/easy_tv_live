@@ -1,4 +1,5 @@
 import 'package:easy_tv_live/channel_drawer_page.dart';
+import 'package:easy_tv_live/empty_page.dart';
 import 'package:easy_tv_live/setting_page.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,15 +52,16 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
         centerTitle: true,
         title: const Text('极简TV'),
         leading: IconButton(
-            onPressed: () {
+            onPressed: () async {
               widget.controller?.pause();
-              Navigator.of(context).push(
+              await Navigator.of(context).push(
                 CupertinoPageRoute(
                   builder: (context) {
                     return const SettingPage();
                   },
                 ),
               );
+              widget.controller?.play();
             },
             icon: Image.asset(
               'assets/images/github.png',
@@ -70,10 +72,10 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
               onPressed: () async {
                 final isPlaying = widget.controller?.value.isPlaying ?? false;
                 if (isPlaying) {
-                  widget.controller!.pause();
+                  widget.controller?.pause();
                 }
                 final res = await Navigator.of(context).pushNamed('subScribe');
-                widget.controller!.play();
+                widget.controller?.play();
                 if (res == true) {
                   lastTimeOffset = 0;
                   lastTimeChannelOffset = 0;
@@ -96,7 +98,7 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
               isPlaying: widget.isPlaying,
             ),
           ),
-          Flexible(child: widget.drawChild)
+          Flexible(child: widget.toastString == 'UNKNOWN' ? EmptyPage(onRefresh: widget.onChangeSubSource) : widget.drawChild)
         ],
       ),
     );

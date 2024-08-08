@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_tv_live/empty_page.dart';
 import 'package:easy_tv_live/subscribe/subscribe_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +14,6 @@ class TvPage extends StatefulWidget {
   final Map<String, dynamic>? videoMap;
   final String? channelName;
   final String? groupName;
-  final String? sourceName;
   final Function(String group, String channel)? onTapChannel;
 
   final VideoPlayerController? controller;
@@ -30,7 +30,6 @@ class TvPage extends StatefulWidget {
     this.videoMap,
     this.groupName,
     this.channelName,
-    this.sourceName,
     this.onTapChannel,
     this.controller,
     this.changeChannelSources,
@@ -116,11 +115,14 @@ class _TvPageState extends State<TvPage> {
         Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
         break;
       case LogicalKeyboardKey.select:
-        debugPrint('按了确认键');
-        if (!widget.isPlaying) {
+        debugPrint('按了确认键:::isPlaying:${widget.isPlaying}:::video:value:${widget.controller?.value}');
+        if (widget.controller!.value.isInitialized == true &&
+            widget.controller!.value.isPlaying == false &&
+            widget.controller!.value.isBuffering == false) {
           widget.controller?.play();
           return;
         }
+        debugPrint('确认键:::打开频道列表');
         if (!Scaffold.of(context).isDrawerOpen) {
           Scaffold.of(context).openDrawer();
         }
@@ -172,32 +174,33 @@ class _TvPageState extends State<TvPage> {
           focusNode: _videoNode,
           autofocus: true,
           onKeyEvent: (KeyEvent e) => _focusEventHandle(context, e),
-          child: Container(
-            alignment: Alignment.center,
-            color: Colors.black,
-            child: widget.controller?.value.isInitialized ?? false
-                ? Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      AspectRatio(
-                        aspectRatio: widget.aspectRatio,
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: VideoPlayer(widget.controller!),
-                        ),
-                      ),
-                      if (!widget.isPlaying)
-                        GestureDetector(
-                            onTap: () {
-                              widget.controller?.play();
-                            },
-                            child: const Icon(Icons.play_circle_outline,
-                                color: Colors.white, size: 50)),
-                      if (widget.isBuffering) const SpinKitSpinningLines(color: Colors.white)
-                    ],
-                  )
-                : VideoHoldBg(toastString: widget.toastString),
-          ),
+          child: widget.toastString == ''
+              ? EmptyPage(onRefresh: () => widget.onChangeSubSource?.call())
+              : Container(
+                  alignment: Alignment.center,
+                  color: Colors.black,
+                  child: widget.controller?.value.isInitialized ?? false
+                      ? Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: widget.aspectRatio,
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: VideoPlayer(widget.controller!),
+                              ),
+                            ),
+                            if (!widget.isPlaying)
+                              GestureDetector(
+                                  onTap: () {
+                                    widget.controller?.play();
+                                  },
+                                  child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50)),
+                            if (widget.isBuffering) const SpinKitSpinningLines(color: Colors.white)
+                          ],
+                        )
+                      : VideoHoldBg(toastString: widget.toastString),
+                ),
         );
       }),
     );

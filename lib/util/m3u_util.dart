@@ -11,19 +11,29 @@ import 'package:sp_util/sp_util.dart';
 class M3uUtil {
   M3uUtil._();
   // 获取默认的m3u文件
-  static Future<Map<String, dynamic>> getDefaultM3uData(Function(String sourceName) sourceNameCallback) async {
+  static Future<Map<String, dynamic>> getDefaultM3uData() async {
     String m3uData = '';
     final models = await getLocalData();
-    if (models.isEmpty) {
-      m3uData = await _fetchData();
-      await saveLocalData(
-          [SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: 'default', result: m3uData, selected: true)]);
-      sourceNameCallback('默认数据源');
+    if (models.isNotEmpty) {
+      final defaultModel = models.firstWhere((element) => element.selected == true, orElse: () => models.first);
+      final newRes = await HttpUtil().getRequest(defaultModel.link == 'default' ? EnvUtil.videoDefaultChannelHost() : defaultModel.link!);
+      if (newRes != null) {
+        debugPrint('已获取新数据::::::');
+        m3uData = newRes;
+        await SpUtil.putString('m3u_cache', m3uData);
+      } else {
+        final oldRes = SpUtil.getString('m3u_cache', defValue: '');
+        if (oldRes != '') {
+          debugPrint('已获取到历史保存的数据::::::');
+          m3uData = oldRes!;
+        }
+      }
+      if (m3uData.isEmpty) {
+        return <String, dynamic>{};
+      }
     } else {
-      // LogUtil.v('models===${models.map((e) => e.toJson())}');
-      final subScribeModel = models.firstWhere((element) => element.selected == true, orElse: () => models.first);
-      m3uData = subScribeModel.result!;
-      sourceNameCallback(subScribeModel.link?.split('/').last ?? '默认数据源');
+      m3uData = await _fetchData();
+      await saveLocalData([SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: 'default', selected: true)]);
     }
     return _parseM3u(m3uData);
   }
@@ -60,18 +70,6 @@ class M3uUtil {
       return true;
     }
     return false;
-  }
-
-  // 刷新m3u文件
-  static Future<String> refreshM3uLink(String link, {bool isAdd = false}) async {
-    debugPrint('refreshM3uLink=======$link');
-    final res = await HttpUtil().getRequest(link);
-    if (res == null) {
-      EasyLoading.showToast('请刷新重试');
-      return '';
-    } else {
-      return res;
-    }
   }
 
   // 解析m3u文件为Map

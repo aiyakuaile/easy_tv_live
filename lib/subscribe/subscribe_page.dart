@@ -4,17 +4,19 @@ import 'dart:io';
 import 'package:easy_tv_live/subscribe/subScribe_model.dart';
 import 'package:easy_tv_live/tv/html_string.dart';
 import 'package:easy_tv_live/util/date_util.dart';
-import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:sp_util/sp_util.dart';
+
+import '../util/env_util.dart';
 
 class SubScribePage extends StatefulWidget {
   final bool isTV;
+
   const SubScribePage({Key? key, this.isTV = false}) : super(key: key);
 
   @override
@@ -22,6 +24,8 @@ class SubScribePage extends StatefulWidget {
 }
 
 class _SubScribePageState extends State<SubScribePage> {
+  AppLifecycleListener? _appLifecycleListener;
+
   List<SubScribeModel> _m3uList = <SubScribeModel>[];
 
   bool _isClickRefresh = false;
@@ -35,11 +39,60 @@ class _SubScribePageState extends State<SubScribePage> {
   @override
   void initState() {
     super.initState();
-    _getData();
     _localNet();
+    _getData();
+    _pasteClipboard();
+    _addLifecycleListen();
+  }
+
+  _addLifecycleListen() {
+    if (EnvUtil.isTV()) return;
+    _appLifecycleListener = AppLifecycleListener(onStateChange: (state) {
+      debugPrint('addLifecycleListen::::::$state');
+      if (state == AppLifecycleState.resumed) {
+        _pasteClipboard();
+      }
+    });
+  }
+
+  _pasteClipboard() async {
+    if (EnvUtil.isTV()) return;
+    final clipData = await Clipboard.getData(Clipboard.kTextPlain);
+    final clipText = clipData?.text;
+    if (clipText != null && clipText.startsWith('http')) {
+      final res = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: const Color(0xff3C3F41),
+              title: const Text('温馨提示'),
+              content: Text('确定添加此数据源吗？\n$clipText'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: const Text('取消'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text('确定'),
+                ),
+              ],
+            );
+          });
+      if (res == true) {
+        await _pareUrl(clipText);
+      }
+      Clipboard.setData(const ClipboardData(text: ''));
+    }
   }
 
   _localNet() async {
+    if (!EnvUtil.isTV()) return;
     _ip = await getCurrentIP();
     debugPrint('_ip::::$_ip');
     _server = await HttpServer.bind(_ip, _port);
@@ -109,26 +162,10 @@ class _SubScribePageState extends State<SubScribePage> {
     return currentIP;
   }
 
-  _refreshData(SubScribeModel model, int index) async {
-    _isClickRefresh = true;
-    final res = await M3uUtil.refreshM3uLink(model.link == 'default' ? EnvUtil.videoDefaultChannelHost() : model.link!);
-    late SubScribeModel sub;
-    if (res.isNotEmpty) {
-      sub = SubScribeModel(
-          time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: model.link, result: res, selected: model.selected);
-    } else {
-      sub = SubScribeModel(time: '获取数据失败，请重新刷新试试', link: model.link, result: res, selected: model.selected);
-    }
-    _m3uList[index] = sub;
-    await M3uUtil.saveLocalData(_m3uList);
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   @override
   void dispose() {
     _server?.close(force: true);
+    _appLifecycleListener?.dispose();
     super.dispose();
   }
 
@@ -164,7 +201,7 @@ class _SubScribePageState extends State<SubScribePage> {
                         itemBuilder: (context, index) {
                           final model = _m3uList[index];
                           return Card(
-                            color: model.selected == true ? Colors.redAccent.withOpacity(0.8) : const Color(0xFF2B2D30),
+                            color: model.selected == true ? Colors.redAccent.withOpacity(0.5) : const Color(0xFF2B2D30),
                             child: Padding(
                               padding: const EdgeInsets.only(top: 20, left: 20, right: 10),
                               child: Column(
@@ -172,12 +209,12 @@ class _SubScribePageState extends State<SubScribePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    model.link == 'default' ? model.link! : model.link!.split('/').last.toString(),
+                                    model.link == 'default' ? model.link! : model.link!.split('?').first.split('/').last.toString(),
                                     style: const TextStyle(fontSize: 20),
                                   ),
                                   const SizedBox(height: 20),
                                   Text(
-                                    '上次刷新：${model.time}',
+                                    '创建日期：${model.time}',
                                     style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
                                   ),
                                   Row(
@@ -222,30 +259,23 @@ class _SubScribePageState extends State<SubScribePage> {
                                               }
                                             },
                                             child: const Text('删除')),
-                                      if (model.selected != true && model.result != 'error')
-                                        TextButton(
-                                            onPressed: () async {
-                                              _isClickRefresh = true;
-                                              if (model.result == null || model.result == '') {
-                                                EasyLoading.showToast('请刷新成功后再试');
-                                                return;
-                                              }
-                                              for (var element in _m3uList) {
-                                                element.selected = false;
-                                              }
-                                              if (model.selected != true) {
-                                                model.selected = true;
-                                                await M3uUtil.saveLocalData(_m3uList);
-                                                setState(() {});
-                                              }
-                                            },
-                                            child: const Text('设为默认')),
                                       TextButton(
-                                          onPressed: () {
-                                            _isClickRefresh = true;
-                                            _refreshData(model, index);
-                                          },
-                                          child: const Text('刷新')),
+                                        onPressed: model.selected != true
+                                            ? () async {
+                                                _isClickRefresh = true;
+                                                for (var element in _m3uList) {
+                                                  element.selected = false;
+                                                }
+                                                if (model.selected != true) {
+                                                  model.selected = true;
+                                                  await SpUtil.remove('m3u_cache');
+                                                  await M3uUtil.saveLocalData(_m3uList);
+                                                  setState(() {});
+                                                }
+                                              }
+                                            : null,
+                                        child: Text(model.selected != true ? '设为默认' : '使用中'),
+                                      ),
                                     ],
                                   )
                                 ],
@@ -295,23 +325,10 @@ class _SubScribePageState extends State<SubScribePage> {
                 ],
               ),
             ),
-            if (widget.isTV) const Divider(),
-            const Text(
-              '如遇视频源失效，请刷新对应的订阅的链接',
-              style: TextStyle(color: Color(0xFF999999)),
-            ),
             if (!widget.isTV)
-              RichText(
-                text: TextSpan(style: const TextStyle(color: Color(0xFF999999), fontFamily: 'Kaiti'), children: [
-                  const TextSpan(text: '如需增加额外的iPTV直播源，'),
-                  TextSpan(
-                      text: '请前往Github>>',
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () async {
-                          await launchUrl(Uri.parse('https://github.com/iptv-org/iptv'));
-                        },
-                      style: const TextStyle(color: Colors.blue)),
-                ]),
+              const Text(
+                '复制订阅源后，回到此页面可自动添加订阅源',
+                style: TextStyle(color: Color(0xFF999999)),
               ),
             SizedBox(height: MediaQuery.of(context).padding.bottom + 10)
           ],
@@ -378,26 +395,19 @@ class _SubScribePageState extends State<SubScribePage> {
   }
 
   _pareUrl(String res) async {
+    debugPrint('添加::::：$res');
     final hasIndex = _m3uList.indexWhere((element) => element.link == res);
+    debugPrint('添加:hasIndex:::：$hasIndex');
     if (hasIndex != -1) {
-      EasyLoading.showToast('已添加过此订阅');
+      EasyLoading.showToast('已添加过此订阅源');
+      return;
     }
     if (res.startsWith('http') && hasIndex == -1) {
       LogUtil.v('添加：$res');
-      final m3uRes = await M3uUtil.refreshM3uLink(res, isAdd: true);
-      if (m3uRes.isNotEmpty) {
-        if (m3uRes == 'error') return;
-        final sub = SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: res, result: m3uRes, selected: false);
-        _m3uList.add(sub);
-        await M3uUtil.saveLocalData(_m3uList);
-        _isClickRefresh = true;
-        setState(() {});
-      } else {
-        final sub = SubScribeModel(time: '请刷新重试', link: res, result: '', selected: false);
-        _m3uList.add(sub);
-        await M3uUtil.saveLocalData(_m3uList);
-        setState(() {});
-      }
+      final sub = SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: res, selected: false);
+      _m3uList.add(sub);
+      await M3uUtil.saveLocalData(_m3uList);
+      setState(() {});
     } else {
       EasyLoading.showToast('请输入http/https链接');
     }
