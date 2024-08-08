@@ -5,10 +5,6 @@ class EnvUtil {
     return const bool.fromEnvironment('isTV');
   }
 
-  static String gitHubToken() {
-    return const String.fromEnvironment('github');
-  }
-
   static bool isChinese() {
     final systemLocale = PlatformDispatcher.instance.locale;
     bool isChinese = systemLocale.languageCode == 'zh' || systemLocale.languageCode == 'zh_CN';

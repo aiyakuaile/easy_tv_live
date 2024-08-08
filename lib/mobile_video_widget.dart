@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import 'util/check_version_util.dart';
+
 class MobileVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
   final GestureTapCallback? changeChannelSources;
@@ -36,6 +38,9 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      CheckVersionUtil.checkVersion(context, false, false);
+    });
   }
 
   @override

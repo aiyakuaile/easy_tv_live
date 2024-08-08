@@ -1,12 +1,5 @@
-import 'dart:io';
-
-import 'package:easy_tv_live/util/env_util.dart';
-import 'package:easy_tv_live/util/http_util.dart';
+import 'package:easy_tv_live/util/check_version_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-const version = '2.0.1';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -16,44 +9,7 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  String? _latestVersion;
-  final downloadLink = EnvUtil.sourceDownloadHost();
-  final releaseLink = EnvUtil.sourceReleaseHost();
-  final homeLink = EnvUtil.sourceHomeHost();
-  final versionLink = EnvUtil.checkVersionHost();
-
-  _launchUrl(String url) async {
-    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-  }
-
-  _checkUpdate() async {
-    if (_latestVersion != null) {
-      if (Platform.isIOS) {
-        _launchUrl('$downloadLink/$_latestVersion/easyTV-$_latestVersion.ipa');
-      } else if (Platform.isAndroid) {
-        _launchUrl('$downloadLink/$_latestVersion/easyTV-$_latestVersion.apk');
-      } else {
-        _launchUrl(releaseLink);
-      }
-      return;
-    }
-    try {
-      final res = await HttpUtil().getRequest(versionLink);
-      if (res != null) {
-        final latestVersion = res['tag_name'] as String?;
-        if (latestVersion != null && latestVersion.compareTo(version) > 0) {
-          setState(() {
-            _latestVersion = latestVersion;
-          });
-          EasyLoading.showInfo('有新版本v$latestVersion');
-        } else {
-          EasyLoading.showInfo('已是最新版本');
-        }
-      }
-    } catch (e) {
-      EasyLoading.showError('检查失败');
-    }
-  }
+  VersionEntity? _latestVersionEntity = CheckVersionUtil.latestVersionEntity;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +42,7 @@ class _SettingPageState extends State<SettingPage> {
                     top: 0,
                     right: -45,
                     child: Text(
-                      'v$version',
+                      'v${CheckVersionUtil.version}',
                       style: TextStyle(fontSize: 12, color: Colors.redAccent, fontWeight: FontWeight.bold),
                     ),
                   )
@@ -99,7 +55,7 @@ class _SettingPageState extends State<SettingPage> {
             leading: const Icon(Icons.home_filled),
             trailing: const Icon(Icons.arrow_right),
             onTap: () {
-              _launchUrl(homeLink);
+              CheckVersionUtil.launchBrowserUrl(CheckVersionUtil.homeLink);
             },
           ),
           ListTile(
@@ -107,7 +63,7 @@ class _SettingPageState extends State<SettingPage> {
             leading: const Icon(Icons.history),
             trailing: const Icon(Icons.arrow_right),
             onTap: () {
-              _launchUrl(releaseLink);
+              CheckVersionUtil.launchBrowserUrl(CheckVersionUtil.releaseLink);
             },
           ),
           ListTile(
@@ -116,12 +72,12 @@ class _SettingPageState extends State<SettingPage> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (_latestVersion != null)
+                if (_latestVersionEntity != null)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(30)),
                     child: Text(
-                      '立即下载v$_latestVersion',
+                      '新版本v${_latestVersionEntity!.latestVersion}',
                       style: const TextStyle(fontSize: 12, color: Colors.white),
                     ),
                   ),
@@ -131,7 +87,12 @@ class _SettingPageState extends State<SettingPage> {
                 const Icon(Icons.arrow_right)
               ],
             ),
-            onTap: _checkUpdate,
+            onTap: () async {
+              await CheckVersionUtil.checkVersion(context);
+              setState(() {
+                _latestVersionEntity = CheckVersionUtil.latestVersionEntity;
+              });
+            },
           ),
         ],
       ),

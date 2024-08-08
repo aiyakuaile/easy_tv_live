@@ -6,9 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 class HttpUtil {
   static final HttpUtil _instance = HttpUtil._();
   late Dio _dio;
-  BaseOptions options = BaseOptions(
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 8));
+  BaseOptions options = BaseOptions(connectTimeout: const Duration(seconds: 5), receiveTimeout: const Duration(seconds: 8));
 
   CancelToken cancelToken = CancelToken();
 
@@ -17,27 +15,23 @@ class HttpUtil {
   }
 
   HttpUtil._() {
-    _dio = Dio(options)
-      ..interceptors.add(LogInterceptor(
-          requestBody: true, responseBody: true, logPrint: LogUtil.v));
+    _dio = Dio(options)..interceptors.add(LogInterceptor(requestBody: true, responseBody: true, logPrint: LogUtil.v));
   }
 
   Future<T?> getRequest<T>(String path,
       {Map<String, dynamic>? queryParameters,
       Options? options,
       CancelToken? cancelToken,
-      ProgressCallback? onReceiveProgress}) async {
-    EasyLoading.show();
+      ProgressCallback? onReceiveProgress,
+      bool isShowLoading = true}) async {
+    if (isShowLoading) EasyLoading.show();
     Response? response;
     try {
-      response = await _dio.get<T>(path,
-          queryParameters: queryParameters,
-          options: options,
-          cancelToken: cancelToken,
-          onReceiveProgress: onReceiveProgress);
-      EasyLoading.dismiss();
+      response =
+          await _dio.get<T>(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+      if (isShowLoading) EasyLoading.dismiss();
     } on DioException catch (e) {
-      EasyLoading.dismiss();
+      if (isShowLoading) EasyLoading.dismiss();
       formatError(e);
     }
     return response?.data;
