@@ -4,9 +4,10 @@ import 'package:easy_tv_live/subscribe/subScribe_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sp_util/sp_util.dart';
+
+import 'log_util.dart';
 
 class M3uUtil {
   M3uUtil._();
@@ -18,13 +19,13 @@ class M3uUtil {
       final defaultModel = models.firstWhere((element) => element.selected == true, orElse: () => models.first);
       final newRes = await HttpUtil().getRequest(defaultModel.link == 'default' ? EnvUtil.videoDefaultChannelHost() : defaultModel.link!);
       if (newRes != null) {
-        debugPrint('已获取新数据::::::');
+        LogUtil.v('已获取新数据::::::');
         m3uData = newRes;
         await SpUtil.putString('m3u_cache', m3uData);
       } else {
         final oldRes = SpUtil.getString('m3u_cache', defValue: '');
         if (oldRes != '') {
-          debugPrint('已获取到历史保存的数据::::::');
+          LogUtil.v('已获取到历史保存的数据::::::');
           m3uData = oldRes!;
         }
       }

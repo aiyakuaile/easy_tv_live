@@ -8,6 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:video_player/video_player.dart';
 
 import '../channel_drawer_page.dart';
+import '../util/log_util.dart';
 import '../video_hold_bg.dart';
 
 class TvPage extends StatefulWidget {
@@ -91,19 +92,19 @@ class _TvPageState extends State<TvPage> {
 
     switch (e.logicalKey) {
       case LogicalKeyboardKey.arrowRight:
-        debugPrint('按了右键');
+        LogUtil.v('按了右键');
         break;
       case LogicalKeyboardKey.arrowLeft:
-        debugPrint('按了左键');
+        LogUtil.v('按了左键');
         break;
       case LogicalKeyboardKey.arrowUp:
-        debugPrint('按了上键');
+        LogUtil.v('按了上键');
         _videoNode.unfocus();
         await widget.changeChannelSources?.call();
         Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
         break;
       case LogicalKeyboardKey.arrowDown:
-        debugPrint('按了下键');
+        LogUtil.v('按了下键');
         widget.controller?.pause();
         _videoNode.unfocus();
         final isChangeSource = await _openAddSource();
@@ -115,35 +116,40 @@ class _TvPageState extends State<TvPage> {
         Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
         break;
       case LogicalKeyboardKey.select:
-        debugPrint('按了确认键:::isPlaying:${widget.isPlaying}:::video:value:${widget.controller?.value}');
+        if (widget.toastString == 'UNKNOWN') {
+          widget.onChangeSubSource?.call();
+          return;
+        }
+
+        LogUtil.v('按了确认键:::isPlaying:${widget.isPlaying}:::video:value:${widget.controller?.value}');
         if (widget.controller!.value.isInitialized == true &&
             widget.controller!.value.isPlaying == false &&
             widget.controller!.value.isBuffering == false) {
           widget.controller?.play();
           return;
         }
-        debugPrint('确认键:::打开频道列表');
+        LogUtil.v('确认键:::打开频道列表');
         if (!Scaffold.of(context).isDrawerOpen) {
           Scaffold.of(context).openDrawer();
         }
         break;
       case LogicalKeyboardKey.goBack:
-        debugPrint('按了返回键');
+        LogUtil.v('按了返回键');
         break;
       case LogicalKeyboardKey.contextMenu:
-        debugPrint('按了菜单键');
+        LogUtil.v('按了菜单键');
         if (!Scaffold.of(context).isDrawerOpen) {
           Scaffold.of(context).openDrawer();
         }
         break;
       case LogicalKeyboardKey.audioVolumeUp:
-        debugPrint('按了音量加键');
+        LogUtil.v('按了音量加键');
         break;
       case LogicalKeyboardKey.audioVolumeDown:
-        debugPrint('按了音量减键');
+        LogUtil.v('按了音量减键');
         break;
       case LogicalKeyboardKey.f5:
-        debugPrint('按了语音键');
+        LogUtil.v('按了语音键');
         break;
     }
   }
@@ -159,7 +165,7 @@ class _TvPageState extends State<TvPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.greenAccent,
+      backgroundColor: Colors.black,
       drawer: ChannelDrawerPage(
         videoMap: widget.videoMap,
         channelName: widget.channelName,
@@ -174,7 +180,7 @@ class _TvPageState extends State<TvPage> {
           focusNode: _videoNode,
           autofocus: true,
           onKeyEvent: (KeyEvent e) => _focusEventHandle(context, e),
-          child: widget.toastString == ''
+          child: widget.toastString == 'UNKNOWN'
               ? EmptyPage(onRefresh: () => widget.onChangeSubSource?.call())
               : Container(
                   alignment: Alignment.center,

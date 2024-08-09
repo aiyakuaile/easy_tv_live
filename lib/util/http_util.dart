@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:easy_tv_live/util/log_util.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class HttpUtil {
@@ -24,7 +23,7 @@ class HttpUtil {
       CancelToken? cancelToken,
       ProgressCallback? onReceiveProgress,
       bool isShowLoading = true}) async {
-    debugPrint('GetRequest::::::$path');
+    LogUtil.v('GetRequest::::::$path');
     if (isShowLoading) EasyLoading.show();
     Response? response;
     try {
@@ -40,7 +39,7 @@ class HttpUtil {
 }
 
 void formatError(DioException e) {
-  debugPrint('DioException>>>>>$e');
+  LogUtil.v('DioException>>>>>$e');
   if (e.type == DioExceptionType.connectionTimeout) {
     EasyLoading.showToast("连接超时");
   } else if (e.type == DioExceptionType.sendTimeout) {

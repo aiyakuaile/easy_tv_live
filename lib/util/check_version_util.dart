@@ -6,9 +6,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'env_util.dart';
 import 'http_util.dart';
+import 'log_util.dart';
 
 class CheckVersionUtil {
-  static const version = '2.1.0';
+  static const version = '2.1.1';
   static final versionHost = EnvUtil.checkVersionHost();
   static final downloadLink = EnvUtil.sourceDownloadHost();
   static final releaseLink = EnvUtil.sourceReleaseHost();
@@ -27,7 +28,7 @@ class CheckVersionUtil {
           return latestVersionEntity;
         } else {
           if (isShowLatestToast) EasyLoading.showToast('已是最新版');
-          debugPrint('已是最新版::::::::');
+          LogUtil.v('已是最新版::::::::');
         }
       }
       return null;

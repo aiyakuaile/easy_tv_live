@@ -1,3 +1,4 @@
+import 'package:easy_tv_live/util/env_util.dart';
 import 'package:flutter/material.dart';
 
 class EmptyPage extends StatelessWidget {
@@ -22,9 +23,11 @@ class EmptyPage extends StatelessWidget {
             style: TextStyle(fontSize: 20, color: Colors.white),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+            ),
             onPressed: onRefresh,
-            child: const Text('      刷新      ', style: const TextStyle(color: Colors.white)),
+            child: Text('      ${EnvUtil.isTV() ? '【OK键】' : ''}刷新      ', style: const TextStyle(color: Colors.white)),
           )
         ],
       ),

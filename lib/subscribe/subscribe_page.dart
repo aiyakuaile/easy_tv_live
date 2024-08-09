@@ -48,7 +48,7 @@ class _SubScribePageState extends State<SubScribePage> {
   _addLifecycleListen() {
     if (EnvUtil.isTV()) return;
     _appLifecycleListener = AppLifecycleListener(onStateChange: (state) {
-      debugPrint('addLifecycleListen::::::$state');
+      LogUtil.v('addLifecycleListen::::::$state');
       if (state == AppLifecycleState.resumed) {
         _pasteClipboard();
       }
@@ -94,7 +94,7 @@ class _SubScribePageState extends State<SubScribePage> {
   _localNet() async {
     if (!EnvUtil.isTV()) return;
     _ip = await getCurrentIP();
-    debugPrint('_ip::::$_ip');
+    LogUtil.v('_ip::::$_ip');
     _server = await HttpServer.bind(_ip, _port);
     _address = 'http://$_ip:$_port';
     setState(() {});
@@ -118,7 +118,7 @@ class _SubScribePageState extends State<SubScribePage> {
             _pareUrl(url);
           }
         } else {
-          debugPrint('Missing parameters');
+          LogUtil.v('Missing parameters');
         }
 
         final responseData = {'message': rMsg};
@@ -149,7 +149,7 @@ class _SubScribePageState extends State<SubScribePage> {
     try {
       for (var interface in await NetworkInterface.list()) {
         for (var addr in interface.addresses) {
-          debugPrint('Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
+          LogUtil.v('Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
 
           if (addr.type == InternetAddressType.IPv4 && addr.address.startsWith('192')) {
             currentIP = addr.address;
@@ -157,7 +157,7 @@ class _SubScribePageState extends State<SubScribePage> {
         }
       }
     } catch (e) {
-      debugPrint(e.toString());
+      LogUtil.v(e.toString());
     }
     return currentIP;
   }
@@ -395,9 +395,9 @@ class _SubScribePageState extends State<SubScribePage> {
   }
 
   _pareUrl(String res) async {
-    debugPrint('添加::::：$res');
+    LogUtil.v('添加::::：$res');
     final hasIndex = _m3uList.indexWhere((element) => element.link == res);
-    debugPrint('添加:hasIndex:::：$hasIndex');
+    LogUtil.v('添加:hasIndex:::：$hasIndex');
     if (hasIndex != -1) {
       EasyLoading.showToast('已添加过此订阅源');
       return;
