@@ -138,6 +138,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   @override
   dispose() {
     WakelockPlus.disable();
+    _playerController?.removeListener(_videoListener);
     _playerController?.dispose();
     super.dispose();
   }
