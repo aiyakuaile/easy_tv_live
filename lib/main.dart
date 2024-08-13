@@ -6,6 +6,7 @@ import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fvp/fvp.dart' as fvp;
 import 'package:sp_util/sp_util.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -17,6 +18,10 @@ void main() async {
   WakelockPlus.enable();
   LogUtil.init(isDebug: true, tag: 'EasyTV');
   await SpUtil.getInstance();
+  fvp.registerWith(options: {
+    'platforms': ['android', 'ios', 'windows', 'linux', 'macos'],
+    'video.decoders': ['FFmpeg']
+  });
   runApp(const MyApp());
   if (Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));

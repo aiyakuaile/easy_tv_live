@@ -6,7 +6,6 @@ import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'channel_drawer_page.dart';
-import 'empty_page.dart';
 import 'mobile_video_widget.dart';
 import 'table_video_widget.dart';
 import 'tv/tv_page.dart';
@@ -14,6 +13,7 @@ import 'util/check_version_util.dart';
 import 'util/env_util.dart';
 import 'util/log_util.dart';
 import 'util/m3u_util.dart';
+import 'widget/empty_page.dart';
 
 class LiveHomePage extends StatefulWidget {
   const LiveHomePage({super.key});
@@ -40,34 +40,32 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   _playVideo() async {
     toastString = '线路${_sourceIndex + 1}播放：$_channel';
+    setState(() {});
     final url = _videoMap![_group][_channel][_sourceIndex].toString();
     LogUtil.v('正在播放:::$url:::_group:$_group:::_channel:$_channel:::_sourceIndex:$_sourceIndex');
-    if (_playerController != null) {
-      await _playerController?.dispose();
-      _playerController = null;
-      setState(() {});
-    }
-    _playerController = VideoPlayerController.networkUrl(Uri.parse(url),
-        // formatHint: VideoFormat.hls,
+    try {
+      _playerController?.removeListener(_videoListener);
+      _playerController?.dispose();
+      _playerController = VideoPlayerController.networkUrl(
+        Uri.parse(url),
         videoPlayerOptions: VideoPlayerOptions(
           allowBackgroundPlayback: false,
           mixWithOthers: false,
           webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
-        ))
-      ..setVolume(1.0);
-
-    try {
-      await _playerController!.initialize();
-      _playerController!.play();
+        ),
+      )..setVolume(1.0);
+      await _playerController?.initialize();
+      _playerController?.play();
       setState(() {
         toastString = '正在加载';
-        aspectRatio = _playerController!.value.aspectRatio;
+        aspectRatio = _playerController?.value.aspectRatio ?? 1.78;
       });
     } catch (e) {
+      LogUtil.v('播放出错:::::$e');
       final channels = _videoMap![_group][_channel];
       _sourceIndex += 1;
       if (_sourceIndex > channels.length - 1) {
-        _sourceIndex = 0;
+        _sourceIndex = channels.length - 1;
         setState(() {
           toastString = '此视频无法播放，请更换其它频道';
         });
@@ -79,35 +77,38 @@ class _LiveHomePageState extends State<LiveHomePage> {
         return;
       }
     }
-    _playerController!.addListener(() {
-      if (_playerController!.value.hasError) {
-        final channels = _videoMap![_group][_channel];
-        _sourceIndex += 1;
-        if (_sourceIndex > channels.length - 1) {
-          _sourceIndex = 0;
-          setState(() {
-            toastString = '出错了，尝试重新连接...';
-          });
-        } else {
-          setState(() {
-            toastString = '切换线路${_sourceIndex + 1}...';
-          });
-        }
-        Future.delayed(const Duration(seconds: 2), () => _playVideo());
-        return;
-      }
-      if (isBuffering != _playerController!.value.isBuffering) {
-        setState(() {
-          isBuffering = _playerController!.value.isBuffering;
-        });
-      }
+    _playerController?.addListener(_videoListener);
+  }
 
-      if (isPlaying != _playerController!.value.isPlaying) {
+  _videoListener() {
+    if (_playerController == null) return;
+    if (_playerController!.value.hasError) {
+      final channels = _videoMap![_group][_channel];
+      _sourceIndex += 1;
+      if (_sourceIndex > channels.length - 1) {
+        _sourceIndex = 0;
         setState(() {
-          isPlaying = _playerController!.value.isPlaying;
+          toastString = '出错了，尝试重新连接...';
+        });
+      } else {
+        setState(() {
+          toastString = '切换线路${_sourceIndex + 1}...';
         });
       }
-    });
+      Future.delayed(const Duration(seconds: 2), () => _playVideo());
+      return;
+    }
+    if (isBuffering != _playerController!.value.isBuffering) {
+      setState(() {
+        isBuffering = _playerController!.value.isBuffering;
+      });
+    }
+
+    if (isPlaying != _playerController!.value.isPlaying) {
+      setState(() {
+        isPlaying = _playerController!.value.isPlaying;
+      });
+    }
   }
 
   _onTapChannel(String group, String channel) {
@@ -276,8 +277,8 @@ class _LiveHomePageState extends State<LiveHomePage> {
           );
         });
     if (selectedIndex != null && _sourceIndex != selectedIndex) {
-      LogUtil.v('切换线路:====线路${_sourceIndex + 1}');
       _sourceIndex = selectedIndex;
+      LogUtil.v('切换线路:====线路${_sourceIndex + 1}');
       _playVideo();
     }
   }

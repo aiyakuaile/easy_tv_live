@@ -1,6 +1,6 @@
-import 'package:easy_tv_live/empty_page.dart';
 import 'package:easy_tv_live/router_keys.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
+import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 

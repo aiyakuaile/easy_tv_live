@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'util/env_util.dart';
+import 'widget/no_scroller_behavior.dart';
 
 class ChannelDrawerPage extends StatefulWidget {
   final Map<String, dynamic>? videoMap;
@@ -101,7 +102,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildOpenDrawer();
+    return ScrollConfiguration(behavior: NoScrollBehavior(), child: _buildOpenDrawer());
   }
 
   Widget _buildOpenDrawer() {
@@ -124,6 +125,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                     color: Colors.transparent,
                     child: InkWell(
                       overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.3)) : null,
+                      canRequestFocus: isTV,
                       onTap: () {
                         if (_groupIndex != index) {
                           setState(() {
@@ -187,6 +189,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                       child: InkWell(
                         overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.3)) : null,
                         autofocus: widget.channelName == name,
+                        canRequestFocus: isTV,
                         onTap: () async {
                           if (widget.channelName == name) {
                             Scaffold.of(context).closeDrawer();

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:easy_tv_live/empty_page.dart';
 import 'package:easy_tv_live/subscribe/subscribe_page.dart';
+import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -9,7 +9,7 @@ import 'package:video_player/video_player.dart';
 
 import '../channel_drawer_page.dart';
 import '../util/log_util.dart';
-import '../video_hold_bg.dart';
+import '../widget/video_hold_bg.dart';
 
 class TvPage extends StatefulWidget {
   final Map<String, dynamic>? videoMap;

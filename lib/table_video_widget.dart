@@ -1,4 +1,4 @@
-import 'package:easy_tv_live/video_hold_bg.dart';
+import 'package:easy_tv_live/widget/video_hold_bg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -93,10 +93,8 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                             onTap: () {
                               widget.controller?.play();
                             },
-                            child: const Icon(Icons.play_circle_outline,
-                                color: Colors.white, size: 50)),
-                      if (widget.isBuffering)
-                        const SpinKitSpinningLines(color: Colors.white)
+                            child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50)),
+                      if (widget.isBuffering) const SpinKitSpinningLines(color: Colors.white)
                     ],
                   )
                 : VideoHoldBg(toastString: widget.toastString),
@@ -116,9 +114,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                     const Spacer(),
                     IconButton(
                         tooltip: '频道列表',
-                        style: IconButton.styleFrom(
-                            backgroundColor: Colors.black87,
-                            side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                         icon: const Icon(
                           Icons.list_alt,
                           color: Colors.white,
@@ -129,9 +125,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                     const SizedBox(width: 12),
                     IconButton(
                         tooltip: '切换线路',
-                        style: IconButton.styleFrom(
-                            backgroundColor: Colors.black87,
-                            side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                         icon: const Icon(
                           Icons.legend_toggle,
                           color: Colors.white,
@@ -140,9 +134,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                     const SizedBox(width: 12),
                     IconButton(
                         tooltip: '调节亮度',
-                        style: IconButton.styleFrom(
-                            backgroundColor: Colors.black87,
-                            side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                         icon: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -160,8 +152,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                                     max: 1.0,
                                     min: .0,
                                     onChanged: (value) {
-                                      ScreenBrightness()
-                                          .setScreenBrightness(value);
+                                      ScreenBrightness().setScreenBrightness(value);
                                       setState(() {
                                         _brightness = value;
                                       });
@@ -177,9 +168,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                     const SizedBox(width: 12),
                     IconButton(
                         tooltip: '调节音量',
-                        style: IconButton.styleFrom(
-                            backgroundColor: Colors.black87,
-                            side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                         icon: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -214,12 +203,9 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
                     IconButton(
                       tooltip: '退出全屏',
                       onPressed: () {
-                        SystemChrome.setPreferredOrientations(
-                            [DeviceOrientation.portraitUp]);
+                        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
                       },
-                      style: IconButton.styleFrom(
-                          backgroundColor: Colors.black87,
-                          side: const BorderSide(color: Colors.white)),
+                      style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                       icon: const Icon(
                         Icons.fullscreen_exit,
                         color: Colors.white,
@@ -234,10 +220,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> {
             bottom: 15,
             child: GestureDetector(
               onTap: () {
-                SystemChrome.setPreferredOrientations([
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight
-                ]);
+                SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
               },
               child: Image.asset(
                 'assets/images/video_fill.png',
