@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'util/env_util.dart';
-import 'widget/no_scroller_behavior.dart';
 
 class ChannelDrawerPage extends StatefulWidget {
   final Map<String, dynamic>? videoMap;
@@ -102,7 +101,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScrollConfiguration(behavior: NoScrollBehavior(), child: _buildOpenDrawer());
+    return _buildOpenDrawer();
   }
 
   Widget _buildOpenDrawer() {
@@ -114,94 +113,41 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
       child: Row(children: [
         SizedBox(
           width: 80,
-          child: ListView.builder(
-              cacheExtent: _itemHeight,
-              padding: const EdgeInsets.only(bottom: 100.0),
-              controller: _scrollController,
-              itemBuilder: (context, index) {
-                final title = _keys[index];
-                return Builder(builder: (context) {
-                  return Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.3)) : null,
-                      canRequestFocus: isTV,
-                      onTap: () {
-                        if (_groupIndex != index) {
-                          setState(() {
-                            _groupIndex = index;
-                            final name = _values[_groupIndex].keys.toList()[0].toString();
-                            widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
-                          });
-                          _scrollChannelController.jumpTo(0);
-                          Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-                        }
-                      },
-                      onFocusChange: isTV
-                          ? (focus) async {
-                              if (focus) {
-                                if (widget.groupName == title) return;
-                                setState(() {
-                                  _groupIndex = index;
-                                  final name = _values[index].keys.toList()[0].toString();
-                                  widget.onTapChannel?.call(_keys[index].toString(), name);
-                                });
-                                _scrollChannelController.jumpTo(0);
-                                Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-                              }
-                            }
-                          : null,
-                      splashColor: Colors.white.withOpacity(0.3),
-                      child: Ink(
-                        width: double.infinity,
-                        height: _itemHeight,
-                        decoration: BoxDecoration(
-                          gradient: _groupIndex == index ? LinearGradient(colors: [Colors.red.withOpacity(0.6), Colors.red.withOpacity(0.3)]) : null,
-                        ),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            title,
-                            style: TextStyle(color: _groupIndex == index ? Colors.red : Colors.white, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                });
-              },
-              itemCount: _keys.length),
-        ),
-        VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
-        if (_values.isNotEmpty && _values[_groupIndex].isNotEmpty)
-          Expanded(
-            flex: 2,
+          child: Scrollbar(
+            interactive: false,
             child: ListView.builder(
-                padding: const EdgeInsets.only(bottom: 100.0),
                 cacheExtent: _itemHeight,
-                controller: _scrollChannelController,
-                physics: const ScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 100.0),
+                controller: _scrollController,
                 itemBuilder: (context, index) {
-                  final name = _values[_groupIndex].keys.toList()[index].toString();
+                  final title = _keys[index];
                   return Builder(builder: (context) {
                     return Material(
                       color: Colors.transparent,
                       child: InkWell(
                         overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.3)) : null,
-                        autofocus: widget.channelName == name,
                         canRequestFocus: isTV,
-                        onTap: () async {
-                          if (widget.channelName == name) {
-                            Scaffold.of(context).closeDrawer();
-                            return;
+                        onTap: () {
+                          if (_groupIndex != index) {
+                            setState(() {
+                              _groupIndex = index;
+                              final name = _values[_groupIndex].keys.toList()[0].toString();
+                              widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
+                            });
+                            _scrollChannelController.jumpTo(0);
+                            Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                           }
-                          widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
-                          Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                         },
                         onFocusChange: isTV
                             ? (focus) async {
-                                if (focus && widget.channelName != name) {
-                                  widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
+                                if (focus) {
+                                  if (widget.groupName == title) return;
+                                  setState(() {
+                                    _groupIndex = index;
+                                    final name = _values[index].keys.toList()[0].toString();
+                                    widget.onTapChannel?.call(_keys[index].toString(), name);
+                                  });
+                                  _scrollChannelController.jumpTo(0);
                                   Scrollable.ensureVisible(context,
                                       alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                                 }
@@ -211,27 +157,87 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                         child: Ink(
                           width: double.infinity,
                           height: _itemHeight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            gradient: widget.channelName == name ? LinearGradient(colors: [Colors.red.withOpacity(0.3), Colors.transparent]) : null,
+                            gradient:
+                                _groupIndex == index ? LinearGradient(colors: [Colors.red.withOpacity(0.6), Colors.red.withOpacity(0.3)]) : null,
                           ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  name,
-                                  style: TextStyle(color: widget.channelName == name ? Colors.red : Colors.white, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              if (widget.channelName == name) SpinKitWave(size: 20, color: Colors.red.withOpacity(0.8))
-                            ],
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              title,
+                              style: TextStyle(color: _groupIndex == index ? Colors.red : Colors.white, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       ),
                     );
                   });
                 },
-                itemCount: _values[_groupIndex].length),
+                itemCount: _keys.length),
+          ),
+        ),
+        VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
+        if (_values.isNotEmpty && _values[_groupIndex].isNotEmpty)
+          Expanded(
+            child: Scrollbar(
+              interactive: false,
+              child: ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 100.0),
+                  cacheExtent: _itemHeight,
+                  controller: _scrollChannelController,
+                  physics: const ScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final name = _values[_groupIndex].keys.toList()[index].toString();
+                    return Builder(builder: (context) {
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.3)) : null,
+                          autofocus: widget.channelName == name,
+                          canRequestFocus: isTV,
+                          onTap: () async {
+                            if (widget.channelName == name) {
+                              Scaffold.of(context).closeDrawer();
+                              return;
+                            }
+                            widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
+                            Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                          },
+                          onFocusChange: isTV
+                              ? (focus) async {
+                                  if (focus && widget.channelName != name) {
+                                    widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
+                                    Scrollable.ensureVisible(context,
+                                        alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                                  }
+                                }
+                              : null,
+                          splashColor: Colors.white.withOpacity(0.3),
+                          child: Ink(
+                            width: double.infinity,
+                            height: _itemHeight,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              gradient: widget.channelName == name ? LinearGradient(colors: [Colors.red.withOpacity(0.3), Colors.transparent]) : null,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    name,
+                                    style: TextStyle(color: widget.channelName == name ? Colors.red : Colors.white, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                if (widget.channelName == name) SpinKitWave(size: 20, color: Colors.red.withOpacity(0.8))
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    });
+                  },
+                  itemCount: _values[_groupIndex].length),
+            ),
           ),
       ]),
     );
