@@ -1,0 +1,85 @@
+{
+  "appName": "极简TV",
+  "loading": "正在加载",
+  "lineToast": "线路{line}播放: {channel}",
+  "@lineToast": {
+    "placeholders": {
+      "line": {},
+      "channel": {}
+    }
+  },
+  "playError": "此视频无法播放，请更换其它频道",
+  "switchLine": "切换线路{line} ...",
+  "@switchLine": {
+    "placeholders": {
+      "line": {}
+    }
+  },
+  "playReconnect": "出错了，尝试重新连接...",
+  "lineIndex": "线路{index}",
+  "@lineIndex": {
+    "placeholders": {
+      "index": {}
+    }
+  },
+  "tipChannelList": "频道列表",
+  "tipChangeLine": "切换线路",
+  "portrait": "竖屏模式",
+  "landscape": "横屏模式",
+  "fullScreen": "全屏切换",
+  "settings": "设置",
+  "homePage": "主页",
+  "releaseHistory": "发布历史",
+  "checkUpdate": "检查更新",
+  "newVersion": "新版本v{version}",
+  "@newVersion": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "update": "立即更新",
+  "latestVersion": "已是最新版本",
+  "findNewVersion": "发现新版本",
+  "updateContent": "更新内容",
+  "dialogTitle": "温馨提示",
+  "dataSourceContent": "确定添加此数据源吗？",
+  "dialogCancel": "取消",
+  "dialogConfirm": "确定",
+  "subscribe": "IPTV订阅",
+  "createTime": "创建时间",
+  "dialogDeleteContent": "确定删除此订阅吗？",
+  "delete": "删除",
+  "setDefault": "设为默认",
+  "inUse": "使用中",
+  "tvParseParma": "参数错误",
+  "tvParseSuccess": "推送成功",
+  "tvParsePushError": "请推送正确的链接",
+  "tvScanTip": "扫码添加订阅源",
+  "pushAddress": "推送地址：{address}",
+  "@pushAddress": {
+    "placeholders": {
+      "address": {}
+    }
+  },
+  "tvPushContent": "在扫码结果页，输入新的订阅源，点击页面中的推送即可添加成功",
+  "pasterContent": "复制订阅源后，回到此页面可自动添加订阅源",
+  "addDataSource": "添加订阅源",
+  "addFiledHintText": "请输入或粘贴.m3u或.txt格式的订阅源链接",
+  "addRepeat": "已添加过此订阅源",
+  "addNoHttpLink": "请输入http/https链接",
+  "netTimeOut": "连接超时",
+  "netSendTimeout": "请求超时",
+  "netReceiveTimeout": "响应超时",
+  "netBadResponse": "响应异常{code}",
+  "@netBadResponse": {
+    "placeholders": {
+      "code": {}
+    }
+  },
+  "netCancel": "请求取消",
+  "parseError": "解析数据源出错",
+  "defaultText": "默认",
+  "getDefaultError": "获取默认数据源失败",
+  "okRefresh": "【OK键】刷新",
+  "refresh": "刷新"
+}

@@ -183,9 +183,12 @@ class _SubScribePageState extends State<SubScribePage> {
           actions: widget.isTV
               ? null
               : [
-                  TextButton(
+                  IconButton(
                     onPressed: _addM3uSource,
-                    child: const Text('添加'),
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
                   )
                 ],
         ),
@@ -318,7 +321,7 @@ class _SubScribePageState extends State<SubScribePage> {
                                   ),
                           ),
                           if (_address != null) Container(margin: const EdgeInsets.only(bottom: 20), child: Text('推送地址：$_address')),
-                          const Text('在扫码结果页，添加新的订阅源，点击页面中的推送即可添加成功'),
+                          const Text('在扫码结果页，输入新的订阅源，点击页面中的推送即可添加成功'),
                         ],
                       ),
                     ))

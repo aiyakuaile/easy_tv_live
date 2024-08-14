@@ -6,11 +6,13 @@ import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fvp/fvp.dart' as fvp;
 import 'package:sp_util/sp_util.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'generated/l10n.dart';
 import 'live_home_page.dart';
 import 'router_keys.dart';
 
@@ -55,6 +57,14 @@ class MyApp extends StatelessWidget {
         RouterKeys.subScribe: (BuildContext context) => const SubScribePage(),
         RouterKeys.setting: (BuildContext context) => const SettingPage()
       },
+      locale: const Locale('zh', ''),
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [const Locale('zh', ''), ...S.delegate.supportedLocales],
       debugShowCheckedModeBanner: false,
       home: const LiveHomePage(),
       builder: EasyLoading.init(),

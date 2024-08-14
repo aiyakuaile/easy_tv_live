@@ -18,7 +18,7 @@ class EmptyPage extends StatelessWidget {
             style: TextStyle(fontSize: 50),
           ),
           const Text(
-            '╮(╯▽╰)╭\n发生异常',
+            '╮(╯▽╰)╭',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20, color: Colors.white),
           ),

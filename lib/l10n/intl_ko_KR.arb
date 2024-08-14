@@ -1,0 +1,85 @@
+{
+  "appName": "EasyTV",
+  "loading": "로딩 중",
+  "lineToast": "라인 {line} 재생 중: {channel}",
+  "@lineToast": {
+    "placeholders": {
+      "line": {},
+      "channel": {}
+    }
+  },
+  "playError": "이 비디오는 재생할 수 없습니다. 다른 채널로 변경해 주세요.",
+  "switchLine": "라인 {line}으로 전환 중...",
+  "@switchLine": {
+    "placeholders": {
+      "line": {}
+    }
+  },
+  "playReconnect": "오류가 발생했습니다. 재연결을 시도합니다...",
+  "lineIndex": "라인 {index}",
+  "@lineIndex": {
+    "placeholders": {
+      "index": {}
+    }
+  },
+  "tipChannelList": "채널 목록",
+  "tipChangeLine": "라인 전환",
+  "portrait": "세로 모드",
+  "landscape": "가로 모드",
+  "fullScreen": "전체 화면 전환",
+  "settings": "설정",
+  "homePage": "홈페이지",
+  "releaseHistory": "릴리스 역사",
+  "checkUpdate": "업데이트 확인",
+  "newVersion": "새 버전 v{version}",
+  "@newVersion": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "update": "지금 업데이트",
+  "latestVersion": "최신 버전입니다",
+  "findNewVersion": "새 버전이 발견되었습니다",
+  "updateContent": "업데이트 내용",
+  "dialogTitle": "친절한 알림",
+  "dataSourceContent": "이 데이터 소스를 추가하시겠습니까?",
+  "dialogCancel": "취소",
+  "dialogConfirm": "확인",
+  "subscribe": "IPTV 구독",
+  "createTime": "생성 시간",
+  "dialogDeleteContent": "이 구독을 삭제하시겠습니까?",
+  "delete": "삭제",
+  "setDefault": "기본값으로 설정",
+  "inUse": "사용 중",
+  "tvParseParma": "파라미터 오류",
+  "tvParseSuccess": "푸시 성공",
+  "tvParsePushError": "올바른 링크를 푸시해 주세요",
+  "tvScanTip": "스캔하여 구독 소스를 추가",
+  "pushAddress": "푸시 주소: {address}",
+  "@pushAddress": {
+    "placeholders": {
+      "address": {}
+    }
+  },
+  "tvPushContent": "스캔 결과 페이지에서 새로운 구독 소스를 입력하고 페이지의 푸시 버튼을 클릭하여 성공적으로 추가합니다.",
+  "pasterContent": "구독 소스를 복사한 후 이 페이지로 돌아가 자동으로 구독 소스를 추가합니다.",
+  "addDataSource": "구독 소스 추가",
+  "addFiledHintText": ".m3u 또는 .txt 형식의 구독 링크를 입력하거나 붙여넣어 주세요.",
+  "addRepeat": "이 구독 소스는 이미 추가되었습니다",
+  "addNoHttpLink": "http/https 링크를 입력해 주세요",
+  "netTimeOut": "연결 시간 초과",
+  "netSendTimeout": "요청 시간 초과",
+  "netReceiveTimeout": "응답 시간 초과",
+  "netBadResponse": "비정상 응답 {code}",
+  "@netBadResponse": {
+    "placeholders": {
+      "code": {}
+    }
+  },
+  "netCancel": "요청 취소",
+  "parseError": "데이터 소스 분석 오류",
+  "default": "기본값",
+  "getDefaultError": "기본 데이터 소스 가져오기 실패",
+  "okRefresh": "【OK 버튼】 새로 고침",
+  "refresh": "새로 고침"
+}

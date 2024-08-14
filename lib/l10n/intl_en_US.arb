@@ -1,0 +1,85 @@
+{
+  "appName": "Minimal TV",
+  "loading": "Loading",
+  "lineToast": "Line {line} playing: {channel}",
+  "@lineToast": {
+    "placeholders": {
+      "line": {},
+      "channel": {}
+    }
+  },
+  "playError": "This video cannot be played, please switch to another channel",
+  "switchLine": "Switching to line {line} ...",
+  "@switchLine": {
+    "placeholders": {
+      "line": {}
+    }
+  },
+  "playReconnect": "An error occurred, trying to reconnect...",
+  "lineIndex": "Line {index}",
+  "@lineIndex": {
+    "placeholders": {
+      "index": {}
+    }
+  },
+  "tipChannelList": "Channel List",
+  "tipChangeLine": "Switch Line",
+  "portrait": "Portrait Mode",
+  "landscape": "Landscape Mode",
+  "fullScreen": "Full Screen Toggle",
+  "settings": "Settings",
+  "homePage": "Home Page",
+  "releaseHistory": "Release History",
+  "checkUpdate": "Check for Updates",
+  "newVersion": "New Version v{version}",
+  "@newVersion": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "update": "Update Now",
+  "latestVersion": "You are on the latest version",
+  "findNewVersion": "New version found",
+  "updateContent": "Update Content",
+  "dialogTitle": "Friendly Reminder",
+  "dataSourceContent": "Are you sure you want to add this data source?",
+  "dialogCancel": "Cancel",
+  "dialogConfirm": "Confirm",
+  "subscribe": "IPTV Subscription",
+  "createTime": "Creation Time",
+  "dialogDeleteContent": "Are you sure you want to delete this subscription?",
+  "delete": "Delete",
+  "setDefault": "Set as Default",
+  "inUse": "In Use",
+  "tvParseParma": "Parameter Error",
+  "tvParseSuccess": "Push Successful",
+  "tvParsePushError": "Please push the correct link",
+  "tvScanTip": "Scan to add subscription source",
+  "pushAddress": "Push Address: {address}",
+  "@pushAddress": {
+    "placeholders": {
+      "address": {}
+    }
+  },
+  "tvPushContent": "On the scan result page, enter the new subscription source and click the push button to add successfully",
+  "pasterContent": "After copying the subscription source, return to this page to automatically add the subscription source",
+  "addDataSource": "Add Subscription Source",
+  "addFiledHintText": "Please enter or paste the .m3u or .txt format subscription link",
+  "addRepeat": "This subscription source has been added",
+  "addNoHttpLink": "Please enter an http/https link",
+  "netTimeOut": "Connection timed out",
+  "netSendTimeout": "Request timed out",
+  "netReceiveTimeout": "Response timed out",
+  "netBadResponse": "Abnormal response {code}",
+  "@netBadResponse": {
+    "placeholders": {
+      "code": {}
+    }
+  },
+  "netCancel": "Request Cancelled",
+  "parseError": "Error parsing data source",
+  "defaultText": "Default",
+  "getDefaultError": "Failed to get the default data source",
+  "okRefresh": "【OK key】 Refresh",
+  "refresh": "Refresh"
+}
