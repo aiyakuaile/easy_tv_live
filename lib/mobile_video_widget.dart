@@ -3,6 +3,7 @@ import 'package:easy_tv_live/table_video_widget.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:window_manager/window_manager.dart';
 
 class MobileVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
@@ -14,6 +15,7 @@ class MobileVideoWidget extends StatefulWidget {
   final bool isPlaying;
   final double aspectRatio;
   final GestureTapCallback onChangeSubSource;
+
   const MobileVideoWidget({
     Key? key,
     required this.controller,
@@ -41,19 +43,10 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
         backgroundColor: Colors.black,
         centerTitle: true,
         title: const Text('极简TV'),
-        leading: IconButton(
-            onPressed: () async {
-              widget.controller?.pause();
-              await Navigator.of(context).pushNamed(RouterKeys.setting);
-              widget.controller?.play();
-            },
-            icon: Image.asset(
-              'assets/images/github.png',
-              width: 30,
-            )),
         actions: [
-          TextButton(
+          IconButton(
               onPressed: () async {
+                windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
                 final isPlaying = widget.controller?.value.isPlaying ?? false;
                 if (isPlaying) {
                   widget.controller?.pause();
@@ -63,8 +56,18 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
                 if (res == true) {
                   widget.onChangeSubSource();
                 }
+                windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
               },
-              child: const Text('频道订阅'))
+              icon: const Icon(Icons.add)),
+          IconButton(
+              onPressed: () async {
+                windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+                widget.controller?.pause();
+                await Navigator.of(context).pushNamed(RouterKeys.setting);
+                widget.controller?.play();
+                windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+              },
+              icon: const Icon(Icons.settings_outlined)),
         ],
       ),
       body: Column(

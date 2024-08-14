@@ -9,12 +9,27 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fvp/fvp.dart' as fvp;
 import 'package:sp_util/sp_util.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'live_home_page.dart';
 import 'router_keys.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+  WindowOptions windowOptions = const WindowOptions(
+    size: Size(375, 667),
+    minimumSize: Size(300, 300 * 9 / 16),
+    center: true,
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.hidden,
+    title: '极简TV',
+  );
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
   WakelockPlus.enable();
   LogUtil.init(isDebug: true, tag: 'EasyTV');
   await SpUtil.getInstance();
@@ -40,6 +55,7 @@ class MyApp extends StatelessWidget {
         RouterKeys.subScribe: (BuildContext context) => const SubScribePage(),
         RouterKeys.setting: (BuildContext context) => const SettingPage()
       },
+      debugShowCheckedModeBanner: false,
       home: const LiveHomePage(),
       builder: EasyLoading.init(),
     );

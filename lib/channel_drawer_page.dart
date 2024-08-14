@@ -108,7 +108,9 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
     return Container(
       key: _viewPortKey,
       padding: EdgeInsets.only(left: MediaQuery.of(context).padding.left),
-      width: widget.isLandscape ? MediaQuery.of(context).size.width * 0.4 + MediaQuery.of(context).padding.left : MediaQuery.of(context).size.width,
+      width: widget.isLandscape
+          ? max(MediaQuery.of(context).size.width * 0.4 + MediaQuery.of(context).padding.left, 300)
+          : MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.black, Colors.transparent])),
       child: Row(children: [
         SizedBox(

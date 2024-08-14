@@ -11,6 +11,8 @@ PODS:
     - FlutterMacOS
   - screen_brightness_macos (0.1.0):
     - FlutterMacOS
+  - screen_retriever (0.0.1):
+    - FlutterMacOS
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -21,6 +23,8 @@ PODS:
     - FlutterMacOS
   - wakelock_plus (0.0.1):
     - FlutterMacOS
+  - window_manager (0.2.0):
+    - FlutterMacOS
 
 DEPENDENCIES:
   - flutter_volume_controller (from `Flutter/ephemeral/.symlinks/plugins/flutter_volume_controller/macos`)
@@ -28,10 +32,12 @@ DEPENDENCIES:
   - fvp (from `Flutter/ephemeral/.symlinks/plugins/fvp/darwin`)
   - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
   - screen_brightness_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_brightness_macos/macos`)
+  - screen_retriever (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos`)
   - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
   - video_player_avfoundation (from `Flutter/ephemeral/.symlinks/plugins/video_player_avfoundation/darwin`)
   - wakelock_plus (from `Flutter/ephemeral/.symlinks/plugins/wakelock_plus/macos`)
+  - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
 
 SPEC REPOS:
   trunk:
@@ -48,6 +54,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos
   screen_brightness_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/screen_brightness_macos/macos
+  screen_retriever:
+    :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos
   shared_preferences_foundation:
     :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
   url_launcher_macos:
@@ -56,6 +64,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/video_player_avfoundation/darwin
   wakelock_plus:
     :path: Flutter/ephemeral/.symlinks/plugins/wakelock_plus/macos
+  window_manager:
+    :path: Flutter/ephemeral/.symlinks/plugins/window_manager/macos
 
 SPEC CHECKSUMS:
   flutter_volume_controller: 25d09126b0d695560f11c80b1311d5063fed882f
@@ -64,10 +74,12 @@ SPEC CHECKSUMS:
   mdk: 3c49affb38303cf86fd9f8ea1e05fe029c4dc194
   package_info_plus: fa739dd842b393193c5ca93c26798dff6e3d0e0c
   screen_brightness_macos: 2d6d3af2165592d9a55ffcd95b7550970e41ebda
+  screen_retriever: 59634572a57080243dd1bf715e55b6c54f241a38
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   url_launcher_macos: 5f437abeda8c85500ceb03f5c1938a8c5a705399
   video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
   wakelock_plus: 4783562c9a43d209c458cb9b30692134af456269
+  window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8
 
 PODFILE CHECKSUM: 236401fc2c932af29a9fcf0e97baeeb2d750d367
 
