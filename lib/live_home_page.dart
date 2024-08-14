@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'channel_drawer_page.dart';
 import 'mobile_video_widget.dart';
@@ -127,6 +128,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
       ..indicatorColor = Colors.black
       ..textColor = Colors.black
       ..backgroundColor = Colors.white70;
+    windowManager.setTitleBarStyle(TitleBarStyle.hidden);
     _loadData();
   }
 
