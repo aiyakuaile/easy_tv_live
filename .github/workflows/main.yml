@@ -139,10 +139,9 @@ jobs:
           draft: true
           prerelease: false
 
-      - name: Download android-and-tv artifact
+      - name: Download artifact artifact
         uses: actions/download-artifact@v4
         with:
-          name: android-and-tv-artifact
           path: release
           merge-multiple: true
 
