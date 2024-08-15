@@ -64,7 +64,7 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            easy_tv_live/release/easyTV-${{ github.ref_name }}-linux.zip
+            easy_tv_live/easy_tv_live/release/easyTV-${{ github.ref_name }}-linux.zip
           
 
 
