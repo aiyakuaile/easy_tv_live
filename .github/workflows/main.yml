@@ -143,20 +143,16 @@ jobs:
         with:
           path: release
           merge-multiple: true
-      - name: Display structure of downloaded files
-        run: |
-          realpath release  
-          find release -type -f 
 
       - name: Upload artifacts to Release
         run: |
           gh release upload ${{ steps.create_release.outputs.upload_url }} \
-            release/easyTV-${{ github.ref_name }}.apk \
-            release/easyTV-${{ github.ref_name }}-linux.zip \
-            release/easyTV-${{ github.ref_name }}-windows.zip \
-            release/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa \
-            release/easyTV-${{ github.ref_name }}-tv.apk \
-            release/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
+            easy_tv_live/release/easyTV-${{ github.ref_name }}.apk \
+            easy_tv_live/release/easyTV-${{ github.ref_name }}-linux.zip \
+            easy_tv_live/release/easyTV-${{ github.ref_name }}-windows.zip \
+            easy_tv_live/release/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa \
+            easy_tv_live/release/easyTV-${{ github.ref_name }}-tv.apk \
+            easy_tv_live/release/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
