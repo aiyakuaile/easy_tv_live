@@ -2,41 +2,131 @@ name: Multi-Platform Build
 
 on:
   push:
-    branches:
-      - main
-
-#    tags:
-#      - '*'
+    tags:
+      - '*'
 
 jobs:
+  build_android_and_tv:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+      - run: flutter pub get
+
+      # Build Android Mobile
+      - name: Build Android APK Mobile
+        run: flutter build apk --dart-define=isTV=false --release --split-per-abi
+      - name: Rename Android APK
+        run: mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
+
+      # Build Android TV
+      - name: Build Android APK TV
+        run: flutter build apk --dart-define=isTV=true --release
+      - name: Rename Android APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
+
+      - name: Upload android_and_tv artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-and-tv-artifact
+          path: |
+            build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
+            build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
+
+  build_ios_macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+      - run: flutter pub get
+
+      # Build iOS
+      - name: Build iOS
+        run: |
+          flutter build ios --dart-define=isTV=false --release --no-codesign
+          cd build/ios/iphoneos
+          mkdir Payload
+          mv Runner.app Payload/
+          zip -r easyTV-${{ github.ref_name }}.ipa Payload
+
+      # Build macOS
+      - name: Build macOS
+        run: |
+          flutter build macos --dart-define=isTV=false --release
+          cd build/macos/Build/Products/Release
+          zip -r easyTV-${{ github.ref_name }}-macos.zip *.app
+
+      - name: Upload ios-macos artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-macos-artifact
+          path: |
+            build/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
+            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
+
   build_linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.22.0'
-    - run: |
-        sudo apt-get update -y
-        sudo apt-get install -y ninja-build libgtk-3-dev
-        sudo apt-get install -y libasound2-dev
-    - run: flutter config --enable-linux-desktop
-    - run: flutter pub get
-    - name: Build Linux
-      run: |
-        flutter build linux --dart-define=isTV=false --release
-        cd build/linux/x64/release/bundle
-        zip -r easyTV-${{ github.ref_name }}-linux.zip *
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev
+          sudo apt-get install -y libasound2-dev
+      - run: flutter config --enable-linux-desktop
+      - run: flutter pub get
+      - name: Build Linux
+        run: |
+          flutter build linux --dart-define=isTV=false --release
+          cd build/linux/x64/release/bundle
+          zip -r easyTV-${{ github.ref_name }}-linux.zip *
 
-    - name: Upload linux artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux-artifact
-        path: |
-          build/linux/x64/release/bundle/easyTV-${{ github.ref_name }}-linux.zip
+      - name: Upload linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifact
+          path: |
+            build/linux/x64/release/bundle/easyTV-${{ github.ref_name }}-linux.zip
+  
+
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - name: Build Windows
+        run: |
+          flutter build windows --dart-define=isTV=false --release
+          cd build/windows/x64/runner/Release
+          7z a easyTV-${{ github.ref_name }}-windows.zip *
+
+      - name: Upload windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifact
+          path: |
+            build/windows/x64/runner/Release/easyTV-${{ github.ref_name }}-windows.zip
 
   create_release:
-    needs: [build_linux]
+    needs: [ build_linux ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -65,9 +155,9 @@ jobs:
           draft: true
           prerelease: false
           files: |
+            ./release/easyTV-${{ github.ref_name }}.apk
+            ./release/easyTV-${{ github.ref_name }}.ipa
+            ./release/easyTV-${{ github.ref_name }}-tv.apk
             ./release/easyTV-${{ github.ref_name }}-linux.zip
-      - run: pwd
-          
-
-
-
+            ./release/easyTV-${{ github.ref_name }}-windows.zip
+            ./release/easyTV-${{ github.ref_name }}-macos.zip
