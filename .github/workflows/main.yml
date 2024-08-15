@@ -32,7 +32,7 @@ jobs:
       run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
 
     - name: Upload android_and_tv artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: android-and-tv-artifact
         path: |
@@ -69,7 +69,7 @@ jobs:
           zip -r easyTV-${{ github.ref_name }}-macos.zip *.app
 
       - name: Upload ios-macos artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ios-macos-artifact
           path: |
@@ -96,7 +96,7 @@ jobs:
         zip -r easyTV-${{ github.ref_name }}-linux.zip *
 
     - name: Upload linux artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: linux-artifact
         path: |
@@ -118,7 +118,7 @@ jobs:
         7z a easyTV-${{ github.ref_name }}-windows.zip *
 
     - name: Upload windows artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: windows-artifact
         path: |
@@ -128,25 +128,41 @@ jobs:
     needs: [build_android_and_tv, build_ios_macos, build_linux, build_windows]
     runs-on: ubuntu-latest
     steps:
-      - name: Download Linux artifact
-        uses: actions/download-artifact@v2
+      - name: Download android-and-tv artifact
+        uses: actions/download-artifact@v4
         with:
           name: android-and-tv-artifact
+          path: release
+          merge-multiple: true
+      - name: display download dir
+        run: ls -R release
 
-      - name: Download Linux artifact
-        uses: actions/download-artifact@v2
+      - name: Download ios-macos artifact
+        uses: actions/download-artifact@v4
         with:
           name: ios-macos-artifact
+          path: release
+          merge-multiple: true
+      - name: display download dir
+        run: ls -R release
 
       - name: Download Linux artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: linux-artifact
+          path: release
+          merge-multiple: true
+      - name: display download dir
+        run: ls -R release
 
       - name: Download Windows artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: windows-artifact
+          path: release
+          merge-multiple: true
+      - name: display download dir
+        run: ls -R release
 
       - uses: actions/checkout@v3
       - name: Create Release
@@ -162,12 +178,12 @@ jobs:
       - name: Upload artifacts to Release
         run: |
           gh release upload ${{ steps.create_release.outputs.upload_url }} \
-            build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk \
-            build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk \
-            build/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa \
-            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip \
-            build/linux/x64/release/bundle/easyTV-${{ github.ref_name }}-linux.zip \
-            build/windows/x64/runner/Release/easyTV-${{ github.ref_name }}-windows.zip
+            release/easyTV-${{ github.ref_name }}.apk \
+            release/easyTV-${{ github.ref_name }}-tv.apk \
+            release/easyTV-${{ github.ref_name }}.ipa \
+            release/easyTV-${{ github.ref_name }}-macos.zip \
+            release/easyTV-${{ github.ref_name }}-linux.zip \
+            release/easyTV-${{ github.ref_name }}-windows.zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
