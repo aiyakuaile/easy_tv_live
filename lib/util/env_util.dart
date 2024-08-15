@@ -2,12 +2,16 @@ import 'dart:io';
 import 'dart:ui';
 
 class EnvUtil {
+  static bool? _isMobile;
+
   static bool isTV() {
     return const bool.fromEnvironment('isTV');
   }
 
-  static bool isMobile() {
-    return Platform.isAndroid || Platform.isIOS;
+  static bool get isMobile {
+    if (_isMobile != null) return _isMobile!;
+    _isMobile = Platform.isAndroid || Platform.isIOS;
+    return _isMobile!;
   }
 
   static bool isChinese() {

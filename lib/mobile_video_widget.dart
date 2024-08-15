@@ -6,6 +6,7 @@ import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'generated/l10n.dart';
+import 'util/env_util.dart';
 
 class MobileVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
@@ -48,7 +49,7 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
         actions: [
           IconButton(
               onPressed: () async {
-                windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+                if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
                 final isPlaying = widget.controller?.value.isPlaying ?? false;
                 if (isPlaying) {
                   widget.controller?.pause();
@@ -58,16 +59,16 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
                 if (res == true) {
                   widget.onChangeSubSource();
                 }
-                windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+                if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
               },
               icon: const Icon(Icons.add)),
           IconButton(
               onPressed: () async {
-                windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+                if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
                 widget.controller?.pause();
                 await Navigator.of(context).pushNamed(RouterKeys.setting);
                 widget.controller?.play();
-                windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+                if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
               },
               icon: const Icon(Icons.settings_outlined)),
         ],

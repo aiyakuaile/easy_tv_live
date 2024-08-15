@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:easy_tv_live/setting_page.dart';
 import 'package:easy_tv_live/subscribe/subscribe_page.dart';
+import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,20 +19,22 @@ import 'router_keys.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
-  WindowOptions windowOptions = const WindowOptions(
-    size: Size(375, 667),
-    minimumSize: Size(300, 300 * 9 / 16),
-    center: true,
-    backgroundColor: Colors.transparent,
-    skipTaskbar: false,
-    titleBarStyle: TitleBarStyle.hidden,
-    title: '极简TV',
-  );
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
+  if (!EnvUtil.isMobile) {
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(375, 667),
+      minimumSize: Size(300, 300 * 9 / 16),
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.hidden,
+      title: '极简TV',
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
   WakelockPlus.enable();
   LogUtil.init(isDebug: true, tag: 'EasyTV');
   await SpUtil.getInstance();

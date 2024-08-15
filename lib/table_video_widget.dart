@@ -39,12 +39,12 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
   @override
   void initState() {
     super.initState();
-    windowManager.addListener(this);
+    if (!EnvUtil.isMobile) windowManager.addListener(this);
   }
 
   @override
   void dispose() {
-    windowManager.removeListener(this);
+    if (!EnvUtil.isMobile) windowManager.removeListener(this);
     super.dispose();
   }
 
@@ -161,7 +161,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                     IconButton(
                       tooltip: S.current.portrait,
                       onPressed: () async {
-                        if (EnvUtil.isMobile()) {
+                        if (EnvUtil.isMobile) {
                           SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
                           return;
                         }
@@ -175,8 +175,8 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                         color: Colors.white,
                       ),
                     ),
-                    if (!EnvUtil.isMobile()) const SizedBox(width: 12),
-                    if (!EnvUtil.isMobile())
+                    if (!EnvUtil.isMobile) const SizedBox(width: 12),
+                    if (!EnvUtil.isMobile)
                       IconButton(
                         tooltip: S.current.fullScreen,
                         onPressed: () async {
@@ -212,7 +212,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
             child: IconButton(
               tooltip: S.current.landscape,
               onPressed: () async {
-                if (EnvUtil.isMobile()) {
+                if (EnvUtil.isMobile) {
                   SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
                   return;
                 }

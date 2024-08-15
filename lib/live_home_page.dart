@@ -129,7 +129,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
       ..indicatorColor = Colors.black
       ..textColor = Colors.black
       ..backgroundColor = Colors.white70;
-    windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+    if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden);
     _loadData();
   }
 
