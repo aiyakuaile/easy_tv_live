@@ -143,6 +143,7 @@ jobs:
         with:
           path: release
           merge-multiple: true
+      - name: Display structure of downloaded files
         run: |
           realpath release  
           find release -type -f 
