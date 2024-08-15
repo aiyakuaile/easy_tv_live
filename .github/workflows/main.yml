@@ -55,7 +55,7 @@ jobs:
       # Build iOS
       - name: Build iOS
         run: |
-          flutter build ios --release --no-codesign
+          flutter build ios --dart-define=isTV=false --release --no-codesign
           cd build/ios/iphoneos
           mkdir Payload
           mv Runner.app Payload/
@@ -64,7 +64,7 @@ jobs:
       # Build macOS
       - name: Build macOS
         run: |
-          flutter build macos --release
+          flutter build macos --dart-define=isTV=false --release
           cd build/macos/Build/Products/Release
           zip -r easyTV-${{ github.ref_name }}-macos.zip *.app
 
@@ -91,7 +91,7 @@ jobs:
     - run: flutter pub get
     - name: Build Linux
       run: |
-        flutter build linux --release
+        flutter build linux --dart-define=isTV=false --release
         cd build/linux/x64/release/bundle
         zip -r easyTV-${{ github.ref_name }}-linux.zip *
 
@@ -113,7 +113,7 @@ jobs:
     - run: flutter pub get
     - name: Build Windows
       run: |
-        flutter build windows --release
+        flutter build windows --dart-define=isTV=false --release
         cd build/windows/x64/runner/Release
         7z a easyTV-${{ github.ref_name }}-windows.zip *
 
