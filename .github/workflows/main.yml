@@ -168,6 +168,8 @@ jobs:
             build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip \
             build/linux/x64/release/bundle/easyTV-${{ github.ref_name }}-linux.zip \
             build/windows/x64/runner/Release/easyTV-${{ github.ref_name }}-windows.zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
 
 
