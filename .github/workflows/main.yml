@@ -128,7 +128,6 @@ jobs:
     needs: [build_android_and_tv, build_ios_macos, build_linux, build_windows]
     runs-on: ubuntu-latest
     steps:
-#      - uses: actions/checkout@v4
       - name: Create Release
         uses: softprops/action-gh-release@v1
         env:
@@ -147,9 +146,6 @@ jobs:
         run: |
           realpath release  
           find release -type -f 
-
-      - name: display workspace
-        run: realpath release
 
       - name: Upload artifacts to Release
         run: |
