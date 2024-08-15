@@ -128,43 +128,19 @@ jobs:
     needs: [build_android_and_tv, build_ios_macos, build_linux, build_windows]
     runs-on: ubuntu-latest
     steps:
-      - name: Download android-and-tv artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: android-and-tv-artifact
-          path: release
-          merge-multiple: true
-      - name: display download dir
-        run: find release -type f
-
-      - name: Download ios-macos artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ios-macos-artifact
-          path: release
-          merge-multiple: true
-      - name: display download dir
-        run: find release -type f
-
-      - name: Download Linux artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-artifact
-          path: release
-          merge-multiple: true
-      - name: display download dir
-        run: find release -type f
-
-      - name: Download Windows artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-artifact
-          path: release
-          merge-multiple: true
-      - name: display download dir
-        run: find release -type f
-
       - uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: display download dir full path
+        run: realpath release
+
+      - name: display download dir file
+        run: find release -type f
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         env:
@@ -176,7 +152,7 @@ jobs:
           prerelease: false
 
       - name: display workspace
-        run: find . -type f
+        run: realpath release
 
       - name: Upload artifacts to Release
         run: |
