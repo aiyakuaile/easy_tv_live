@@ -12,7 +12,7 @@ class EnvUtil {
 
   static bool isChinese() {
     final systemLocale = PlatformDispatcher.instance.locale;
-    bool isChinese = systemLocale.languageCode == 'zh' || systemLocale.languageCode == 'zh_CN';
+    bool isChinese = systemLocale.languageCode == 'zh';
     return isChinese;
   }
 

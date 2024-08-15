@@ -7,6 +7,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'channel_drawer_page.dart';
+import 'generated/l10n.dart';
 import 'mobile_video_widget.dart';
 import 'table_video_widget.dart';
 import 'tv/tv_page.dart';
@@ -24,7 +25,7 @@ class LiveHomePage extends StatefulWidget {
 }
 
 class _LiveHomePageState extends State<LiveHomePage> {
-  String toastString = '正在加载';
+  String toastString = S.current.loading;
 
   Map<String, dynamic>? _videoMap;
 
@@ -40,7 +41,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   double aspectRatio = 1.78;
 
   _playVideo() async {
-    toastString = '线路${_sourceIndex + 1}播放：$_channel';
+    toastString = S.current.lineToast(_sourceIndex + 1, _channel);
     setState(() {});
     final url = _videoMap![_group][_channel][_sourceIndex].toString();
     LogUtil.v('正在播放:::$url:::_group:$_group:::_channel:$_channel:::_sourceIndex:$_sourceIndex');
@@ -58,7 +59,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
       await _playerController?.initialize();
       _playerController?.play();
       setState(() {
-        toastString = '正在加载';
+        toastString = S.current.loading;
         aspectRatio = _playerController?.value.aspectRatio ?? 1.78;
       });
     } catch (e) {
@@ -68,11 +69,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
       if (_sourceIndex > channels.length - 1) {
         _sourceIndex = channels.length - 1;
         setState(() {
-          toastString = '此视频无法播放，请更换其它频道';
+          toastString = S.current.playError;
         });
       } else {
         setState(() {
-          toastString = '切换线路${_sourceIndex + 1}...';
+          toastString = S.current.switchLine(_sourceIndex + 1);
         });
         Future.delayed(const Duration(seconds: 2), () => _playVideo());
         return;
@@ -89,11 +90,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
       if (_sourceIndex > channels.length - 1) {
         _sourceIndex = 0;
         setState(() {
-          toastString = '出错了，尝试重新连接...';
+          toastString = S.current.playReconnect;
         });
       } else {
         setState(() {
-          toastString = '切换线路${_sourceIndex + 1}...';
+          toastString = '${S.current.switchLine(_sourceIndex + 1)}...';
         });
       }
       Future.delayed(const Duration(seconds: 2), () => _playVideo());
@@ -204,11 +205,6 @@ class _LiveHomePageState extends State<LiveHomePage> {
           );
         },
         landscape: (context) {
-          // return ResponsiveBuilder(builder: (context, sizingInformation) {
-          //   LogUtil.v('sizingInformation::::${sizingInformation.deviceScreenType.name}');
-          //   if (sizingInformation.isDesktop) {
-          //     return const TvPage();
-          //   } else {
           SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
           return PopScope(
             canPop: false,
@@ -235,8 +231,6 @@ class _LiveHomePageState extends State<LiveHomePage> {
                       isLandscape: true),
             ),
           );
-          //   }
-          // });
         },
       ),
     );
@@ -264,7 +258,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                         style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.zero, side: BorderSide(color: _sourceIndex == index ? Colors.red : Colors.white)),
                         child: Text(
-                          '线路${index + 1}',
+                          S.current.lineIndex(index + 1),
                           style: TextStyle(fontSize: 12, color: _sourceIndex == index ? Colors.red : Colors.white),
                         ),
                         onFocusChange: (focus) {

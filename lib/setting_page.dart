@@ -1,6 +1,8 @@
 import 'package:easy_tv_live/util/check_version_util.dart';
 import 'package:flutter/material.dart';
 
+import 'generated/l10n.dart';
+
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
 
@@ -15,7 +17,7 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('设置'),
+        title: Text(S.current.settings),
       ),
       body: ListView(
         children: [
@@ -31,14 +33,14 @@ class _SettingPageState extends State<SettingPage> {
               const SizedBox(
                 height: 12,
               ),
-              const Stack(
+              Stack(
                 clipBehavior: Clip.none,
                 children: [
                   Text(
-                    '极简TV',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    S.current.appName,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  Positioned(
+                  const Positioned(
                     top: 0,
                     right: -45,
                     child: Text(
@@ -51,7 +53,7 @@ class _SettingPageState extends State<SettingPage> {
             ],
           ),
           ListTile(
-            title: const Text('主页'),
+            title: Text(S.current.homePage),
             leading: const Icon(Icons.home_filled),
             trailing: const Icon(Icons.arrow_right),
             onTap: () {
@@ -59,7 +61,7 @@ class _SettingPageState extends State<SettingPage> {
             },
           ),
           ListTile(
-            title: const Text('发布历史'),
+            title: Text(S.current.releaseHistory),
             leading: const Icon(Icons.history),
             trailing: const Icon(Icons.arrow_right),
             onTap: () {
@@ -67,7 +69,7 @@ class _SettingPageState extends State<SettingPage> {
             },
           ),
           ListTile(
-            title: const Text('检查更新'),
+            title: Text(S.current.checkUpdate),
             leading: const Icon(Icons.tips_and_updates),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -77,7 +79,7 @@ class _SettingPageState extends State<SettingPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(30)),
                     child: Text(
-                      '新版本v${_latestVersionEntity!.latestVersion}',
+                      S.current.newVersion(_latestVersionEntity!.latestVersion!),
                       style: const TextStyle(fontSize: 12, color: Colors.white),
                     ),
                   ),

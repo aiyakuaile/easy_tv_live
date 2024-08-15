@@ -1,6 +1,8 @@
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:flutter/material.dart';
 
+import '../generated/l10n.dart';
+
 class EmptyPage extends StatelessWidget {
   final GestureTapCallback onRefresh;
   const EmptyPage({super.key, required this.onRefresh});
@@ -27,7 +29,7 @@ class EmptyPage extends StatelessWidget {
               backgroundColor: Colors.redAccent,
             ),
             onPressed: onRefresh,
-            child: Text('      ${EnvUtil.isTV() ? '【OK键】' : ''}刷新      ', style: const TextStyle(color: Colors.white)),
+            child: Text('      ${EnvUtil.isTV() ? S.current.okRefresh : S.current.refresh}      ', style: const TextStyle(color: Colors.white)),
           )
         ],
       ),

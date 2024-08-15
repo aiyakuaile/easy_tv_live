@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/src/spinning_lines.dart';
 
+import '../generated/l10n.dart';
+
 class VideoHoldBg extends StatelessWidget {
   final String? toastString;
   const VideoHoldBg({Key? key, required this.toastString}) : super(key: key);
@@ -14,9 +16,11 @@ class VideoHoldBg extends StatelessWidget {
         children: [
           const SpinKitSpinningLines(color: Colors.white, size: 40),
           const Spacer(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Text(toastString ?? '正在加载', style: const TextStyle(color: Colors.white, fontSize: 16)),
+          FittedBox(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(toastString ?? S.current.loading, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            ),
           ),
         ],
       ),

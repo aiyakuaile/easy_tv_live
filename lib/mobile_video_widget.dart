@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'generated/l10n.dart';
+
 class MobileVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
   final GestureTapCallback? changeChannelSources;
@@ -42,7 +44,7 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         centerTitle: true,
-        title: const Text('极简TV'),
+        title: Text(S.current.appName),
         actions: [
           IconButton(
               onPressed: () async {

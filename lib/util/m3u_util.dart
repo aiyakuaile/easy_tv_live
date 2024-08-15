@@ -7,6 +7,7 @@ import 'package:easy_tv_live/util/http_util.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sp_util/sp_util.dart';
 
+import '../generated/l10n.dart';
 import 'log_util.dart';
 
 class M3uUtil {
@@ -58,7 +59,7 @@ class M3uUtil {
     final defaultM3u = EnvUtil.videoDefaultChannelHost();
     final res = await HttpUtil().getRequest(defaultM3u);
     if (res == null) {
-      EasyLoading.showToast('获取默认数据源失败');
+      EasyLoading.showToast(S.current.getDefaultError);
       return '';
     } else {
       return res;
@@ -85,7 +86,7 @@ class M3uUtil {
         if (line.startsWith('#EXTINF:')) {
           final lineList = line.split(',');
           List<String> params = lineList.first.replaceAll('"', '').split(' ');
-          final groupStr = params.firstWhere((element) => element.startsWith('group-title='), orElse: () => 'group-title=默认');
+          final groupStr = params.firstWhere((element) => element.startsWith('group-title='), orElse: () => 'group-title=${S.current.defaultText}');
           if (groupStr.isNotEmpty) {
             tempGroupTitle = groupStr.split('=').last;
             tempChannelName = lineList.last;
@@ -113,7 +114,7 @@ class M3uUtil {
         }
       }
     } else {
-      String tempGroup = '默认';
+      String tempGroup = S.current.defaultText;
       for (int i = 0; i < lines.length - 1; i++) {
         final line = lines[i];
         final lineList = line.split(',');
@@ -127,7 +128,7 @@ class M3uUtil {
             group[groupTitle] = chanelList;
             result[tempGroup] = group;
           } else {
-            tempGroup = groupTitle == '' ? '默认${i + 1}' : groupTitle;
+            tempGroup = groupTitle == '' ? '${S.current.defaultText}${i + 1}' : groupTitle;
             if (result[tempGroup] == null) {
               result[tempGroup] = <String, List<String>>{};
             }
@@ -137,7 +138,7 @@ class M3uUtil {
     }
 
     if (result.isEmpty) {
-      EasyLoading.showError('解析数据源失败');
+      EasyLoading.showError(S.current.parseError);
     }
 
     return result;

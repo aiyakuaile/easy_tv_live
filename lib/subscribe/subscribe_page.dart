@@ -12,6 +12,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:sp_util/sp_util.dart';
 
+import '../generated/l10n.dart';
 import '../util/env_util.dart';
 
 class SubScribePage extends StatefulWidget {
@@ -66,20 +67,20 @@ class _SubScribePageState extends State<SubScribePage> {
           builder: (BuildContext context) {
             return AlertDialog(
               backgroundColor: const Color(0xff3C3F41),
-              title: const Text('温馨提示'),
-              content: Text('确定添加此数据源吗？\n$clipText'),
+              title: Text(S.current.dialogTitle),
+              content: Text('${S.current.dataSourceContent}\n$clipText'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },
-                  child: const Text('取消'),
+                  child: Text(S.current.dialogCancel),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(true);
                   },
-                  child: const Text('确定'),
+                  child: Text(S.current.dialogConfirm),
                 ),
               ],
             );
@@ -107,14 +108,14 @@ class _SubScribePageState extends State<SubScribePage> {
       } else if (request.method == 'POST') {
         String content = await utf8.decoder.bind(request).join();
         Map<String, dynamic> data = jsonDecode(content);
-        String rMsg = '参数错误';
+        String rMsg = S.current.tvParseParma;
         if (data.containsKey('url')) {
           final url = data['url'] as String?;
           if (url == '' || url == null || !url.startsWith('http')) {
-            EasyLoading.showError('请推送正确的链接');
-            rMsg = '请推送正确的链接';
+            EasyLoading.showError(S.current.tvParsePushError);
+            rMsg = S.current.tvParsePushError;
           } else {
-            rMsg = '推送成功';
+            rMsg = S.current.tvParseSuccess;
             _pareUrl(url);
           }
         } else {
@@ -178,7 +179,7 @@ class _SubScribePageState extends State<SubScribePage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('订阅'),
+          title: Text(S.current.subscribe),
           centerTitle: true,
           actions: widget.isTV
               ? null
@@ -217,7 +218,7 @@ class _SubScribePageState extends State<SubScribePage> {
                                   ),
                                   const SizedBox(height: 20),
                                   Text(
-                                    '创建日期：${model.time}',
+                                    '${S.current.createTime}：${model.time}',
                                     style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
                                   ),
                                   Row(
@@ -233,24 +234,24 @@ class _SubScribePageState extends State<SubScribePage> {
                                                     return AlertDialog(
                                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                                       backgroundColor: const Color(0xFF393B40),
-                                                      content: const Text(
-                                                        '确定删除此订阅吗？',
-                                                        style: TextStyle(color: Colors.white, fontSize: 20),
+                                                      content: Text(
+                                                        S.current.dialogDeleteContent,
+                                                        style: const TextStyle(color: Colors.white, fontSize: 20),
                                                       ),
                                                       actions: [
                                                         TextButton(
                                                             onPressed: () {
                                                               Navigator.pop(context, false);
                                                             },
-                                                            child: const Text(
-                                                              '取消',
-                                                              style: TextStyle(fontSize: 17),
+                                                            child: Text(
+                                                              S.current.dialogCancel,
+                                                              style: const TextStyle(fontSize: 17),
                                                             )),
                                                         TextButton(
                                                             onPressed: () {
                                                               Navigator.pop(context, true);
                                                             },
-                                                            child: const Text('确定', style: TextStyle(fontSize: 17))),
+                                                            child: Text(S.current.dialogConfirm, style: const TextStyle(fontSize: 17))),
                                                       ],
                                                     );
                                                   });
@@ -261,7 +262,7 @@ class _SubScribePageState extends State<SubScribePage> {
                                                 setState(() {});
                                               }
                                             },
-                                            child: const Text('删除')),
+                                            child: Text(S.current.delete)),
                                       TextButton(
                                         onPressed: model.selected != true
                                             ? () async {
@@ -277,7 +278,7 @@ class _SubScribePageState extends State<SubScribePage> {
                                                 }
                                               }
                                             : null,
-                                        child: Text(model.selected != true ? '设为默认' : '使用中'),
+                                        child: Text(model.selected != true ? S.current.setDefault : S.current.inUse),
                                       ),
                                     ],
                                   )
@@ -300,9 +301,9 @@ class _SubScribePageState extends State<SubScribePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text(
-                            '扫码添加订阅源',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          Text(
+                            S.current.tvScanTip,
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           Container(
                             decoration: const BoxDecoration(color: Colors.white),
@@ -320,8 +321,9 @@ class _SubScribePageState extends State<SubScribePage> {
                                     ),
                                   ),
                           ),
-                          if (_address != null) Container(margin: const EdgeInsets.only(bottom: 20), child: Text('推送地址：$_address')),
-                          const Text('在扫码结果页，输入新的订阅源，点击页面中的推送即可添加成功'),
+                          if (_address != null)
+                            Container(margin: const EdgeInsets.only(bottom: 20), child: Text(S.current.pushAddress(_address ?? ''))),
+                          Text(S.current.tvPushContent),
                         ],
                       ),
                     ))
@@ -329,9 +331,12 @@ class _SubScribePageState extends State<SubScribePage> {
               ),
             ),
             if (!widget.isTV)
-              const Text(
-                '复制订阅源后，回到此页面可自动添加订阅源',
-                style: TextStyle(color: Color(0xFF999999)),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  S.current.pasterContent,
+                  style: const TextStyle(color: Color(0xFF999999)),
+                ),
               ),
             SizedBox(height: MediaQuery.of(context).padding.bottom + 10)
           ],
@@ -358,7 +363,7 @@ class _SubScribePageState extends State<SubScribePage> {
                       child: AppBar(
                         elevation: 0,
                         backgroundColor: Colors.transparent,
-                        title: const Text('添加订阅源'),
+                        title: Text(S.current.addDataSource),
                         centerTitle: true,
                         automaticallyImplyLeading: false,
                         actions: [
@@ -366,7 +371,7 @@ class _SubScribePageState extends State<SubScribePage> {
                               onPressed: () {
                                 Navigator.pop(context, _textController.text);
                               },
-                              child: const Text('确定'))
+                              child: Text(S.current.dialogConfirm))
                         ],
                       ),
                     ),
@@ -377,8 +382,8 @@ class _SubScribePageState extends State<SubScribePage> {
                           controller: _textController,
                           autofocus: true,
                           maxLines: 1,
-                          decoration: const InputDecoration(
-                            hintText: '请输入或粘贴.m3u或.txt格式的订阅源链接',
+                          decoration: InputDecoration(
+                            hintText: S.current.addFiledHintText,
                             border: InputBorder.none,
                           ),
                         ),
@@ -402,7 +407,7 @@ class _SubScribePageState extends State<SubScribePage> {
     final hasIndex = _m3uList.indexWhere((element) => element.link == res);
     LogUtil.v('添加:hasIndex:::：$hasIndex');
     if (hasIndex != -1) {
-      EasyLoading.showToast('已添加过此订阅源');
+      EasyLoading.showToast(S.current.addRepeat);
       return;
     }
     if (res.startsWith('http') && hasIndex == -1) {
@@ -412,7 +417,7 @@ class _SubScribePageState extends State<SubScribePage> {
       await M3uUtil.saveLocalData(_m3uList);
       setState(() {});
     } else {
-      EasyLoading.showToast('请输入http/https链接');
+      EasyLoading.showToast(S.current.addNoHttpLink);
     }
   }
 }

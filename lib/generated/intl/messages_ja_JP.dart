@@ -34,8 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "addDataSource":
-            MessageLookupByLibrary.simpleMessage("サブスクリプションソースを追加"),
+        "addDataSource": MessageLookupByLibrary.simpleMessage("IPTV追加"),
         "addFiledHintText": MessageLookupByLibrary.simpleMessage(
             ".m3uまたは.txt形式のサブスクリプションリンクを入力または貼り付けてください。"),
         "addNoHttpLink":
@@ -85,7 +84,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "releaseHistory": MessageLookupByLibrary.simpleMessage("リリース履歴"),
         "setDefault": MessageLookupByLibrary.simpleMessage("デフォルトに設定"),
         "settings": MessageLookupByLibrary.simpleMessage("設定"),
-        "subscribe": MessageLookupByLibrary.simpleMessage("IPTVサブスクリプション"),
+        "subscribe": MessageLookupByLibrary.simpleMessage("订阅"),
         "switchLine": m5,
         "tipChangeLine": MessageLookupByLibrary.simpleMessage("ラインを切り替える"),
         "tipChannelList": MessageLookupByLibrary.simpleMessage("チャンネルリスト"),

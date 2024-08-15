@@ -1,0 +1,85 @@
+{
+  "appName": "EasyTV",
+  "loading": "กำลังโหลด",
+  "lineToast": "สาย {line} กำลังเล่น: {channel}",
+  "@lineToast": {
+    "placeholders": {
+      "line": {},
+      "channel": {}
+    }
+  },
+  "playError": "ไม่สามารถเล่นวิดีโอนี้ได้ กรุณาเปลี่ยนไปยังช่องอื่น",
+  "switchLine": "กำลังเปลี่ยนไปสาย {line} ...",
+  "@switchLine": {
+    "placeholders": {
+      "line": {}
+    }
+  },
+  "playReconnect": "เกิดข้อผิดพลาด กำลังพยายามเชื่อมต่ออีกครั้ง...",
+  "lineIndex": "สาย {index}",
+  "@lineIndex": {
+    "placeholders": {
+      "index": {}
+    }
+  },
+  "tipChannelList": "รายการช่อง",
+  "tipChangeLine": "เปลี่ยนสาย",
+  "portrait": "โหมดแนวตั้ง",
+  "landscape": "โหมดแนวนอน",
+  "fullScreen": "สลับไปยังโหมดเต็มจอ",
+  "settings": "การตั้งค่า",
+  "homePage": "หน้าแรก",
+  "releaseHistory": "ประวัติการเผยแพร่",
+  "checkUpdate": "ตรวจสอบการอัปเดต",
+  "newVersion": "เวอร์ชันใหม่ v{version}",
+  "@newVersion": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "update": "อัปเดตทันที",
+  "latestVersion": "คุณอยู่ในเวอร์ชันล่าสุดแล้ว",
+  "findNewVersion": "พบเวอร์ชันใหม่",
+  "updateContent": "เนื้อหาการอัปเดต",
+  "dialogTitle": "คำเตือนที่เป็นมิตร",
+  "dataSourceContent": "คุณแน่ใจหรือว่าต้องการเพิ่มแหล่งข้อมูลนี้?",
+  "dialogCancel": "ยกเลิก",
+  "dialogConfirm": "ยืนยัน",
+  "subscribe": "การสมัคร IPTV",
+  "createTime": "เวลาที่สร้าง",
+  "dialogDeleteContent": "คุณแน่ใจหรือว่าต้องการลบการสมัครนี้?",
+  "delete": "ลบ",
+  "setDefault": "ตั้งเป็นค่าเริ่มต้น",
+  "inUse": "กำลังใช้งาน",
+  "tvParseParma": "ข้อผิดพลาดของพารามิเตอร์",
+  "tvParseSuccess": "การส่งสำเร็จ",
+  "tvParsePushError": "กรุณาส่งลิงก์ที่ถูกต้อง",
+  "tvScanTip": "สแกนเพื่อเพิ่มแหล่งข้อมูลการสมัคร",
+  "pushAddress": "ที่อยู่การส่ง: {address}",
+  "@pushAddress": {
+    "placeholders": {
+      "address": {}
+    }
+  },
+  "tvPushContent": "ในหน้าผลลัพธ์การสแกน ให้ป้อนแหล่งข้อมูลการสมัครใหม่ และคลิกปุ่มส่งเพื่อเพิ่มสำเร็จ",
+  "pasterContent": "หลังจากคัดลอกแหล่งข้อมูลการสมัครแล้ว ให้กลับมาที่หน้านี้เพื่อเพิ่มแหล่งข้อมูลการสมัครโดยอัตโนมัติ",
+  "addDataSource": "เพิ่มแหล่งข้อมูลการสมัคร",
+  "addFiledHintText": "กรุณาใส่หรือวางลิงก์แหล่งข้อมูลที่มีรูปแบบ .m3u หรือ .txt",
+  "addRepeat": "แหล่งข้อมูลการสมัครนี้ถูกเพิ่มแล้ว",
+  "addNoHttpLink": "กรุณาใส่ลิงก์ http/https",
+  "netTimeOut": "การเชื่อมต่อหมดเวลา",
+  "netSendTimeout": "คำขอหมดเวลา",
+  "netReceiveTimeout": "การตอบกลับหมดเวลา",
+  "netBadResponse": "การตอบกลับผิดปกติ {code}",
+  "@netBadResponse": {
+    "placeholders": {
+      "code": {}
+    }
+  },
+  "netCancel": "คำขอยกเลิก",
+  "parseError": "ข้อผิดพลาดในการวิเคราะห์แหล่งข้อมูล",
+  "default": "ค่าเริ่มต้น",
+  "getDefaultError": "ไม่สามารถดึงแหล่งข้อมูลเริ่มต้นได้",
+  "okRefresh": "【ปุ่ม OK】 รีเฟรช",
+  "refresh": "รีเฟรช"
+}

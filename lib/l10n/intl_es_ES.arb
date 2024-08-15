@@ -1,0 +1,85 @@
+{
+  "appName": "EasyTV",
+  "loading": "Cargando",
+  "lineToast": "Línea {line} reproduciendo: {channel}",
+  "@lineToast": {
+    "placeholders": {
+      "line": {},
+      "channel": {}
+    }
+  },
+  "playError": "Este video no se puede reproducir, por favor cambia a otro canal",
+  "switchLine": "Cambiando a la línea {line} ...",
+  "@switchLine": {
+    "placeholders": {
+      "line": {}
+    }
+  },
+  "playReconnect": "Ocurrió un error, intentando reconectar...",
+  "lineIndex": "Línea {index}",
+  "@lineIndex": {
+    "placeholders": {
+      "index": {}
+    }
+  },
+  "tipChannelList": "Lista de Canales",
+  "tipChangeLine": "Cambiar Línea",
+  "portrait": "Modo Vertical",
+  "landscape": "Modo Horizontal",
+  "fullScreen": "Alternar Pantalla Completa",
+  "settings": "Configuraciones",
+  "homePage": "Página Principal",
+  "releaseHistory": "Historial de Lanzamientos",
+  "checkUpdate": "Verificar Actualizaciones",
+  "newVersion": "Nueva Versión v{version}",
+  "@newVersion": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "update": "Actualizar Ahora",
+  "latestVersion": "Ya estás en la última versión",
+  "findNewVersion": "Nueva versión encontrada",
+  "updateContent": "Contenido de la Actualización",
+  "dialogTitle": "Recordatorio Amistoso",
+  "dataSourceContent": "¿Estás seguro de que deseas agregar esta fuente de datos?",
+  "dialogCancel": "Cancelar",
+  "dialogConfirm": "Confirmar",
+  "subscribe": "Suscripción IPTV",
+  "createTime": "Hora de Creación",
+  "dialogDeleteContent": "¿Estás seguro de que deseas eliminar esta suscripción?",
+  "delete": "Eliminar",
+  "setDefault": "Establecer como Predeterminado",
+  "inUse": "En Uso",
+  "tvParseParma": "Error de Parámetro",
+  "tvParseSuccess": "Push Exitoso",
+  "tvParsePushError": "Por favor, empuja el enlace correcto",
+  "tvScanTip": "Escanea para agregar fuente de suscripción",
+  "pushAddress": "Dirección de Push: {address}",
+  "@pushAddress": {
+    "placeholders": {
+      "address": {}
+    }
+  },
+  "tvPushContent": "En la página de resultados del escaneo, ingresa la nueva fuente de suscripción y haz clic en el botón de push para agregar con éxito",
+  "pasterContent": "Después de copiar la fuente de suscripción, regresa a esta página para agregar automáticamente la fuente de suscripción",
+  "addDataSource": "Agregar Fuente de Suscripción",
+  "addFiledHintText": "Por favor, ingresa o pega el enlace de suscripción en formato .m3u o .txt",
+  "addRepeat": "Esta fuente de suscripción ya ha sido agregada",
+  "addNoHttpLink": "Por favor, ingresa un enlace http/https",
+  "netTimeOut": "Tiempo de conexión agotado",
+  "netSendTimeout": "Tiempo de solicitud agotado",
+  "netReceiveTimeout": "Tiempo de respuesta agotado",
+  "netBadResponse": "Respuesta anormal {code}",
+  "@netBadResponse": {
+    "placeholders": {
+      "code": {}
+    }
+  },
+  "netCancel": "Solicitud Cancelada",
+  "parseError": "Error al analizar la fuente de datos",
+  "default": "Predeterminado",
+  "getDefaultError": "Error al obtener la fuente de datos predeterminada",
+  "okRefresh": "【Tecla OK】 Actualizar",
+  "refresh": "Actualizar"
+}

@@ -57,14 +57,29 @@ class MyApp extends StatelessWidget {
         RouterKeys.subScribe: (BuildContext context) => const SubScribePage(),
         RouterKeys.setting: (BuildContext context) => const SettingPage()
       },
-      locale: const Locale('zh', ''),
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate
       ],
-      supportedLocales: [const Locale('zh', ''), ...S.delegate.supportedLocales],
+      supportedLocales: S.delegate.supportedLocales,
+      localeResolutionCallback: (locale, supportedLocales) {
+        if (locale == null) {
+          return const Locale('en', 'US');
+        }
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale.languageCode && supportedLocale.countryCode == locale.countryCode) {
+            return supportedLocale;
+          }
+        }
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale.languageCode && supportedLocale.countryCode != locale.countryCode) {
+            return supportedLocale;
+          }
+        }
+        return const Locale('en', 'US');
+      },
       debugShowCheckedModeBanner: false,
       home: const LiveHomePage(),
       builder: EasyLoading.init(),

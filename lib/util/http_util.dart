@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+import '../generated/l10n.dart';
+
 class HttpUtil {
   static final HttpUtil _instance = HttpUtil._();
   late Dio _dio;
@@ -41,15 +43,15 @@ class HttpUtil {
 void formatError(DioException e) {
   LogUtil.v('DioException>>>>>$e');
   if (e.type == DioExceptionType.connectionTimeout) {
-    EasyLoading.showToast("连接超时");
+    EasyLoading.showToast(S.current.netTimeOut);
   } else if (e.type == DioExceptionType.sendTimeout) {
-    EasyLoading.showToast("请求超时");
+    EasyLoading.showToast(S.current.netSendTimeout);
   } else if (e.type == DioExceptionType.receiveTimeout) {
-    EasyLoading.showToast("响应超时");
+    EasyLoading.showToast(S.current.netReceiveTimeout);
   } else if (e.type == DioExceptionType.badResponse) {
-    EasyLoading.showToast("出现异常${e.response?.statusCode}");
+    EasyLoading.showToast(S.current.netBadResponse(e.response?.statusCode ?? ''));
   } else if (e.type == DioExceptionType.cancel) {
-    EasyLoading.showToast("请求取消");
+    EasyLoading.showToast(S.current.netCancel);
   } else {
     EasyLoading.showToast(e.message.toString());
   }

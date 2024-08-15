@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../generated/l10n.dart';
 import 'env_util.dart';
 import 'http_util.dart';
 import 'log_util.dart';
@@ -27,7 +28,7 @@ class CheckVersionUtil {
           latestVersionEntity = VersionEntity(latestVersion: latestVersion, latestMsg: latestMsg);
           return latestVersionEntity;
         } else {
-          if (isShowLatestToast) EasyLoading.showToast('已是最新版');
+          if (isShowLatestToast) EasyLoading.showToast(S.current.latestVersion);
           LogUtil.v('已是最新版::::::::');
         }
       }
@@ -52,11 +53,11 @@ class CheckVersionUtil {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(20),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
                     child: Text(
-                      '发现新版本🚀',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                      '${S.current.findNewVersion}🚀',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                     ),
                   ),
                   Container(
@@ -66,7 +67,7 @@ class CheckVersionUtil {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '🎒 v${CheckVersionUtil.latestVersionEntity!.latestVersion}更新内容',
+                          '🎒 v${CheckVersionUtil.latestVersionEntity!.latestVersion}${S.current.updateContent}',
                           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                         ),
                         Padding(
@@ -81,9 +82,9 @@ class CheckVersionUtil {
                     onPressed: () {
                       Navigator.pop(context, true);
                     },
-                    child: const Text(
-                      '立即更新',
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      S.current.update,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   const SizedBox(height: 30),

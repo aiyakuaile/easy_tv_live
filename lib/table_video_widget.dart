@@ -8,6 +8,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'generated/l10n.dart';
+
 class TableVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
   final GestureTapCallback? changeChannelSources;
@@ -129,7 +131,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                   children: [
                     const Spacer(),
                     IconButton(
-                        tooltip: '频道列表',
+                        tooltip: S.current.tipChannelList,
                         style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                         icon: const Icon(
                           Icons.list_alt,
@@ -143,7 +145,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                         }),
                     const SizedBox(width: 12),
                     IconButton(
-                        tooltip: '切换线路',
+                        tooltip: S.current.tipChangeLine,
                         style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                         icon: const Icon(
                           Icons.legend_toggle,
@@ -157,7 +159,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                         }),
                     const SizedBox(width: 12),
                     IconButton(
-                      tooltip: '竖屏模式',
+                      tooltip: S.current.portrait,
                       onPressed: () async {
                         if (EnvUtil.isMobile()) {
                           SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -176,7 +178,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                     if (!EnvUtil.isMobile()) const SizedBox(width: 12),
                     if (!EnvUtil.isMobile())
                       IconButton(
-                        tooltip: '全屏切换',
+                        tooltip: S.current.fullScreen,
                         onPressed: () async {
                           final isFullScreen = await windowManager.isFullScreen();
                           LogUtil.v('isFullScreen:::::$isFullScreen');
@@ -208,7 +210,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
             right: 15,
             bottom: 15,
             child: IconButton(
-              tooltip: '横屏模式',
+              tooltip: S.current.landscape,
               onPressed: () async {
                 if (EnvUtil.isMobile()) {
                   SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
