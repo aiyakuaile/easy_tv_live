@@ -135,7 +135,7 @@ jobs:
           path: release
           merge-multiple: true
       - name: display download dir
-        run: ls -R release
+        run: find release -type f
 
       - name: Download ios-macos artifact
         uses: actions/download-artifact@v4
@@ -144,7 +144,7 @@ jobs:
           path: release
           merge-multiple: true
       - name: display download dir
-        run: ls -R release
+        run: find release -type f
 
       - name: Download Linux artifact
         uses: actions/download-artifact@v4
@@ -153,7 +153,7 @@ jobs:
           path: release
           merge-multiple: true
       - name: display download dir
-        run: ls -R release
+        run: find release -type f
 
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
@@ -162,7 +162,7 @@ jobs:
           path: release
           merge-multiple: true
       - name: display download dir
-        run: ls -R release
+        run: find release -type f
 
       - uses: actions/checkout@v3
       - name: Create Release
