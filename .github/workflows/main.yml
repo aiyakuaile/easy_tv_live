@@ -129,18 +129,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          path: release
-          merge-multiple: true
-
-      - name: display download dir full path
-        run: realpath release
-
-      - name: display download dir file
-        run: find release -type f
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         env:
@@ -150,6 +138,16 @@ jobs:
           release_name: ${{ github.ref }}
           draft: true
           prerelease: false
+
+      - name: Download android-and-tv artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-and-tv-artifact
+          path: release
+          merge-multiple: true
+
+      - name: display download dir
+        run: find release -type -f
 
       - name: display workspace
         run: realpath release
