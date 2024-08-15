@@ -39,16 +39,6 @@ jobs:
     needs: [build_linux]
     runs-on: ubuntu-latest
     steps:
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: true
-          prerelease: false
-
       - name: Download artifact artifact
         uses: actions/download-artifact@v4
         with:
@@ -57,12 +47,21 @@ jobs:
       - name: display Release dir
         run: ls -l release
 
+      - name: Checkout
+        uses: actions/checkout@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts to Release
-        run: |
-          gh release upload ${{ steps.create_release.outputs.upload_url }}  \
-          easy_tv_live/release/easyTV-${{ github.ref_name }}-linux.zip
+        uses: softprops/action-gh-release@v2
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
+          draft: true
+          prerelease: false
+          files: |
+            easy_tv_live/release/easyTV-${{ github.ref_name }}-linux.zip
           
 
 
