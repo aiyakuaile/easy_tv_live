@@ -176,7 +176,7 @@ jobs:
           prerelease: false
 
       - name: display workspace
-        run: find release -type f
+        run: find . -type f
 
       - name: Upload artifacts to Release
         run: |
