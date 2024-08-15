@@ -156,8 +156,8 @@ jobs:
           prerelease: false
           files: |
             ./release/easyTV-${{ github.ref_name }}.apk
-            ./release/easyTV-${{ github.ref_name }}.ipa
+            ./release/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
             ./release/easyTV-${{ github.ref_name }}-tv.apk
             ./release/easyTV-${{ github.ref_name }}-linux.zip
             ./release/easyTV-${{ github.ref_name }}-windows.zip
-            ./release/easyTV-${{ github.ref_name }}-macos.zip
+            ./release/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
