@@ -126,7 +126,7 @@ jobs:
             build/windows/x64/runner/Release/easyTV-${{ github.ref_name }}-windows.zip
 
   create_release:
-    needs: [ build_linux ]
+    needs: [ build_linux, build_windows, build_android_and_tv, build_ios_macos ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
