@@ -59,7 +59,8 @@ jobs:
 
       - name: Upload artifacts to Release
         run: |
-          gh release upload ${{ steps.create_release.outputs.upload_url }} easy_tv_live/release/build/linux/x64/release/bundle/easyTV-${{ github.ref_name }}-linux.zip
+          gh release upload ${{ steps.create_release.outputs.upload_url }}  \
+          easy_tv_live/release/easyTV-${{ github.ref_name }}-linux.zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
