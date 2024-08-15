@@ -53,6 +53,7 @@ jobs:
         run: |
           realpath release  
           ls -l release
+          pwd
 
       - name: Upload artifacts to Release
         uses: softprops/action-gh-release@v2
@@ -65,6 +66,7 @@ jobs:
           prerelease: false
           files: |
             easy_tv_live/easy_tv_live/release/easyTV-${{ github.ref_name }}-linux.zip
+      - run: pwd
           
 
 
