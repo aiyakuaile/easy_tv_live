@@ -33,6 +33,11 @@ void main() async {
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
+      windowManager.setResizable(true);
+      windowManager.setMovable(true);
+      windowManager.setClosable(true);
+      windowManager.setMinimizable(true);
+      windowManager.setMaximizable(true);
     });
   }
   WakelockPlus.enable();
