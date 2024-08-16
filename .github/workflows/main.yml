@@ -19,15 +19,28 @@ jobs:
           flutter-version: '3.22.0'
       - run: flutter pub get
 
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > ~/keystore.jks
+
       # Build Android Mobile
       - name: Build Android APK Mobile
-        run: flutter build apk --dart-define=isTV=false --release --split-per-abi
+        run: flutter build apk --dart-define=isTV=false --release --signing-config=release --split-per-abi
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
       - name: Rename Android APK
         run: mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
 
       # Build Android TV
       - name: Build Android APK TV
-        run: flutter build apk --dart-define=isTV=true --release
+        run: flutter build apk --dart-define=isTV=true --release --signing-config=release
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
+
       - name: Rename Android APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
 
