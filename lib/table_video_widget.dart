@@ -165,7 +165,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                           SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
                           return;
                         }
-                        await windowManager.setSize(const Size(375, 667), animate: true);
+                        await windowManager.setSize(const Size(414, 414 * 16 / 9), animate: true);
                         await windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
                         Future.delayed(const Duration(milliseconds: 500), () => windowManager.center(animate: true));
                       },

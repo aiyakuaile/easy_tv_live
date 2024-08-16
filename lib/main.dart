@@ -22,7 +22,7 @@ void main() async {
   if (!EnvUtil.isMobile) {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
-      size: Size(375, 667),
+      size: Size(414, 414 * 16 / 9),
       minimumSize: Size(300, 300 * 9 / 16),
       center: true,
       backgroundColor: Colors.transparent,
@@ -33,11 +33,6 @@ void main() async {
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
-      windowManager.setResizable(true);
-      windowManager.setMovable(true);
-      windowManager.setClosable(true);
-      windowManager.setMinimizable(true);
-      windowManager.setMaximizable(true);
     });
   }
   WakelockPlus.enable();
@@ -89,7 +84,7 @@ class MyApp extends StatelessWidget {
         return const Locale('en', 'US');
       },
       debugShowCheckedModeBanner: false,
-      home: const LiveHomePage(),
+      home: Platform.isWindows ? const DragToResizeArea(child: DragToMoveArea(child: LiveHomePage())) : const LiveHomePage(),
       builder: EasyLoading.init(),
     );
   }
