@@ -128,6 +128,8 @@ jobs:
       - name: Build Windows
         run: |
           flutter build windows --dart-define=isTV=false --release
+          cp windows/system32/* build/windows/x64/runner/Release/
+          ls -l build/windows/x64/runner/Release
           cd build/windows/x64/runner/Release
           7z a easyTV-${{ github.ref_name }}-windows.zip *
 
