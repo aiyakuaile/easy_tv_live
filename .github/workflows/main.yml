@@ -25,7 +25,7 @@ jobs:
 
       # Build Android Mobile
       - name: Build Android APK Mobile
-        run: flutter build apk --dart-define=isTV=false --release --signing-config=release --split-per-abi
+        run: flutter build apk --dart-define=isTV=false --release --split-per-abi
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -35,7 +35,7 @@ jobs:
 
       # Build Android TV
       - name: Build Android APK TV
-        run: flutter build apk --dart-define=isTV=true --release --signing-config=release
+        run: flutter build apk --dart-define=isTV=true --release
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
