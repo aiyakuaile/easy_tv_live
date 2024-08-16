@@ -21,7 +21,7 @@ EasyTV is a lightweight IPTV player that supports all platforms and Android TV l
 - OK key: Confirm operation, display channel list
 
 #### [View the released version on GitHub](https://github.com/aiyakuaile/easy_tv_live/releases)
-> For iOS, after downloading the ipa, you need to sign it for installation using tools like: 3uTools, Cydia Impactor, etc.
+> For iOS, after downloading the ipa, you need to sign it for installation using tools.
 > If the added live source is an IPv6 address, please confirm that your current network can access IPv6 addresses normally.
 > [IPv6 Test Address](https://v6t.ipip.net/)
 
