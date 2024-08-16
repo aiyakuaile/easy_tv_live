@@ -1,33 +1,31 @@
 ![logo](https://fastly.jsdelivr.net/gh/aiyakuaile/images/tv-flow.png)
 
-# 极简电视
+[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README.md)
+[![简体中文](https://img.shields.io/badge/语言-简体中文-blueviolet?style=for-the-badge)](README-zh.md)
+# EasyTV
+EasyTV is a lightweight IPTV player that supports all platforms and Android TV large screens. It is simple and easy to use. Welcome to download and experience!
 
-极简电视直播App，简洁易用的iPTV播放器，支持Android、iOS、电视大屏欢迎下载体验！
+#### Features
+- IPTV player that supports all platforms
+- Ability to add live source links independently
+- Clean and simple UI interaction
+- Support for parsing .m3u files
+- Support for parsing .txt files (added in v1.5.0)
+- Pure black theme (added in v1.5.0)
+- Supports Android TV (added in v2.0.0, supports Android OS 5.0+)
+- Desktop support (added in v2.6.0)
 
-#### 功能
+#### TV Version Interaction
+- Up key: Switch lines
+- Down key: Modify or add subscription sources
+- OK key: Confirm operation, display channel list
 
-- 简易的IPTV直播源播放器
-- 可自主添加直播源链接
-- 干净简洁的UI交互
-- 自带国内直播源
-- 增加对.m3u文件的解析支持
-- 增加对.txt文件的解析支持(v1.5.0新增)
-- 纯黑主题(v1.5.0新增)
-- 支持Android TV(v2.0.0新增，支持AndroidOS 5.0+)
+#### [View the released version on GitHub](https://github.com/aiyakuaile/easy_tv_live/releases)
+> For iOS, after downloading the ipa, you need to sign it for installation using tools like: 3uTools, Cydia Impactor, etc.
+> If the added live source is an IPv6 address, please confirm that your current network can access IPv6 addresses normally.
+> [IPv6 Test Address](https://v6t.ipip.net/)
 
-#### TV版交互
-
-上键：切换线路
-下键：修改或添加订阅源
-ok键：确认操作、显示频道列表
-
-
-#### [查看国外Github已发布的版本](https://github.com/aiyakuaile/easy_tv_live/releases)
-#### [查看国内Gitee已发布的版本](https://gitee.com/AMuMuSir/easy_tv_live/releases)
-
-> ios 下载ipa后需要自行签名安装，例如：爱思助手,轻松签,巨魔等
-
-## 预览
+## Preview
 
 ![image_2](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_2.jpeg)
 
@@ -35,8 +33,8 @@ ok键：确认操作、显示频道列表
 ---|---
 
 
-## 赞助
-如果觉得此项目有用，可以考虑赞助我喝杯咖啡❤
+## Sponsorship
+If you find this project useful, consider sponsoring me for a cup of coffee ❤
 
 <a href="https://buymeacoffee.com/aiyakuaile" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
