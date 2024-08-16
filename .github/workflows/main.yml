@@ -21,7 +21,7 @@ jobs:
 
       - name: Decode keystore
         run: |
-          echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > ~/keystore.jks
+          echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > keystore.jks
 
       # Build Android Mobile
       - name: Build Android APK Mobile
