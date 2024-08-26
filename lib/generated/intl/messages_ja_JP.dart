@@ -70,6 +70,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "netSendTimeout": MessageLookupByLibrary.simpleMessage("リクエストタイムアウト"),
         "netTimeOut": MessageLookupByLibrary.simpleMessage("接続タイムアウト"),
         "newVersion": m3,
+        "noEPG": MessageLookupByLibrary.simpleMessage(""),
         "okRefresh": MessageLookupByLibrary.simpleMessage("【OKキー】リフレッシュ"),
         "parseError": MessageLookupByLibrary.simpleMessage("データソースの解析エラー"),
         "pasterContent": MessageLookupByLibrary.simpleMessage(

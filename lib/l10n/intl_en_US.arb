@@ -81,5 +81,6 @@
   "defaultText": "Default",
   "getDefaultError": "Failed to get the default data source",
   "okRefresh": "【OK key】 Refresh",
-  "refresh": "Refresh"
+  "refresh": "Refresh",
+  "noEPG": "NO EPG DATA"
 }

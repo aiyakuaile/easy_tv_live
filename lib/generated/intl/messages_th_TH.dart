@@ -76,6 +76,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "netTimeOut":
             MessageLookupByLibrary.simpleMessage("การเชื่อมต่อหมดเวลา"),
         "newVersion": m3,
+        "noEPG": MessageLookupByLibrary.simpleMessage(""),
         "okRefresh": MessageLookupByLibrary.simpleMessage("【ปุ่ม OK】 รีเฟรช"),
         "parseError": MessageLookupByLibrary.simpleMessage(
             "ข้อผิดพลาดในการวิเคราะห์แหล่งข้อมูล"),

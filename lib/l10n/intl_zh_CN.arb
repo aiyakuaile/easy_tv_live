@@ -81,5 +81,6 @@
   "defaultText": "默认",
   "getDefaultError": "获取默认数据源失败",
   "okRefresh": "【OK键】刷新",
-  "refresh": "刷新"
+  "refresh": "刷新",
+  "noEPG": "暂无节目信息"
 }

@@ -81,5 +81,6 @@
   "default": "기본값",
   "getDefaultError": "기본 데이터 소스 가져오기 실패",
   "okRefresh": "【OK 버튼】 새로 고침",
-  "refresh": "새로 고침"
+  "refresh": "새로 고침",
+  "noEPG": ""
 }

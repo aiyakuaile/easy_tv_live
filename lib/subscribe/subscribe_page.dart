@@ -96,6 +96,7 @@ class _SubScribePageState extends State<SubScribePage> {
     if (!EnvUtil.isTV()) return;
     _ip = await getCurrentIP();
     LogUtil.v('_ip::::$_ip');
+    if (_ip == null) return;
     _server = await HttpServer.bind(_ip, _port);
     _address = 'http://$_ip:$_port';
     setState(() {});
@@ -145,22 +146,25 @@ class _SubScribePageState extends State<SubScribePage> {
     });
   }
 
-  Future<String> getCurrentIP() async {
-    String currentIP = '';
+  Future<String?> getCurrentIP() async {
     try {
-      for (var interface in await NetworkInterface.list()) {
-        for (var addr in interface.addresses) {
-          LogUtil.v('Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
+      final interfaces = await NetworkInterface.list(
+        includeLoopback: false,
+        type: InternetAddressType.IPv4,
+      );
 
-          if (addr.type == InternetAddressType.IPv4 && addr.address.startsWith('192')) {
-            currentIP = addr.address;
+      for (var interface in interfaces) {
+        for (var addr in interface.addresses) {
+          // 过滤掉非局域网IP
+          if (addr.address.startsWith('192.168.') || addr.address.startsWith('10.') || addr.address.startsWith('172.')) {
+            return addr.address;
           }
         }
       }
     } catch (e) {
-      LogUtil.v(e.toString());
+      debugPrint('获取局域网IP地址时发生错误: $e');
     }
-    return currentIP;
+    return null;
   }
 
   @override

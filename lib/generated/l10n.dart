@@ -569,6 +569,16 @@ class S {
       args: [],
     );
   }
+
+  /// `暂无节目信息`
+  String get noEPG {
+    return Intl.message(
+      '暂无节目信息',
+      name: 'noEPG',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

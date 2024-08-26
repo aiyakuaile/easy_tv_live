@@ -81,5 +81,6 @@
   "default": "デフォルト",
   "getDefaultError": "デフォルトデータソースの取得に失敗しました",
   "okRefresh": "【OKキー】リフレッシュ",
-  "refresh": "リフレッシュ"
+  "refresh": "リフレッシュ",
+  "noEPG": ""
 }

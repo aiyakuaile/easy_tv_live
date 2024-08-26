@@ -81,5 +81,6 @@
   "default": "Standard",
   "getDefaultError": "Fehler beim Abrufen der Standarddatenquelle",
   "okRefresh": "【OK-Taste】 Aktualisieren",
-  "refresh": "Aktualisieren"
+  "refresh": "Aktualisieren",
+  "noEPG": ""
 }

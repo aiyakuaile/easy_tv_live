@@ -79,6 +79,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "netTimeOut":
             MessageLookupByLibrary.simpleMessage("Verbindungstimeout"),
         "newVersion": m3,
+        "noEPG": MessageLookupByLibrary.simpleMessage(""),
         "okRefresh":
             MessageLookupByLibrary.simpleMessage("【OK-Taste】 Aktualisieren"),
         "parseError": MessageLookupByLibrary.simpleMessage(

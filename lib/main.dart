@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
         return const Locale('en', 'US');
       },
       debugShowCheckedModeBanner: false,
-      home: Platform.isWindows ? const DragToResizeArea(child: DragToMoveArea(child: LiveHomePage())) : const LiveHomePage(),
+      home: Platform.isWindows || Platform.isLinux ? const DragToResizeArea(child: DragToMoveArea(child: LiveHomePage())) : const LiveHomePage(),
       builder: EasyLoading.init(),
     );
   }

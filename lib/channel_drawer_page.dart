@@ -1,8 +1,11 @@
 import 'dart:math';
 
+import 'package:easy_tv_live/util/date_util.dart';
+import 'package:easy_tv_live/util/epg_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'util/env_util.dart';
 
@@ -13,15 +16,17 @@ class ChannelDrawerPage extends StatefulWidget {
   final bool isLandscape;
   final Function(String group, String channel)? onTapChannel;
 
-  const ChannelDrawerPage({Key? key, this.videoMap, this.groupName, this.channelName, this.onTapChannel, this.isLandscape = true}) : super(key: key);
+  const ChannelDrawerPage({super.key, this.videoMap, this.groupName, this.channelName, this.onTapChannel, this.isLandscape = true});
 
   @override
-  _ChannelDrawerPageState createState() => _ChannelDrawerPageState();
+  State<ChannelDrawerPage> createState() => _ChannelDrawerPageState();
 }
 
 class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
   final _scrollController = ScrollController();
   final _scrollChannelController = ScrollController();
+  List<EpgData>? _epgData;
+  int _selEPGIndex = 0;
 
   final _viewPortKey = GlobalKey();
   double? _viewPortHeight;
@@ -33,6 +38,21 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
   final _itemHeight = 50.0;
 
   final isTV = EnvUtil.isTV();
+
+  _loadEPGMsg(String channelName) async {
+    setState(() {
+      _epgData?.clear();
+      _selEPGIndex = 0;
+    });
+    final res = await EpgUtil.getEpg(channelName);
+    if (res == null || res!.epgData == null || res!.epgData!.isEmpty) return;
+    _epgData = res.epgData!;
+    final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
+    final selectTimeData = _epgData!.where((element) => element.start!.compareTo(epgRangeTime) < 0).last.start;
+    final selIndex = _epgData!.indexWhere((element) => element.start == selectTimeData);
+    _selEPGIndex = selIndex;
+    setState(() {});
+  }
 
   @override
   void initState() {
@@ -76,7 +96,15 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
         }
       }
     });
+    _loadEPGMsg(widget.channelName!);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _scrollChannelController.dispose();
+    super.dispose();
   }
 
   @override
@@ -96,6 +124,9 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
         channelIndex = 0;
       }
     });
+    if (widget.channelName != oldWidget.channelName) {
+      _loadEPGMsg(widget.channelName!);
+    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -105,12 +136,16 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
   }
 
   Widget _buildOpenDrawer() {
+    double drawWidth = max(MediaQuery.of(context).size.width * 0.4 + MediaQuery.of(context).padding.left, 300);
+    final screenWidth = MediaQuery.of(context).size.width;
+    bool isShowEPG = (drawWidth + 200) < screenWidth;
+    if (isShowEPG && _epgData != null && _epgData!.isNotEmpty) {
+      drawWidth += 200;
+    }
     return Container(
       key: _viewPortKey,
       padding: EdgeInsets.only(left: MediaQuery.of(context).padding.left),
-      width: widget.isLandscape
-          ? max(MediaQuery.of(context).size.width * 0.4 + MediaQuery.of(context).padding.left, 300)
-          : MediaQuery.of(context).size.width,
+      width: widget.isLandscape ? drawWidth : screenWidth,
       decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.black, Colors.transparent])),
       child: Row(children: [
         SizedBox(
@@ -233,6 +268,45 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                 },
                 itemCount: _values[_groupIndex].length),
           ),
+        if (isShowEPG) VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
+        if (isShowEPG && _epgData != null && _epgData!.isNotEmpty)
+          SizedBox(
+            width: 200,
+            child: Column(
+              children: [
+                Container(
+                  height: 44,
+                  alignment: Alignment.center,
+                  child: const Text(
+                    '节目单',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
+                Flexible(
+                  child: ScrollablePositionedList.builder(
+                      initialScrollIndex: _selEPGIndex,
+                      itemBuilder: (BuildContext context, int index) {
+                        final data = _epgData![index];
+                        final isSelect = index == _selEPGIndex;
+                        return Container(
+                          constraints: const BoxConstraints(
+                            minHeight: 40,
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '${data.start}-${data.end}\n${data.title}',
+                            style: TextStyle(
+                                fontWeight: isSelect ? FontWeight.bold : FontWeight.normal, color: isSelect ? Colors.redAccent : Colors.white),
+                          ),
+                        );
+                      },
+                      itemCount: _epgData!.length),
+                ),
+              ],
+            ),
+          )
       ]),
     );
   }

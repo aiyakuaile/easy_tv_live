@@ -7,7 +7,7 @@ import '../generated/l10n.dart';
 class HttpUtil {
   static final HttpUtil _instance = HttpUtil._();
   late Dio _dio;
-  BaseOptions options = BaseOptions(connectTimeout: const Duration(seconds: 5), receiveTimeout: const Duration(seconds: 8));
+  BaseOptions options = BaseOptions(connectTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10));
 
   CancelToken cancelToken = CancelToken();
 
@@ -34,14 +34,15 @@ class HttpUtil {
       if (isShowLoading) EasyLoading.dismiss();
     } on DioException catch (e) {
       if (isShowLoading) EasyLoading.dismiss();
-      formatError(e);
+      formatError(e, isShowLoading);
     }
     return response?.data;
   }
 }
 
-void formatError(DioException e) {
+void formatError(DioException e, bool isShowLoading) {
   LogUtil.v('DioException>>>>>$e');
+  if (!isShowLoading) return;
   if (e.type == DioExceptionType.connectionTimeout) {
     EasyLoading.showToast(S.current.netTimeOut);
   } else if (e.type == DioExceptionType.sendTimeout) {

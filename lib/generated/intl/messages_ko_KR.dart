@@ -69,6 +69,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "netSendTimeout": MessageLookupByLibrary.simpleMessage("요청 시간 초과"),
         "netTimeOut": MessageLookupByLibrary.simpleMessage("연결 시간 초과"),
         "newVersion": m3,
+        "noEPG": MessageLookupByLibrary.simpleMessage(""),
         "okRefresh": MessageLookupByLibrary.simpleMessage("【OK 버튼】 새로 고침"),
         "parseError": MessageLookupByLibrary.simpleMessage("데이터 소스 분석 오류"),
         "pasterContent": MessageLookupByLibrary.simpleMessage(

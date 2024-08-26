@@ -81,5 +81,6 @@
   "default": "Predeterminado",
   "getDefaultError": "Error al obtener la fuente de datos predeterminada",
   "okRefresh": "【Tecla OK】 Actualizar",
-  "refresh": "Actualizar"
+  "refresh": "Actualizar",
+  "noEPG": ""
 }

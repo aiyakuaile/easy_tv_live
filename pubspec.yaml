@@ -32,7 +32,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  fvp: ^0.23.0
+  fvp: ^0.25.0
   video_player: ^2.9.1
   responsive_builder: ^0.7.1
   flutter_easyloading: ^3.0.3
@@ -46,6 +46,7 @@ dependencies:
   pretty_qr_code: ^3.3.0
   window_manager: ^0.4.0
   intl: ^0.19.0
+  scrollable_positioned_list: ^0.3.8
 
 
 dev_dependencies:
@@ -57,7 +58,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

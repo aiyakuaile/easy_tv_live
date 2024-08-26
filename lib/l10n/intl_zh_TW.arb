@@ -81,5 +81,6 @@
   "default": "默認",
   "getDefaultError": "獲取默認數據源失敗",
   "okRefresh": "【OK鍵】刷新",
-  "refresh": "刷新"
+  "refresh": "刷新",
+  "noEPG": "暂无节目信息"
 }
