@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:easy_tv_live/util/log_util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../generated/l10n.dart';
@@ -37,6 +40,30 @@ class HttpUtil {
       formatError(e, isShowLoading);
     }
     return response?.data;
+  }
+
+  Future<int?> downloadFile(String url, String savePath, {ValueChanged<double>? progressCallback}) async {
+    Response? response;
+    try {
+      await _dio.head(url);
+      response = await _dio.download(
+        url,
+        savePath,
+        options: Options(
+          headers: {HttpHeaders.acceptEncodingHeader: '*'},
+        ),
+        onReceiveProgress: (received, total) {
+          if (total <= 0) return;
+          progressCallback?.call((received / total));
+        },
+      );
+      if (response.statusCode != 200) {
+        throw DioException(requestOptions: response.requestOptions, error: 'status code ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      formatError(e, true);
+    }
+    return response?.statusCode ?? 500;
   }
 }
 

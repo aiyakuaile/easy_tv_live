@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:easy_tv_live/subscribe/subscribe_page.dart';
+import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

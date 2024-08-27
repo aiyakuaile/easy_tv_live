@@ -59,4 +59,12 @@ class EnvUtil {
       return 'https://api.github.com/repos/aiyakuaile/easy_tv_live/releases/latest';
     }
   }
+
+  static String fontLink() {
+    if (isChinese()) {
+      return 'https://gitee.com/AMuMuSir/easy_tv_font/raw/main';
+    } else {
+      return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_font/main';
+    }
+  }
 }

@@ -15,9 +15,10 @@ class EpgUtil {
   static Future<EpgModel?> getEpg(String channelName) async {
     final channel = channelName.replaceAll(' ', '').replaceAll('-', '');
     final date = DateUtil.formatDate(DateTime.now(), format: "yyMMdd");
-    final _channelKey = "$date-$channel".hashCode.toString();
-    if (_EPGMap.containsKey(_channelKey)) {
-      return _EPGMap[_channelKey]!;
+    final channelKey = "$date-$channel";
+    if (_EPGMap.containsKey(channelKey)) {
+      final cacheModel = _EPGMap[channelKey]!;
+      return cacheModel;
     } else {
       _cancelToken?.cancel();
       _cancelToken ??= CancelToken();
@@ -28,7 +29,7 @@ class EpgUtil {
         LogUtil.v('epgRes:channelName::${epgRes['channel_name']}');
         if (channel.contains(epgRes['channel_name'])) {
           final epg = EpgModel.fromJson(epgRes);
-          _EPGMap[_channelKey] = epg;
+          _EPGMap[channelKey] = epg;
           return epg;
         }
       }
@@ -50,7 +51,7 @@ class EpgModel {
     if (json['epg_data'] != null) {
       epgData = [];
       json['epg_data'].forEach((v) {
-        epgData?.add(EpgData.fromJson(v));
+        epgData!.add(EpgData.fromJson(v));
       });
     }
   }

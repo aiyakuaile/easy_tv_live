@@ -1,7 +1,8 @@
+import 'package:easy_tv_live/router_keys.dart';
 import 'package:easy_tv_live/util/check_version_util.dart';
 import 'package:flutter/material.dart';
 
-import 'generated/l10n.dart';
+import '../generated/l10n.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -94,6 +95,14 @@ class _SettingPageState extends State<SettingPage> {
               setState(() {
                 _latestVersionEntity = CheckVersionUtil.latestVersionEntity;
               });
+            },
+          ),
+          ListTile(
+            title: const Text('字体'),
+            leading: const Icon(Icons.text_fields),
+            trailing: const Icon(Icons.arrow_right),
+            onTap: () {
+              Navigator.pushNamed(context, RouterKeys.settingFont);
             },
           ),
         ],

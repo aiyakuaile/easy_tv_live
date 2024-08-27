@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:easy_tv_live/subscribe/subScribe_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sp_util/sp_util.dart';
 
+import '../entity/subScribe_model.dart';
 import '../generated/l10n.dart';
 import 'log_util.dart';
 

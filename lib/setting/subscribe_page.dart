@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:easy_tv_live/subscribe/subScribe_model.dart';
 import 'package:easy_tv_live/tv/html_string.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
@@ -12,6 +11,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:sp_util/sp_util.dart';
 
+import '../entity/subScribe_model.dart';
 import '../generated/l10n.dart';
 import '../util/env_util.dart';
 
