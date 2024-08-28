@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:easy_tv_live/setting/subscribe_page.dart';
+import 'package:easy_tv_live/tv/tv_setting_page.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -57,9 +57,7 @@ class _TvPageState extends State<TvPage> {
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
-          return const SubScribePage(
-            isTV: true,
-          );
+          return const TvSettingPage();
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           var begin = const Offset(0.0, -1.0);

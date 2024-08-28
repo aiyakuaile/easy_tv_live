@@ -9,7 +9,8 @@ import '../entity/font_model.dart';
 import '../util/env_util.dart';
 
 class SettingFontPage extends StatefulWidget {
-  const SettingFontPage({super.key});
+  final bool isTV;
+  const SettingFontPage({super.key, this.isTV = false});
 
   @override
   State<SettingFontPage> createState() => _SettingFontPageState();
@@ -39,6 +40,7 @@ class _SettingFontPageState extends State<SettingFontPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: widget.isTV ? const SizedBox.shrink() : null,
         title: const Text('字体设置'),
       ),
       body: Consumer<ThemeProvider>(builder: (BuildContext context, ThemeProvider themeProvider, Widget? child) {
@@ -103,43 +105,51 @@ class _SettingFontPageState extends State<SettingFontPage> {
                                   style: const TextStyle(fontSize: 17),
                                 ),
                                 const Spacer(),
-                                ElevatedButton(
-                                  onPressed: themeProvider.fontFamily == model.fontKey || model.progress != 0.0
-                                      ? null
-                                      : () async {
-                                          if (model.fontKey == 'system') {
-                                            themeProvider.setFontFamily(model.fontKey!);
-                                            return;
-                                          }
-                                          final res = await FontUtil()
-                                              .loadFont('$_fontLink/fonts/${model.fontKey!}.${model.fontType}', model.fontKey!,
-                                                  progressCallback: (double progress) {
-                                            LogUtil.v('progress=========$progress');
-                                            setState(() {
-                                              model.progress = progress;
+                                Builder(builder: (context) {
+                                  return ElevatedButton(
+                                    onPressed: themeProvider.fontFamily == model.fontKey || model.progress != 0.0
+                                        ? null
+                                        : () async {
+                                            if (model.fontKey == 'system') {
+                                              themeProvider.setFontFamily(model.fontKey!);
+                                              return;
+                                            }
+                                            final res = await FontUtil()
+                                                .loadFont('$_fontLink/fonts/${model.fontKey!}.${model.fontType}', model.fontKey!,
+                                                    progressCallback: (double progress) {
+                                              LogUtil.v('progress=========$progress');
+                                              setState(() {
+                                                model.progress = progress;
+                                              });
                                             });
-                                          });
-                                          if (res && context.mounted) {
-                                            setState(() {
-                                              model.progress = 0.0;
-                                            });
-                                            themeProvider.setFontFamily(model.fontKey!);
-                                          }
-                                        },
-                                  style: ElevatedButton.styleFrom(
-                                    fixedSize: const Size(80, 40),
-                                    padding: EdgeInsets.zero,
-                                    disabledBackgroundColor: themeProvider.fontFamily == model.fontKey ? Colors.redAccent : null,
-                                  ),
-                                  child: Text(
-                                    model.progress != 0.0
-                                        ? '下载中'
-                                        : themeProvider.fontFamily == model.fontKey
-                                            ? '使用中'
-                                            : '使用',
-                                    style: TextStyle(color: themeProvider.fontFamily == model.fontKey ? Colors.white : null),
-                                  ),
-                                ),
+                                            if (res && context.mounted) {
+                                              setState(() {
+                                                model.progress = 0.0;
+                                              });
+                                              themeProvider.setFontFamily(model.fontKey!);
+                                            }
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      fixedSize: const Size(80, 40),
+                                      padding: EdgeInsets.zero,
+                                      disabledBackgroundColor: themeProvider.fontFamily == model.fontKey ? Colors.redAccent : null,
+                                    ),
+                                    child: Text(
+                                      model.progress != 0.0
+                                          ? '下载中'
+                                          : themeProvider.fontFamily == model.fontKey
+                                              ? '使用中'
+                                              : '使用',
+                                      style: TextStyle(color: themeProvider.fontFamily == model.fontKey ? Colors.white : null),
+                                    ),
+                                    onFocusChange: (bool isFocus) {
+                                      if (isFocus) {
+                                        Scrollable.ensureVisible(context,
+                                            alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                                      }
+                                    },
+                                  );
+                                }),
                               ],
                             ),
                           ),
