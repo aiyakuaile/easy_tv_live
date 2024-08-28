@@ -39,9 +39,11 @@ class _SettingFontPageState extends State<SettingFontPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.isTV ? const Color(0xFF1E2022) : null,
       appBar: AppBar(
         leading: widget.isTV ? const SizedBox.shrink() : null,
         title: const Text('字体设置'),
+        backgroundColor: widget.isTV ? const Color(0xFF1E2022) : null,
       ),
       body: Consumer<ThemeProvider>(builder: (BuildContext context, ThemeProvider themeProvider, Widget? child) {
         return Column(

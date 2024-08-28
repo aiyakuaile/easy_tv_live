@@ -29,13 +29,11 @@ class _SubScribePageState extends State<SubScribePage> {
 
   List<SubScribeModel> _m3uList = <SubScribeModel>[];
 
-  bool _isClickRefresh = false;
-
   HttpServer? _server;
 
   String? _address;
   String? _ip;
-  final _port = 8080;
+  final _port = 8828;
 
   @override
   void initState() {
@@ -146,25 +144,21 @@ class _SubScribePageState extends State<SubScribePage> {
     });
   }
 
-  Future<String?> getCurrentIP() async {
+  Future<String> getCurrentIP() async {
+    String currentIP = '';
     try {
-      final interfaces = await NetworkInterface.list(
-        includeLoopback: false,
-        type: InternetAddressType.IPv4,
-      );
-
-      for (var interface in interfaces) {
+      for (var interface in await NetworkInterface.list()) {
         for (var addr in interface.addresses) {
-          // 过滤掉非局域网IP
-          if (addr.address.startsWith('192.168.') || addr.address.startsWith('10.') || addr.address.startsWith('172.')) {
-            return addr.address;
+          LogUtil.v('Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
+          if (addr.type == InternetAddressType.IPv4 && addr.address.startsWith('192')) {
+            currentIP = addr.address;
           }
         }
       }
     } catch (e) {
-      debugPrint('获取局域网IP地址时发生错误: $e');
+      LogUtil.v(e.toString());
     }
-    return null;
+    return currentIP;
   }
 
   @override
@@ -177,7 +171,9 @@ class _SubScribePageState extends State<SubScribePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.isTV ? const Color(0xFF1E2022) : null,
       appBar: AppBar(
+        backgroundColor: widget.isTV ? const Color(0xFF1E2022) : null,
         title: Text(S.current.subscribe),
         centerTitle: true,
         leading: widget.isTV ? const SizedBox.shrink() : null,
@@ -256,7 +252,6 @@ class _SubScribePageState extends State<SubScribePage> {
                                                   );
                                                 });
                                             if (isDelete == true) {
-                                              _isClickRefresh = true;
                                               _m3uList.removeAt(index);
                                               await M3uUtil.saveLocalData(_m3uList);
                                               setState(() {});
@@ -266,7 +261,6 @@ class _SubScribePageState extends State<SubScribePage> {
                                     TextButton(
                                       onPressed: model.selected != true
                                           ? () async {
-                                              _isClickRefresh = true;
                                               for (var element in _m3uList) {
                                                 element.selected = false;
                                               }

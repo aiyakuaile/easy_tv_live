@@ -18,6 +18,7 @@ class EpgUtil {
     final channelKey = "$date-$channel";
     if (_EPGMap.containsKey(channelKey)) {
       final cacheModel = _EPGMap[channelKey]!;
+      LogUtil.v('命中EPG:::${cacheModel.toJson()}');
       return cacheModel;
     } else {
       _cancelToken?.cancel();

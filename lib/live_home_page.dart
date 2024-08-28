@@ -256,19 +256,23 @@ class _LiveHomePageState extends State<LiveHomePage> {
                     return OutlinedButton(
                         autofocus: _sourceIndex == index,
                         style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.zero, side: BorderSide(color: _sourceIndex == index ? Colors.red : Colors.white)),
+                            padding: EdgeInsets.zero,
+                            side: BorderSide(color: _sourceIndex == index ? Colors.red : Colors.white),
+                            foregroundColor: Colors.redAccent),
                         child: Text(
                           S.current.lineIndex(index + 1),
                           style: TextStyle(fontSize: 12, color: _sourceIndex == index ? Colors.red : Colors.white),
                         ),
-                        onFocusChange: (focus) {
-                          if (focus && _sourceIndex != index) {
-                            Future.delayed(const Duration(microseconds: 300), () => Navigator.pop(context, index));
-                          }
-                        },
-                        onPressed: () {
-                          Navigator.pop(context, index);
-                        });
+                        // onFocusChange: (focus) {
+                        //   if (focus && _sourceIndex != index) {
+                        //     Future.delayed(const Duration(microseconds: 300), () => Navigator.pop(context, index));
+                        //   }
+                        // },
+                        onPressed: _sourceIndex == index
+                            ? null
+                            : () {
+                                Navigator.pop(context, index);
+                              });
                   })),
             ),
           );

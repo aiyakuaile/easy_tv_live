@@ -5,6 +5,7 @@ import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
 
 import '../channel_drawer_page.dart';
@@ -105,8 +106,9 @@ class _TvPageState extends State<TvPage> {
         LogUtil.v('按了下键');
         widget.controller?.pause();
         _videoNode.unfocus();
-        final isChangeSource = await _openAddSource();
-        if (isChangeSource == true) {
+        await _openAddSource();
+        final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
+        if (m3uData == '') {
           widget.onChangeSubSource?.call();
         } else {
           widget.controller?.play();

@@ -2,6 +2,7 @@ import 'package:easy_tv_live/router_keys.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
+import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -54,9 +55,10 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
                 if (isPlaying) {
                   widget.controller?.pause();
                 }
-                final res = await Navigator.of(context).pushNamed(RouterKeys.subScribe);
+                await Navigator.of(context).pushNamed(RouterKeys.subScribe);
                 widget.controller?.play();
-                if (res == true) {
+                final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
+                if (m3uData == '') {
                   widget.onChangeSubSource();
                 }
                 if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);

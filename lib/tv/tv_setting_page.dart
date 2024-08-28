@@ -47,11 +47,6 @@ class _TvSettingPageState extends State<TvSettingPage> {
             ),
           ),
         ),
-        const VerticalDivider(
-          thickness: 1,
-          indent: 0,
-          endIndent: 0,
-        ),
         if (_selectedIndex == 0)
           const Expanded(
             child: SubScribePage(isTV: true),
