@@ -4,6 +4,7 @@ import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/setting/setting_font_page.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/util/env_util.dart';
+import 'package:easy_tv_live/util/font_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

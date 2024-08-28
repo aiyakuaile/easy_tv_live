@@ -116,8 +116,9 @@ class _SettingFontPageState extends State<SettingFontPage> {
                                               themeProvider.setFontFamily(model.fontKey!);
                                               return;
                                             }
+                                            final fontUrl = '$_fontLink/fonts/${model.fontKey!}.${model.fontType}';
                                             final res = await FontUtil()
-                                                .loadFont('$_fontLink/fonts/${model.fontKey!}.${model.fontType}', model.fontKey!,
+                                                .loadFont(fontUrl, model.fontKey!,
                                                     progressCallback: (double progress) {
                                               LogUtil.v('progress=========$progress');
                                               setState(() {
@@ -128,7 +129,7 @@ class _SettingFontPageState extends State<SettingFontPage> {
                                               setState(() {
                                                 model.progress = 0.0;
                                               });
-                                              themeProvider.setFontFamily(model.fontKey!);
+                                              themeProvider.setFontFamily(model.fontKey!,fontUrl);
                                             }
                                           },
                                     style: ElevatedButton.styleFrom(
