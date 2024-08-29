@@ -2,44 +2,33 @@
 
 [![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-es)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-blueviolet?style=for-the-badge)](README)
+# EasyTV
+EasyTV is a lightweight IPTV player that supports all platforms and Android TV large screens. It is simple and easy to use. Welcome to download and experience!
 
-# 极简TV
+#### Features
+- IPTV player that supports all platforms
+- Ability to add live source links independently
+- Clean and simple UI interaction
+- Support for parsing .m3u files
+- Support for parsing .txt files (added in v1.5.0)
+- Pure black theme (added in v1.5.0)
+- Supports Android TV (added in v2.0.0, supports Android OS 5.0+)
+- Desktop support (added in v2.6.0)
 
-极简TV,一款轻量级，支持全平台及安卓电视大屏的IPTV播放器，简洁易用，欢迎下载体验！
+#### TV Version Interaction
+- Up key: Switch lines
+- Down key: Modify or add subscription sources
+- OK key: Confirm operation, display channel list
 
-#### 功能
+#### Fonts
+The fonts that support switching need to use the [easy_tv_font](https://github.com/aiyakuaile/easy_tv_font) project. If you want to add other fonts, please follow the instructions in this project.
 
-- 全平台支持的IPTV播放器
-- 可自主添加直播源链接
-- 干净简洁的UI交互
-- 增加对.m3u文件的解析支持
-- 增加对.txt文件的解析支持(v1.5.0新增)
-- 纯黑主题(v1.5.0新增)
-- 支持Android TV(v2.0.0新增，支持AndroidOS 5.0+)
-- 桌面端支持(v2.6.0新增)
-- 支持切换字体和字体大小
-- 支持使用Bing每日图片作为视频背景
+#### [View the released version on GitHub](https://github.com/aiyakuaile/easy_tv_live/releases)
+> For iOS, after downloading the ipa, you need to sign it for installation using tools.
+> If the added live source is an IPv6 address, please confirm that your current network can access IPv6 addresses normally.
+> [IPv6 Test Address](https://v6t.ipip.net/)
 
-#### TV版交互
-
-上键：切换线路
-下键：切换频道或进入设置页面
-ok键：确认操作、显示频道列表
-
-#### 字体
-支持切换的字体需要使用[easy_tv_font](https://github.com/aiyakuaile/easy_tv_font)这个项目,
-您如果想要添加其他字体，请按照这个项目的提示进行操作。
-
-
-#### [查看国外Github已发布的版本](https://github.com/aiyakuaile/easy_tv_live/releases)
-#### [查看国内Gitee已发布的版本](https://gitee.com/AMuMuSir/easy_tv_live/releases)
-
-> ios 下载ipa后需要自行签名安装，例如：爱思助手,轻松签,巨魔等
-
-> 如果添加的直播源是ipv6地址，请先确认您当前的网络是否可以正常访问ipv6地址
-> [ipv6测试地址](https://v6t.ipip.net/)
-
-## 预览
+## Preview
 
 ![image_2](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_2.jpeg)
 
@@ -47,8 +36,8 @@ ok键：确认操作、显示频道列表
 ---|---
 
 
-## 赞助
-如果觉得此项目有用，可以考虑赞助我喝杯咖啡❤
+## Sponsorship
+If you find this project useful, consider sponsoring me for a cup of coffee ❤
 
 <a href="https://buymeacoffee.com/aiyakuaile" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
@@ -81,3 +70,7 @@ ok键：确认操作、显示频道列表
     src="https://api.star-history.com/svg?repos=aiyakuaile/easy_tv_live&type=Date"
   />
 </picture>
+
+
+
+
