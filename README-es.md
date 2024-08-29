@@ -1,7 +1,8 @@
 ![logo](https://fastly.jsdelivr.net/gh/aiyakuaile/images/tv-flow.png)
 
-[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-es)
-[![简体中文](https://img.shields.io/badge/语言-简体中文-blueviolet?style=for-the-badge)](README)
+[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-es.md)
+[![简体中文](https://img.shields.io/badge/语言-简体中文-blueviolet?style=for-the-badge)](README.md)
+
 # EasyTV
 EasyTV is a lightweight IPTV player that supports all platforms and Android TV large screens. It is simple and easy to use. Welcome to download and experience!
 
