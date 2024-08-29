@@ -105,6 +105,14 @@ class _SettingPageState extends State<SettingPage> {
               Navigator.pushNamed(context, RouterKeys.settingFont);
             },
           ),
+          ListTile(
+            title: const Text('美化'),
+            leading: const Icon(Icons.ac_unit),
+            trailing: const Icon(Icons.arrow_right),
+            onTap: () {
+              Navigator.pushNamed(context, RouterKeys.settingBeautify);
+            },
+          ),
         ],
       ),
     );

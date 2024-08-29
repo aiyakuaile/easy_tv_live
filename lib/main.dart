@@ -4,7 +4,6 @@ import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/setting/setting_font_page.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/util/env_util.dart';
-import 'package:easy_tv_live/util/font_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +18,7 @@ import 'package:window_manager/window_manager.dart';
 import 'generated/l10n.dart';
 import 'live_home_page.dart';
 import 'router_keys.dart';
+import 'setting/setting_beautify_page.dart';
 import 'setting/setting_page.dart';
 
 void main() async {
@@ -62,9 +62,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, provider, child) {
-        String? fontFamily = provider.fontFamily;
+    return Selector<ThemeProvider, ({String fontFamily, double textScaleFactor})>(
+      selector: (_, provider) => (fontFamily: provider.fontFamily, textScaleFactor: provider.textScaleFactor),
+      builder: (context, data, child) {
+        String? fontFamily = data.fontFamily;
         if (fontFamily == 'system') {
           fontFamily = null;
         }
@@ -86,6 +87,7 @@ class MyApp extends StatelessWidget {
             RouterKeys.subScribe: (BuildContext context) => const SubScribePage(),
             RouterKeys.setting: (BuildContext context) => const SettingPage(),
             RouterKeys.settingFont: (BuildContext context) => const SettingFontPage(),
+            RouterKeys.settingBeautify: (BuildContext context) => const SettingBeautifyPage(),
           },
           localizationsDelegates: const [
             S.delegate,
@@ -114,7 +116,7 @@ class MyApp extends StatelessWidget {
           home: Platform.isWindows || Platform.isLinux ? const DragToResizeArea(child: DragToMoveArea(child: LiveHomePage())) : const LiveHomePage(),
           builder: (context, child) {
             return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(provider.textScaleFactor)),
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(data.textScaleFactor)),
               child: FlutterEasyLoading(child: child),
             );
           },

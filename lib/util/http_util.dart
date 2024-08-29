@@ -45,12 +45,17 @@ class HttpUtil {
   Future<int?> downloadFile(String url, String savePath, {ValueChanged<double>? progressCallback}) async {
     Response? response;
     try {
-      await _dio.head(url);
+      // await _dio.head(url);
       response = await _dio.download(
         url,
         savePath,
         options: Options(
-          headers: {HttpHeaders.acceptEncodingHeader: '*'},
+          receiveTimeout: const Duration(seconds: 60),
+          headers: {
+            HttpHeaders.acceptEncodingHeader: '*',
+            HttpHeaders.userAgentHeader:
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+          },
         ),
         onReceiveProgress: (received, total) {
           if (total <= 0) return;

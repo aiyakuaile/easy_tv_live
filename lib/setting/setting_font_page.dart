@@ -18,6 +18,7 @@ class SettingFontPage extends StatefulWidget {
 
 class _SettingFontPageState extends State<SettingFontPage> {
   final _fontLink = EnvUtil.fontLink();
+  final _fontDownloadLink = EnvUtil.fontDownloadLink();
   final _fontList = <FontModel>[];
   final _fontScales = [1.0, 1.2, 1.4, 1.6, 1.8];
 
@@ -109,17 +110,16 @@ class _SettingFontPageState extends State<SettingFontPage> {
                                 const Spacer(),
                                 Builder(builder: (context) {
                                   return ElevatedButton(
-                                    onPressed: themeProvider.fontFamily == model.fontKey || model.progress != 0.0
+                                    onPressed: themeProvider.fontFamily == model.fontKey
                                         ? null
                                         : () async {
+                                            if (model.progress != 0.0) return;
                                             if (model.fontKey == 'system') {
                                               themeProvider.setFontFamily(model.fontKey!);
                                               return;
                                             }
-                                            final fontUrl = '$_fontLink/fonts/${model.fontKey!}.${model.fontType}';
-                                            final res = await FontUtil()
-                                                .loadFont(fontUrl, model.fontKey!,
-                                                    progressCallback: (double progress) {
+                                            final fontUrl = '$_fontDownloadLink/${model.fontKey!}.${model.fontType}';
+                                            final res = await FontUtil().loadFont(fontUrl, model.fontKey!, progressCallback: (double progress) {
                                               LogUtil.v('progress=========$progress');
                                               setState(() {
                                                 model.progress = progress;
@@ -129,7 +129,7 @@ class _SettingFontPageState extends State<SettingFontPage> {
                                               setState(() {
                                                 model.progress = 0.0;
                                               });
-                                              themeProvider.setFontFamily(model.fontKey!,fontUrl);
+                                              themeProvider.setFontFamily(model.fontKey!, fontUrl);
                                             }
                                           },
                                     style: ElevatedButton.styleFrom(

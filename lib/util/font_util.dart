@@ -28,7 +28,7 @@ class FontUtil {
     final fontPath = '$dir/$filename';
     final file = File(fontPath);
     if (await file.exists() && !overwrite) {
-      LogUtil.v('****** font $filename already exists *****');
+      LogUtil.v('****** font $filename already exists *****${await file.length()}');
       return file.readAsBytes();
     }
     final bytes = await downloadBytes(url, filename, fontPath, progressCallback: progressCallback);

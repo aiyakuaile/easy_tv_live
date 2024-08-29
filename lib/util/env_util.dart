@@ -67,4 +67,12 @@ class EnvUtil {
       return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_font/main';
     }
   }
+
+  static String fontDownloadLink() {
+    if (isChinese()) {
+      return 'https://gitee.com/AMuMuSir/easy_tv_font/releases/download/fonts';
+    } else {
+      return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_font/main';
+    }
+  }
 }
