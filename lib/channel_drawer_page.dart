@@ -117,13 +117,21 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
       int groupIndex = _keys.indexWhere((element) => element == widget.groupName);
       int channelIndex = _channelIndex;
       if (groupIndex != -1) {
-        channelIndex = _values[_groupIndex].keys.toList().indexWhere((element) => element == widget.channelName);
+        channelIndex = _values[groupIndex].keys.toList().indexWhere((element) => element == widget.channelName);
       }
       if (groupIndex == -1) {
         groupIndex = 0;
       }
       if (channelIndex == -1) {
         channelIndex = 0;
+      }
+      _groupIndex = groupIndex;
+      _channelIndex = channelIndex;
+      if (_groupIndex == 0 && _scrollController.positions.isNotEmpty) {
+        Future.delayed(Duration.zero, () => _scrollController.jumpTo(0));
+      }
+      if (_channelIndex == 0 && _scrollChannelController.positions.isNotEmpty) {
+        Future.delayed(Duration.zero, () => _scrollChannelController.jumpTo(0));
       }
     });
     if (widget.channelName != oldWidget.channelName) {
