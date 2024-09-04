@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:easy_tv_live/entity/playlist_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
+import 'package:xml/xml.dart';
 
 /// channel_name : "CCTV1"
 /// date : ""
@@ -10,32 +12,84 @@ class EpgUtil {
   EpgUtil._();
 
   static final _EPGMap = <String, EpgModel>{};
+  static Iterable<XmlElement>? _programmes;
   static CancelToken? _cancelToken;
 
-  static Future<EpgModel?> getEpg(String channelName) async {
-    final channel = channelName.replaceAll(' ', '').replaceAll('-', '');
-    final date = DateUtil.formatDate(DateTime.now(), format: "yyMMdd");
-    final channelKey = "$date-$channel";
+  static Future<EpgModel?> getEpg(PlayModel? model) async {
+    if (model == null) return null;
+
+    String channelKey = '';
+    String channel = '';
+    String date = '';
+    final isHasXml = _programmes != null && _programmes!.isNotEmpty;
+    if (model.id != null && model.id != '' && isHasXml) {
+      channelKey = model.id!;
+    } else {
+      channel = model.title!.replaceAll(' ', '').replaceAll('-', '');
+      date = DateUtil.formatDate(DateTime.now(), format: "yyMMdd");
+      channelKey = "$date-$channel";
+    }
+
     if (_EPGMap.containsKey(channelKey)) {
       final cacheModel = _EPGMap[channelKey]!;
       LogUtil.v('命中EPG:::${cacheModel.toJson()}');
       return cacheModel;
-    } else {
-      _cancelToken?.cancel();
-      _cancelToken ??= CancelToken();
-      final epgRes = await HttpUtil().getRequest('https://epg.v1.mk/json?ch=$channel&date=$date', cancelToken: _cancelToken, isShowLoading: false);
-      LogUtil.v('epgRes:::$epgRes');
-      _cancelToken = null;
-      if (epgRes != null) {
-        LogUtil.v('epgRes:channelName::${epgRes['channel_name']}');
-        if (channel.contains(epgRes['channel_name'])) {
-          final epg = EpgModel.fromJson(epgRes);
-          _EPGMap[channelKey] = epg;
-          return epg;
+    }
+
+    if (isHasXml) {
+      EpgModel epgModel = EpgModel(channelName: model.title, epgData: []);
+      for (var programme in _programmes!) {
+        final channel = programme.getAttribute('channel');
+        if (channel == model.id) {
+          final start = programme.getAttribute('start')!;
+          final dateStart = DateUtil.formatDate(DateUtil.parseCustomDateTimeString(start), format: "HH:mm");
+          final stop = programme.getAttribute('stop')!;
+          final dateEnd = DateUtil.formatDate(DateUtil.parseCustomDateTimeString(stop), format: "HH:mm");
+          final title = programme.findAllElements('title').first.innerText;
+          epgModel.epgData!.add(EpgData(title: title, start: dateStart, end: dateEnd));
         }
       }
-      return null;
+      if (epgModel.epgData!.isEmpty) return null;
+      epgModel.epgData!.sort((a, b) => a.start!.compareTo(b.start!));
+      _EPGMap[channelKey] = epgModel;
+      return epgModel;
     }
+
+    _cancelToken?.cancel();
+    _cancelToken ??= CancelToken();
+    final epgRes = await HttpUtil().getRequest('https://epg.v1.mk/json?ch=$channel&date=$date', cancelToken: _cancelToken, isShowLoading: false);
+    LogUtil.v('epgRes:::$epgRes');
+    _cancelToken = null;
+    if (epgRes != null) {
+      LogUtil.v('epgRes:channelName::${epgRes['channel_name']}');
+      if (channel.contains(epgRes['channel_name'])) {
+        final epg = EpgModel.fromJson(epgRes);
+        _EPGMap[channelKey] = epg;
+        return epg;
+      }
+    }
+    return null;
+  }
+
+  static Future<XmlDocument?> loadEPGXML(String url) async {
+    int index = 0;
+    final urlLink = url.split(',');
+    XmlDocument? tempXmlDocument;
+    while (tempXmlDocument == null && index < urlLink.length) {
+      final res = await HttpUtil().getRequest(urlLink[index], isShowLoading: false);
+      if (res != null) {
+        LogUtil.v('****download EPG Xml success****');
+        tempXmlDocument = XmlDocument.parse(res.toString());
+      } else {
+        tempXmlDocument = null;
+        index += 1;
+      }
+    }
+    _programmes = tempXmlDocument!.findAllElements('programme');
+  }
+
+  static resetEPGXML() {
+    _programmes = null;
   }
 }
 

@@ -9,6 +9,7 @@ import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'generated/l10n.dart';
+import 'util/date_util.dart';
 
 class TableVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
@@ -117,6 +118,21 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                 : VideoHoldBg(toastString: widget.toastString),
           ),
         ),
+        if (Scaffold.of(context).isDrawerOpen)
+          Positioned(
+            top: 20,
+            right: 20,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  DateUtil.formatDate(DateTime.now(), format: 'HH:mm'),
+                  style: TextStyle(fontSize: 30),
+                ),
+                Text(DateUtil.formatDate(DateTime.now(), format: 'yyyy年MM月dd日'), style: TextStyle(fontSize: 20)),
+              ],
+            ),
+          ),
         const VolumeBrightnessWidget(),
         if (widget.isLandscape)
           AnimatedPositioned(

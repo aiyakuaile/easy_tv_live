@@ -5,6 +5,7 @@ import 'package:easy_tv_live/setting/setting_font_page.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -40,7 +41,7 @@ void main() async {
     });
   }
   WakelockPlus.enable();
-  LogUtil.init(isDebug: true, tag: 'EasyTV');
+  LogUtil.init(isDebug: kDebugMode, tag: 'EasyTV');
   await SpUtil.getInstance();
   fvp.registerWith(options: {
     'platforms': ['android', 'ios', 'windows', 'linux', 'macos'],

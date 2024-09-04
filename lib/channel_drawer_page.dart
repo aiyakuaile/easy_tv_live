@@ -9,16 +9,16 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import 'entity/playlist_model.dart';
 import 'util/env_util.dart';
 
 class ChannelDrawerPage extends StatefulWidget {
-  final Map<String, dynamic>? videoMap;
-  final String? channelName;
-  final String? groupName;
+  final PlaylistModel? videoMap;
+  final PlayModel? playModel;
   final bool isLandscape;
-  final Function(String group, String channel)? onTapChannel;
+  final Function(PlayModel? newModel)? onTapChannel;
 
-  const ChannelDrawerPage({super.key, this.videoMap, this.groupName, this.channelName, this.onTapChannel, this.isLandscape = true});
+  const ChannelDrawerPage({super.key, this.videoMap, this.playModel, this.onTapChannel, this.isLandscape = true});
 
   @override
   State<ChannelDrawerPage> createState() => _ChannelDrawerPageState();
@@ -38,15 +38,16 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
   late int _groupIndex = 0;
   late int _channelIndex = 0;
   final _itemHeight = 50.0;
-
+  bool _isShowEPG = true;
   final isTV = EnvUtil.isTV();
 
-  _loadEPGMsg(String channelName) async {
+  _loadEPGMsg() async {
+    if (!_isShowEPG) return;
     setState(() {
       _epgData = null;
       _selEPGIndex = 0;
     });
-    final res = await EpgUtil.getEpg(channelName);
+    final res = await EpgUtil.getEpg(widget.playModel);
     if (res == null || res!.epgData == null || res!.epgData!.isEmpty) return;
     _epgData = res.epgData!;
     final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
@@ -59,11 +60,11 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
   @override
   void initState() {
     LogUtil.v('ChannelDrawerPage:isTV:::$isTV');
-    _keys = widget.videoMap?.keys.toList() ?? <String>[];
-    _values = widget.videoMap?.values.toList().cast<Map>() ?? <Map>[];
-    _groupIndex = _keys.indexWhere((element) => element == widget.groupName);
+    _keys = widget.videoMap?.playList?.keys.toList() ?? <String>[];
+    _values = widget.videoMap?.playList?.values.toList().cast<Map>() ?? <Map>[];
+    _groupIndex = _keys.indexWhere((element) => element == (widget.playModel?.group ?? ''));
     if (_groupIndex != -1) {
-      _channelIndex = _values[_groupIndex].keys.toList().indexWhere((element) => element == widget.channelName);
+      _channelIndex = _values[_groupIndex].keys.toList().indexWhere((element) => element == widget.playModel!.title);
     }
     if (_groupIndex == -1) {
       _groupIndex = 0;
@@ -98,7 +99,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
         }
       }
     });
-    _loadEPGMsg(widget.channelName!);
+    _loadEPGMsg();
     super.initState();
   }
 
@@ -111,31 +112,31 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
 
   @override
   void didUpdateWidget(covariant ChannelDrawerPage oldWidget) {
-    setState(() {
-      _keys = widget.videoMap?.keys.toList() ?? <String>[];
-      _values = widget.videoMap?.values.toList().cast<Map>() ?? <Map>[];
-      int groupIndex = _keys.indexWhere((element) => element == widget.groupName);
-      int channelIndex = _channelIndex;
-      if (groupIndex != -1) {
-        channelIndex = _values[groupIndex].keys.toList().indexWhere((element) => element == widget.channelName);
-      }
-      if (groupIndex == -1) {
-        groupIndex = 0;
-      }
-      if (channelIndex == -1) {
-        channelIndex = 0;
-      }
-      _groupIndex = groupIndex;
-      _channelIndex = channelIndex;
-      if (_groupIndex == 0 && _scrollController.positions.isNotEmpty) {
-        Future.delayed(Duration.zero, () => _scrollController.jumpTo(0));
-      }
-      if (_channelIndex == 0 && _scrollChannelController.positions.isNotEmpty) {
-        Future.delayed(Duration.zero, () => _scrollChannelController.jumpTo(0));
-      }
-    });
-    if (widget.channelName != oldWidget.channelName) {
-      _loadEPGMsg(widget.channelName!);
+    if (widget.playModel != oldWidget.playModel) {
+      setState(() {
+        _keys = widget.videoMap?.playList?.keys.toList() ?? <String>[];
+        _values = widget.videoMap?.playList?.values.toList().cast<Map>() ?? <Map>[];
+        int groupIndex = _keys.indexWhere((element) => element == widget.playModel?.group);
+        int channelIndex = _channelIndex;
+        if (groupIndex != -1) {
+          channelIndex = _values[groupIndex].keys.toList().indexWhere((element) => element == widget.playModel?.title);
+        }
+        if (groupIndex == -1) {
+          groupIndex = 0;
+        }
+        if (channelIndex == -1) {
+          channelIndex = 0;
+        }
+        _groupIndex = groupIndex;
+        _channelIndex = channelIndex;
+        if (_groupIndex == 0 && _scrollController.positions.isNotEmpty) {
+          Future.delayed(Duration.zero, () => _scrollController.jumpTo(0));
+        }
+        if (_channelIndex == 0 && _scrollChannelController.positions.isNotEmpty) {
+          Future.delayed(Duration.zero, () => _scrollChannelController.jumpTo(0));
+        }
+      });
+      _loadEPGMsg();
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -148,8 +149,8 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
   Widget _buildOpenDrawer() {
     double drawWidth = max(MediaQuery.of(context).size.width * 0.5 + MediaQuery.of(context).padding.left, 300);
     final screenWidth = MediaQuery.of(context).size.width;
-    bool isShowEPG = (drawWidth + 200) < screenWidth;
-    if (isShowEPG && _epgData != null && _epgData!.isNotEmpty) {
+    _isShowEPG = (drawWidth + 200) < screenWidth;
+    if (_isShowEPG && _epgData != null && _epgData!.isNotEmpty) {
       drawWidth += 200;
     }
     return Container(
@@ -176,7 +177,8 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                           setState(() {
                             _groupIndex = index;
                             final name = _values[_groupIndex].keys.toList()[0].toString();
-                            widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
+                            final newModel = widget.videoMap!.playList![_keys[_groupIndex]]![name];
+                            widget.onTapChannel?.call(newModel);
                           });
                           _scrollChannelController.jumpTo(0);
                           Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
@@ -227,11 +229,12 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                         overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
                         canRequestFocus: isTV,
                         onTap: () async {
-                          if (widget.channelName == name) {
+                          if (widget.playModel?.title == name) {
                             Scaffold.of(context).closeDrawer();
                             return;
                           }
-                          widget.onTapChannel?.call(_keys[_groupIndex].toString(), name);
+                          final newModel = widget.videoMap!.playList![_keys[_groupIndex]]![name];
+                          widget.onTapChannel?.call(newModel);
                           Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                         },
                         onFocusChange: (focus) async {
@@ -245,17 +248,18 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                           height: _itemHeight,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            gradient: widget.channelName == name ? LinearGradient(colors: [Colors.red.withOpacity(0.3), Colors.transparent]) : null,
+                            gradient:
+                                widget.playModel?.title == name ? LinearGradient(colors: [Colors.red.withOpacity(0.3), Colors.transparent]) : null,
                           ),
                           child: Row(
                             children: [
                               Expanded(
                                 child: Text(
                                   name,
-                                  style: TextStyle(color: widget.channelName == name ? Colors.red : Colors.white, fontWeight: FontWeight.bold),
+                                  style: TextStyle(color: widget.playModel?.title == name ? Colors.red : Colors.white, fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              if (widget.channelName == name) SpinKitWave(size: 20, color: Colors.red.withOpacity(0.8))
+                              if (widget.playModel?.title == name) SpinKitWave(size: 20, color: Colors.red.withOpacity(0.8))
                             ],
                           ),
                         ),
@@ -265,8 +269,8 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                 },
                 itemCount: _values[_groupIndex].length),
           ),
-        if (isShowEPG) VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
-        if (isShowEPG && _epgData != null && _epgData!.isNotEmpty)
+        if (_isShowEPG) VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
+        if (_isShowEPG && _epgData != null && _epgData!.isNotEmpty)
           SizedBox(
             width: 200,
             child: Column(

@@ -1,3 +1,4 @@
+import 'package:easy_tv_live/util/epg_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -7,6 +8,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'channel_drawer_page.dart';
+import 'entity/playlist_model.dart';
 import 'generated/l10n.dart';
 import 'mobile_video_widget.dart';
 import 'table_video_widget.dart';
@@ -27,10 +29,10 @@ class LiveHomePage extends StatefulWidget {
 class _LiveHomePageState extends State<LiveHomePage> {
   String toastString = S.current.loading;
 
-  Map<String, dynamic>? _videoMap;
+  PlaylistModel? _videoMap;
 
-  String _group = '';
-  String _channel = '';
+  PlayModel? _currentChannel;
+
   int _sourceIndex = 0;
 
   VideoPlayerController? _playerController;
@@ -41,10 +43,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
   double aspectRatio = 1.78;
 
   _playVideo() async {
-    toastString = S.current.lineToast(_sourceIndex + 1, _channel);
+    if (_currentChannel == null) return;
+    toastString = S.current.lineToast(_sourceIndex + 1, _currentChannel!.title ?? '');
     setState(() {});
-    final url = _videoMap![_group][_channel][_sourceIndex].toString();
-    LogUtil.v('正在播放:::$url:::_group:$_group:::_channel:$_channel:::_sourceIndex:$_sourceIndex');
+    final url = _currentChannel!.urls![_sourceIndex].toString();
+    LogUtil.v('正在播放:$_sourceIndex::${_currentChannel!.toJson()}');
     try {
       _playerController?.removeListener(_videoListener);
       _playerController?.dispose();
@@ -64,10 +67,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
       });
     } catch (e) {
       LogUtil.v('播放出错:::::$e');
-      final channels = _videoMap![_group][_channel];
       _sourceIndex += 1;
-      if (_sourceIndex > channels.length - 1) {
-        _sourceIndex = channels.length - 1;
+      if (_sourceIndex > _currentChannel!.urls!.length - 1) {
+        _sourceIndex = _currentChannel!.urls!.length - 1;
         setState(() {
           toastString = S.current.playError;
         });
@@ -85,9 +87,8 @@ class _LiveHomePageState extends State<LiveHomePage> {
   _videoListener() {
     if (_playerController == null) return;
     if (_playerController!.value.hasError) {
-      final channels = _videoMap![_group][_channel];
       _sourceIndex += 1;
-      if (_sourceIndex > channels.length - 1) {
+      if (_sourceIndex > _currentChannel!.urls!.length - 1) {
         _sourceIndex = 0;
         setState(() {
           toastString = S.current.playReconnect;
@@ -113,11 +114,10 @@ class _LiveHomePageState extends State<LiveHomePage> {
     }
   }
 
-  _onTapChannel(String group, String channel) {
-    _group = group;
-    _channel = channel;
+  _onTapChannel(PlayModel? model) {
+    _currentChannel = model;
     _sourceIndex = 0;
-    LogUtil.v('onTapChannel:::::$group:::::$channel:::::$_sourceIndex');
+    LogUtil.v('onTapChannel:::::${_currentChannel?.toJson()}');
     _playVideo();
   }
 
@@ -136,6 +136,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
   _loadData() async {
     await _parseData();
     if (!EnvUtil.isTV()) CheckVersionUtil.checkVersion(context, false, false);
+    if (_videoMap?.epgUrl != null && _videoMap?.epgUrl != '') {
+      EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
+    } else {
+      EpgUtil.resetEPGXML();
+    }
   }
 
   @override
@@ -151,13 +156,13 @@ class _LiveHomePageState extends State<LiveHomePage> {
     LogUtil.v('_parseData:::::$resMap');
     _videoMap = resMap;
     _sourceIndex = 0;
-    if (_videoMap?.isNotEmpty ?? false) {
-      _group = _videoMap!.keys.first.toString();
-      _channel = Map.from(_videoMap![_group]).keys.first;
+    if (_videoMap?.playList?.isNotEmpty ?? false) {
+      String group = _videoMap!.playList!.keys.first.toString();
+      String channel = _videoMap!.playList![group]!.keys.first;
+      _currentChannel = _videoMap!.playList![group]![channel];
       _playVideo();
     } else {
-      _group = '';
-      _channel = '';
+      _currentChannel = null;
       _playerController?.dispose();
       _playerController = null;
       toastString = 'UNKNOWN';
@@ -170,8 +175,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
     if (EnvUtil.isTV()) {
       return TvPage(
         videoMap: _videoMap,
-        channelName: _channel,
-        groupName: _group,
+        playModel: _currentChannel,
         onTapChannel: _onTapChannel,
         toastString: toastString,
         controller: _playerController,
@@ -197,8 +201,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
             onChangeSubSource: _parseData,
             drawChild: ChannelDrawerPage(
               videoMap: _videoMap,
-              channelName: _channel,
-              groupName: _group,
+              playModel: _currentChannel,
               onTapChannel: _onTapChannel,
               isLandscape: false,
             ),
@@ -215,8 +218,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
               }
             },
             child: Scaffold(
-              drawer:
-                  ChannelDrawerPage(videoMap: _videoMap, channelName: _channel, groupName: _group, onTapChannel: _onTapChannel, isLandscape: true),
+              drawer: ChannelDrawerPage(videoMap: _videoMap, playModel: _currentChannel, onTapChannel: _onTapChannel, isLandscape: true),
               drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
               drawerScrimColor: Colors.transparent,
               body: toastString == 'UNKNOWN'
@@ -237,7 +239,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   Future<void> _changeChannelSources() async {
-    List sources = _videoMap![_group][_channel];
+    List<String> sources = _videoMap!.playList![_currentChannel!.group]![_currentChannel!.title]!.urls!;
     final selectedIndex = await showModalBottomSheet(
         context: context,
         useRootNavigator: true,
@@ -259,20 +261,15 @@ class _LiveHomePageState extends State<LiveHomePage> {
                             padding: EdgeInsets.zero,
                             side: BorderSide(color: _sourceIndex == index ? Colors.red : Colors.white),
                             foregroundColor: Colors.redAccent),
-                        child: Text(
-                          S.current.lineIndex(index + 1),
-                          style: TextStyle(fontSize: 12, color: _sourceIndex == index ? Colors.red : Colors.white),
-                        ),
-                        // onFocusChange: (focus) {
-                        //   if (focus && _sourceIndex != index) {
-                        //     Future.delayed(const Duration(microseconds: 300), () => Navigator.pop(context, index));
-                        //   }
-                        // },
                         onPressed: _sourceIndex == index
                             ? null
                             : () {
                                 Navigator.pop(context, index);
-                              });
+                              },
+                        child: Text(
+                          S.current.lineIndex(index + 1),
+                          style: TextStyle(fontSize: 12, color: _sourceIndex == index ? Colors.red : Colors.white),
+                        ));
                   })),
             ),
           );

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_tv_live/entity/playlist_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
@@ -13,7 +14,7 @@ import 'log_util.dart';
 class M3uUtil {
   M3uUtil._();
   // 获取默认的m3u文件
-  static Future<Map<String, dynamic>> getDefaultM3uData() async {
+  static Future<PlaylistModel?> getDefaultM3uData() async {
     String m3uData = '';
     final models = await getLocalData();
     if (models.isNotEmpty) {
@@ -31,7 +32,7 @@ class M3uUtil {
         }
       }
       if (m3uData.isEmpty) {
-        return <String, dynamic>{};
+        return null;
       }
     } else {
       m3uData = await _fetchData();
@@ -75,42 +76,75 @@ class M3uUtil {
   }
 
   // 解析m3u文件为Map
-  static Future<Map<String, dynamic>> _parseM3u(String m3u) async {
+  // {
+  //     "epgUrl": "http://epg.xml",
+  //     "playList": {
+  //         "央视": {
+  //             "CCTV-1": {
+  //                 "id": "cctv1",
+  //                 "logo": "https://tv.cctv.com/live/cctv1/logo.png",
+  //                 "title": "CCTV-1"
+  //                 "urls": [
+  //                     "http://live.cctv.com/live/cctv1/index.m3u8"
+  //                 ]
+  //             },
+  //         }
+  //     }
+  // }
+  static Future<PlaylistModel> _parseM3u(String m3u) async {
     final lines = m3u.split('\n');
-    final result = <String, dynamic>{};
-    if (m3u.startsWith('#EXTM3U')) {
+    final playListModel = PlaylistModel();
+    playListModel.playList = <String, Map<String, PlayModel>>{};
+    if (m3u.startsWith('#EXTM3U') || m3u.startsWith('#EXTINF')) {
       String tempGroupTitle = '';
       String tempChannelName = '';
       for (int i = 0; i < lines.length - 1; i++) {
-        final line = lines[i];
-        if (line.startsWith('#EXTINF:')) {
+        String line = lines[i];
+        if (line.startsWith('#EXTM3U')) {
+          List<String> params = line.replaceAll('"', '').split(' ');
+          final tvgUrl = params.firstWhere((element) => element.startsWith('x-tvg-url'), orElse: () => '');
+          if (tvgUrl.isNotEmpty) {
+            playListModel.epgUrl = tvgUrl.split('=').last;
+          }
+        } else if (line.startsWith('#EXTINF:')) {
+          if (line.startsWith('#EXTINF:-1,')) {
+            line = line.replaceFirst('#EXTINF:-1,', '#EXTINF:-1 ');
+          }
           final lineList = line.split(',');
           List<String> params = lineList.first.replaceAll('"', '').split(' ');
           final groupStr = params.firstWhere((element) => element.startsWith('group-title='), orElse: () => 'group-title=${S.current.defaultText}');
+          String tvgLogo = params.firstWhere((element) => element.startsWith('tvg-logo='), orElse: () => '');
+          String tvgId = params.firstWhere((element) => element.startsWith('tvg-name='), orElse: () => '');
+          if (tvgId.isEmpty) {
+            tvgId = params.firstWhere((element) => element.startsWith('tvg-id='), orElse: () => '');
+          }
+          if (tvgId.isNotEmpty) {
+            tvgId = tvgId.split('=').last;
+          }
+          if (tvgLogo.isNotEmpty) {
+            tvgLogo = tvgLogo.split('=').last;
+          }
           if (groupStr.isNotEmpty) {
             tempGroupTitle = groupStr.split('=').last;
             tempChannelName = lineList.last;
-            Map group = result[tempGroupTitle] ?? {};
-            List groupList = group[tempChannelName] ?? [];
+            Map<String, PlayModel> group = playListModel.playList![tempGroupTitle] ?? {};
+            PlayModel groupList =
+                group[tempChannelName] ?? PlayModel(id: tvgId, group: tempGroupTitle, logo: tvgLogo, title: tempChannelName, urls: []);
             final lineNext = lines[i + 1];
             if (isLiveLink(lineNext)) {
-              groupList.add(lineNext);
+              groupList.urls!.add(lineNext);
               group[tempChannelName] = groupList;
-              result[tempGroupTitle] = group;
+              playListModel.playList![tempGroupTitle] = group;
               i += 1;
             } else if (isLiveLink(lines[i + 2])) {
-              groupList.add(lines[i + 2].toString());
+              groupList.urls!.add(lines[i + 2].toString());
               group[tempChannelName] = groupList;
-              result[tempGroupTitle] = group;
+              playListModel.playList![tempGroupTitle] = group;
               i += 2;
             }
           }
         } else if (isLiveLink(line)) {
-          Map group = result[tempGroupTitle] ?? {};
-          List groupList = group[tempChannelName] ?? [];
-          groupList.add(line);
-          group[tempChannelName] = groupList;
-          result[tempGroupTitle] = group;
+          playListModel.playList![tempGroupTitle]![tempChannelName]!.urls!.add(line);
         }
       }
     } else {
@@ -122,25 +156,25 @@ class M3uUtil {
           final groupTitle = lineList[0];
           final channelLink = lineList[1];
           if (isLiveLink(channelLink)) {
-            Map<String, List<String>> group = result[tempGroup] ?? <String, List<String>>{};
-            List<String> chanelList = group[groupTitle] ?? <String>[];
-            chanelList.add(channelLink);
+            Map<String, PlayModel> group = playListModel.playList![tempGroup] ?? <String, PlayModel>{};
+            final chanelList = group[groupTitle] ?? PlayModel(group: tempGroup, id: groupTitle, title: groupTitle, urls: []);
+            chanelList.urls!.add(channelLink);
             group[groupTitle] = chanelList;
-            result[tempGroup] = group;
+            playListModel.playList![tempGroup] = group;
           } else {
             tempGroup = groupTitle == '' ? '${S.current.defaultText}${i + 1}' : groupTitle;
-            if (result[tempGroup] == null) {
-              result[tempGroup] = <String, List<String>>{};
+            if (playListModel.playList![tempGroup] == null) {
+              playListModel.playList![tempGroup] = <String, PlayModel>{};
             }
           }
         }
       }
     }
 
-    if (result.isEmpty) {
+    if (playListModel.playList!.isEmpty) {
       EasyLoading.showError(S.current.parseError);
     }
 
-    return result;
+    return playListModel;
   }
 }

@@ -50,6 +50,7 @@ dependencies:
   path_provider: ^2.1.4
 #  file_picker: ^8.1.2
   provider: ^6.1.2
+  xml: ^6.5.0
 
 
 dev_dependencies:

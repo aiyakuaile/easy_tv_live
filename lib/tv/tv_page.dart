@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:easy_tv_live/tv/tv_setting_page.dart';
+import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,14 +10,14 @@ import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
 
 import '../channel_drawer_page.dart';
+import '../entity/playlist_model.dart';
 import '../util/log_util.dart';
 import '../widget/video_hold_bg.dart';
 
 class TvPage extends StatefulWidget {
-  final Map<String, dynamic>? videoMap;
-  final String? channelName;
-  final String? groupName;
-  final Function(String group, String channel)? onTapChannel;
+  final PlaylistModel? videoMap;
+  final PlayModel? playModel;
+  final Function(PlayModel? newModel)? onTapChannel;
 
   final VideoPlayerController? controller;
   final Future<void> Function()? changeChannelSources;
@@ -28,12 +29,11 @@ class TvPage extends StatefulWidget {
   final double aspectRatio;
 
   const TvPage({
-    Key? key,
+    super.key,
     this.videoMap,
-    this.groupName,
-    this.channelName,
     this.onTapChannel,
     this.controller,
+    this.playModel,
     this.changeChannelSources,
     this.onChangeSubSource,
     this.toastString,
@@ -41,7 +41,7 @@ class TvPage extends StatefulWidget {
     this.isBuffering = false,
     this.isPlaying = false,
     this.aspectRatio = 16 / 9,
-  }) : super(key: key);
+  });
 
   @override
   State<TvPage> createState() => _TvPageState();
@@ -168,8 +168,7 @@ class _TvPageState extends State<TvPage> {
       backgroundColor: Colors.black,
       drawer: ChannelDrawerPage(
         videoMap: widget.videoMap,
-        channelName: widget.channelName,
-        groupName: widget.groupName,
+        playModel: widget.playModel,
         onTapChannel: widget.onTapChannel,
         isLandscape: true,
       ),
@@ -202,7 +201,18 @@ class _TvPageState extends State<TvPage> {
                                     widget.controller?.play();
                                   },
                                   child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50)),
-                            if (widget.isBuffering) const SpinKitSpinningLines(color: Colors.white)
+                            if (widget.isBuffering) const SpinKitSpinningLines(color: Colors.white),
+                            if (Scaffold.of(context).isDrawerOpen)
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: Column(
+                                  children: [
+                                    Text(DateUtil.formatDate(DateTime.now(), format: 'HH:mm')),
+                                    Text(DateUtil.formatDate(DateTime.now(), format: 'yyyy年MM月dd日')),
+                                  ],
+                                ),
+                              )
                           ],
                         )
                       : VideoHoldBg(toastString: widget.toastString),
