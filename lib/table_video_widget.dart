@@ -35,8 +35,7 @@ class TableVideoWidget extends StatefulWidget {
   State<TableVideoWidget> createState() => _TableVideoWidgetState();
 }
 
-class _TableVideoWidgetState extends State<TableVideoWidget>
-    with WindowListener {
+class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener {
   bool _isShowMenuBar = true;
 
   @override
@@ -54,18 +53,15 @@ class _TableVideoWidgetState extends State<TableVideoWidget>
   @override
   void onWindowEnterFullScreen() {
     super.onWindowEnterFullScreen();
-    windowManager.setTitleBarStyle(TitleBarStyle.hidden,
-        windowButtonVisibility: true);
+    windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
   }
 
   @override
   void onWindowLeaveFullScreen() {
     if (widget.isLandscape) {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden,
-          windowButtonVisibility: false);
+      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
     } else {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden,
-          windowButtonVisibility: true);
+      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
     }
   }
 
@@ -73,11 +69,9 @@ class _TableVideoWidgetState extends State<TableVideoWidget>
   void onWindowResize() {
     LogUtil.v('onWindowResize:::::${widget.isLandscape}');
     if (widget.isLandscape) {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden,
-          windowButtonVisibility: false);
+      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
     } else {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden,
-          windowButtonVisibility: true);
+      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
     }
   }
 
@@ -113,23 +107,21 @@ class _TableVideoWidgetState extends State<TableVideoWidget>
                           child: VideoPlayer(widget.controller!),
                         ),
                       ),
-                      if (!widget.isPlaying)
+                      if (!widget.isPlaying && !widget.drawerIsOpen)
                         GestureDetector(
                             onTap: () {
                               widget.controller?.play();
                             },
-                            child: const Icon(Icons.play_circle_outline,
-                                color: Colors.white, size: 50)),
-                      if (widget.isBuffering)
-                        const SpinKitSpinningLines(color: Colors.white)
+                            child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50)),
+                      if (widget.isBuffering && !widget.drawerIsOpen) const SpinKitSpinningLines(color: Colors.white)
                     ],
                   )
-                : VideoHoldBg(toastString: widget.toastString),
+                : VideoHoldBg(toastString: widget.drawerIsOpen ? '' : widget.toastString),
           ),
         ),
-        if (widget.drawerIsOpen) const DatePositionWidget(),
+        if (widget.drawerIsOpen || (!widget.drawerIsOpen && _isShowMenuBar && widget.isLandscape)) const DatePositionWidget(),
         const VolumeBrightnessWidget(),
-        if (widget.isLandscape)
+        if (widget.isLandscape && !widget.drawerIsOpen)
           AnimatedPositioned(
               left: 0,
               right: 0,
@@ -143,9 +135,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget>
                     const Spacer(),
                     IconButton(
                         tooltip: S.current.tipChannelList,
-                        style: IconButton.styleFrom(
-                            backgroundColor: Colors.black87,
-                            side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                         icon: const Icon(
                           Icons.list_alt,
                           color: Colors.white,
@@ -159,9 +149,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget>
                     const SizedBox(width: 12),
                     IconButton(
                         tooltip: S.current.tipChangeLine,
-                        style: IconButton.styleFrom(
-                            backgroundColor: Colors.black87,
-                            side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                         icon: const Icon(
                           Icons.legend_toggle,
                           color: Colors.white,
@@ -177,22 +165,14 @@ class _TableVideoWidgetState extends State<TableVideoWidget>
                       tooltip: S.current.portrait,
                       onPressed: () async {
                         if (EnvUtil.isMobile) {
-                          SystemChrome.setPreferredOrientations(
-                              [DeviceOrientation.portraitUp]);
+                          SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
                           return;
                         }
-                        await windowManager.setSize(
-                            const Size(414, 414 * 16 / 9),
-                            animate: true);
-                        await windowManager.setTitleBarStyle(
-                            TitleBarStyle.hidden,
-                            windowButtonVisibility: true);
-                        Future.delayed(const Duration(milliseconds: 500),
-                            () => windowManager.center(animate: true));
+                        await windowManager.setSize(const Size(414, 414 * 16 / 9), animate: true);
+                        await windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+                        Future.delayed(const Duration(milliseconds: 500), () => windowManager.center(animate: true));
                       },
-                      style: IconButton.styleFrom(
-                          backgroundColor: Colors.black87,
-                          side: const BorderSide(color: Colors.white)),
+                      style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                       icon: const Icon(
                         Icons.screen_rotation,
                         color: Colors.white,
@@ -203,22 +183,17 @@ class _TableVideoWidgetState extends State<TableVideoWidget>
                       IconButton(
                         tooltip: S.current.fullScreen,
                         onPressed: () async {
-                          final isFullScreen =
-                              await windowManager.isFullScreen();
+                          final isFullScreen = await windowManager.isFullScreen();
                           LogUtil.v('isFullScreen:::::$isFullScreen');
                           windowManager.setFullScreen(!isFullScreen);
                         },
-                        style: IconButton.styleFrom(
-                            backgroundColor: Colors.black87,
-                            side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
                         icon: FutureBuilder<bool>(
                           future: windowManager.isFullScreen(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Icon(
-                                snapshot.data!
-                                    ? Icons.close_fullscreen
-                                    : Icons.fit_screen_outlined,
+                                snapshot.data! ? Icons.close_fullscreen : Icons.fit_screen_outlined,
                                 color: Colors.white,
                               );
                             } else {
@@ -241,21 +216,14 @@ class _TableVideoWidgetState extends State<TableVideoWidget>
               tooltip: S.current.landscape,
               onPressed: () async {
                 if (EnvUtil.isMobile) {
-                  SystemChrome.setPreferredOrientations([
-                    DeviceOrientation.landscapeLeft,
-                    DeviceOrientation.landscapeRight
-                  ]);
+                  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
                   return;
                 }
-                await windowManager.setSize(const Size(800, 800 * 9 / 16),
-                    animate: true);
-                await windowManager.setTitleBarStyle(TitleBarStyle.hidden,
-                    windowButtonVisibility: false);
-                Future.delayed(const Duration(milliseconds: 500),
-                    () => windowManager.center(animate: true));
+                await windowManager.setSize(const Size(800, 800 * 9 / 16), animate: true);
+                await windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+                Future.delayed(const Duration(milliseconds: 500), () => windowManager.center(animate: true));
               },
-              style: IconButton.styleFrom(
-                  backgroundColor: Colors.black45, iconSize: 20),
+              style: IconButton.styleFrom(backgroundColor: Colors.black45, iconSize: 20),
               icon: const Icon(Icons.screen_rotation, color: Colors.white),
             ),
           )

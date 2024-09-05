@@ -46,8 +46,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   _playVideo() async {
     if (_currentChannel == null) return;
-    toastString =
-        S.current.lineToast(_sourceIndex + 1, _currentChannel!.title ?? '');
+    toastString = S.current.lineToast(_sourceIndex + 1, _currentChannel!.title ?? '');
     setState(() {});
     final url = _currentChannel!.urls![_sourceIndex].toString();
     LogUtil.v('正在播放:$_sourceIndex::${_currentChannel!.toJson()}');
@@ -59,8 +58,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
         videoPlayerOptions: VideoPlayerOptions(
           allowBackgroundPlayback: false,
           mixWithOthers: false,
-          webOptions: const VideoPlayerWebOptions(
-              controls: VideoPlayerWebOptionsControls.enabled()),
+          webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
         ),
       )..setVolume(1.0);
       await _playerController?.initialize();
@@ -140,11 +138,6 @@ class _LiveHomePageState extends State<LiveHomePage> {
   _loadData() async {
     await _parseData();
     if (!EnvUtil.isTV()) CheckVersionUtil.checkVersion(context, false, false);
-    if (_videoMap?.epgUrl != null && _videoMap?.epgUrl != '') {
-      EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
-    } else {
-      EpgUtil.resetEPGXML();
-    }
   }
 
   @override
@@ -161,17 +154,25 @@ class _LiveHomePageState extends State<LiveHomePage> {
     _videoMap = resMap;
     _sourceIndex = 0;
     if (_videoMap?.playList?.isNotEmpty ?? false) {
-      String group = _videoMap!.playList!.keys.first.toString();
-      String channel = _videoMap!.playList![group]!.keys.first;
-      _currentChannel = _videoMap!.playList![group]![channel];
-      _playVideo();
+      setState(() {
+        String group = _videoMap!.playList!.keys.first.toString();
+        String channel = _videoMap!.playList![group]!.keys.first;
+        _currentChannel = _videoMap!.playList![group]![channel];
+        _playVideo();
+      });
+      if (_videoMap?.epgUrl != null && _videoMap?.epgUrl != '') {
+        EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
+      } else {
+        EpgUtil.resetEPGXML();
+      }
     } else {
-      _currentChannel = null;
-      _playerController?.dispose();
-      _playerController = null;
-      toastString = 'UNKNOWN';
+      setState(() {
+        _currentChannel = null;
+        _playerController?.dispose();
+        _playerController = null;
+        toastString = 'UNKNOWN';
+      });
     }
-    setState(() {});
   }
 
   @override
@@ -217,19 +218,12 @@ class _LiveHomePageState extends State<LiveHomePage> {
             canPop: false,
             onPopInvoked: (didPop) {
               if (!didPop) {
-                SystemChrome.setPreferredOrientations([
-                  DeviceOrientation.portraitUp,
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight
-                ]);
+                SystemChrome.setPreferredOrientations(
+                    [DeviceOrientation.portraitUp, DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
               }
             },
             child: Scaffold(
-              drawer: ChannelDrawerPage(
-                  videoMap: _videoMap,
-                  playModel: _currentChannel,
-                  onTapChannel: _onTapChannel,
-                  isLandscape: true),
+              drawer: ChannelDrawerPage(videoMap: _videoMap, playModel: _currentChannel, onTapChannel: _onTapChannel, isLandscape: true),
               drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
               drawerScrimColor: Colors.transparent,
               onDrawerChanged: (bool isOpened) {
@@ -256,8 +250,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   Future<void> _changeChannelSources() async {
-    List<String> sources = _videoMap!
-        .playList![_currentChannel!.group]![_currentChannel!.title]!.urls!;
+    List<String> sources = _videoMap!.playList![_currentChannel!.group]![_currentChannel!.title]!.urls!;
     final selectedIndex = await showModalBottomSheet(
         context: context,
         useRootNavigator: true,
@@ -267,8 +260,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
           return SingleChildScrollView(
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(
-                  left: 20, right: 20, top: 20, bottom: 40),
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 40),
               color: Colors.transparent,
               child: Wrap(
                   spacing: 10,
@@ -278,10 +270,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                         autofocus: _sourceIndex == index,
                         style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.zero,
-                            side: BorderSide(
-                                color: _sourceIndex == index
-                                    ? Colors.red
-                                    : Colors.white),
+                            side: BorderSide(color: _sourceIndex == index ? Colors.red : Colors.white),
                             foregroundColor: Colors.redAccent),
                         onPressed: _sourceIndex == index
                             ? null
@@ -290,11 +279,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                               },
                         child: Text(
                           S.current.lineIndex(index + 1),
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: _sourceIndex == index
-                                  ? Colors.red
-                                  : Colors.white),
+                          style: TextStyle(fontSize: 12, color: _sourceIndex == index ? Colors.red : Colors.white),
                         ));
                   })),
             ),

@@ -22,6 +22,7 @@ class EpgUtil {
     String channel = '';
     String date = '';
     final isHasXml = _programmes != null && _programmes!.isNotEmpty;
+    LogUtil.v('加载EPG:::$isHasXml:::${_programmes?.length}');
     if (model.id != null && model.id != '' && isHasXml) {
       channelKey = model.id!;
     } else {
@@ -42,16 +43,11 @@ class EpgUtil {
         final channel = programme.getAttribute('channel');
         if (channel == model.id) {
           final start = programme.getAttribute('start')!;
-          final dateStart = DateUtil.formatDate(
-              DateUtil.parseCustomDateTimeString(start),
-              format: "HH:mm");
+          final dateStart = DateUtil.formatDate(DateUtil.parseCustomDateTimeString(start), format: "HH:mm");
           final stop = programme.getAttribute('stop')!;
-          final dateEnd = DateUtil.formatDate(
-              DateUtil.parseCustomDateTimeString(stop),
-              format: "HH:mm");
+          final dateEnd = DateUtil.formatDate(DateUtil.parseCustomDateTimeString(stop), format: "HH:mm");
           final title = programme.findAllElements('title').first.innerText;
-          epgModel.epgData!
-              .add(EpgData(title: title, start: dateStart, end: dateEnd));
+          epgModel.epgData!.add(EpgData(title: title, start: dateStart, end: dateEnd));
         }
       }
       if (epgModel.epgData!.isEmpty) return null;
@@ -61,10 +57,7 @@ class EpgUtil {
 
     _cancelToken?.cancel();
     _cancelToken ??= CancelToken();
-    final epgRes = await HttpUtil().getRequest(
-        'https://epg.v1.mk/json?ch=$channel&date=$date',
-        cancelToken: _cancelToken,
-        isShowLoading: false);
+    final epgRes = await HttpUtil().getRequest('https://epg.v1.mk/json?ch=$channel&date=$date', cancelToken: _cancelToken, isShowLoading: false);
     LogUtil.v('epgRes:::$epgRes');
     _cancelToken = null;
     if (epgRes != null) {
@@ -78,14 +71,14 @@ class EpgUtil {
     return null;
   }
 
-  static Future<XmlDocument?> loadEPGXML(String url) async {
+  static loadEPGXML(String url) async {
+    LogUtil.v('****start download EPG Xml ****');
     int index = 0;
     final uStr = url.replaceAll('/h', ',h');
     final urlLink = uStr.split(',');
     XmlDocument? tempXmlDocument;
     while (tempXmlDocument == null && index < urlLink.length) {
-      final res =
-          await HttpUtil().getRequest(urlLink[index], isShowLoading: false);
+      final res = await HttpUtil().getRequest(urlLink[index], isShowLoading: false);
       if (res != null) {
         LogUtil.v('****download EPG Xml success****');
         tempXmlDocument = XmlDocument.parse(res.toString());
@@ -94,10 +87,11 @@ class EpgUtil {
         index += 1;
       }
     }
-    _programmes = tempXmlDocument!.findAllElements('programme');
+    _programmes = tempXmlDocument?.findAllElements('programme');
   }
 
   static resetEPGXML() {
+    LogUtil.v('****reset EPG Xml ****');
     _programmes = null;
   }
 }
