@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_tv_live/widget/update_download_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,12 +40,14 @@ class CheckVersionUtil {
   }
 
   static Future<bool?> showUpdateDialog(BuildContext context) async {
+    bool isTV = EnvUtil.isTV();
     return showDialog<bool>(
         context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return Center(
             child: Container(
-              width: 300,
+              width: isTV ? 600 : 300,
               decoration: BoxDecoration(
                   color: const Color(0xFF2B2D30),
                   borderRadius: BorderRadius.circular(8),
@@ -53,12 +56,27 @@ class CheckVersionUtil {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text(
-                      '${S.current.findNewVersion}🚀',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
+                  Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${S.current.findNewVersion}🚀',
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                          icon: const Icon(Icons.close),
+                        ),
+                      )
+                    ],
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -77,16 +95,9 @@ class CheckVersionUtil {
                       ],
                     ),
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(fixedSize: const Size(260, 44), backgroundColor: Colors.redAccent),
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
-                    child: Text(
-                      S.current.update,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
+                  UpdateDownloadBtn(
+                      apkUrl: '$downloadLink/${latestVersionEntity!.latestVersion}/easyTV-${latestVersionEntity!.latestVersion}${isTV ? '-tv' : ''}'
+                          '.apk'),
                   const SizedBox(height: 30),
                 ],
               ),
@@ -97,16 +108,10 @@ class CheckVersionUtil {
 
   static checkVersion(BuildContext context, [bool isShowLoading = true, isShowLatestToast = true]) async {
     final res = await checkRelease(isShowLoading, isShowLatestToast);
-    if (res != null) {
+    if (res != null && context.mounted) {
       final isUpdate = await showUpdateDialog(context);
-      if (isUpdate == true) {
-        if (Platform.isIOS) {
-          launchBrowserUrl('$downloadLink/${res!.latestVersion}/easyTV-${res!.latestVersion}.ipa');
-        } else if (Platform.isAndroid) {
-          launchBrowserUrl('$downloadLink/${res!.latestVersion}/easyTV-${res!.latestVersion}.apk');
-        } else {
-          launchBrowserUrl(releaseLink);
-        }
+      if (isUpdate == true && !Platform.isAndroid) {
+        launchBrowserUrl(releaseLink);
       }
     }
   }
@@ -119,5 +124,6 @@ class CheckVersionUtil {
 class VersionEntity {
   final String? latestVersion;
   final String? latestMsg;
+
   VersionEntity({this.latestVersion, this.latestMsg});
 }

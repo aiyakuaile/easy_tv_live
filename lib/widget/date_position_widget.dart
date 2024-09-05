@@ -12,7 +12,7 @@ class DatePositionWidget extends StatelessWidget {
       right: 10,
       child: IgnorePointer(
         child: Card(
-          color: Colors.black45,
+          color: Colors.black12,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(

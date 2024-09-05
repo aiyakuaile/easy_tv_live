@@ -51,6 +51,7 @@ dependencies:
 #  file_picker: ^8.1.2
   provider: ^6.1.2
   xml: ^6.5.0
+  apk_installer: ^0.0.4
 
 
 dev_dependencies:

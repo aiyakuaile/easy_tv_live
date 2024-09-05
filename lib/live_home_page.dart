@@ -137,7 +137,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   _loadData() async {
     await _parseData();
-    if (!EnvUtil.isTV()) CheckVersionUtil.checkVersion(context, false, false);
+    CheckVersionUtil.checkVersion(context, false, false);
   }
 
   @override
