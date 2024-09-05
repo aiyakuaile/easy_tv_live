@@ -32,7 +32,8 @@ class _SettingFontPageState extends State<SettingFontPage> {
     final res = await HttpUtil().getRequest('$_fontLink/font.json');
     if (res != null) {
       _fontList.clear();
-      _fontList.addAll((res as List).map((e) => FontModel.fromJson(e)).toList());
+      _fontList
+          .addAll((res as List).map((e) => FontModel.fromJson(e)).toList());
       if (mounted) setState(() {});
     }
   }
@@ -46,7 +47,8 @@ class _SettingFontPageState extends State<SettingFontPage> {
         title: const Text('字体设置'),
         backgroundColor: widget.isTV ? const Color(0xFF1E2022) : null,
       ),
-      body: Consumer<ThemeProvider>(builder: (BuildContext context, ThemeProvider themeProvider, Widget? child) {
+      body: Consumer<ThemeProvider>(builder:
+          (BuildContext context, ThemeProvider themeProvider, Widget? child) {
         return Column(
           children: [
             Container(
@@ -74,7 +76,8 @@ class _SettingFontPageState extends State<SettingFontPage> {
                           '${_fontScales[index]}',
                           style: const TextStyle(fontSize: 15),
                         ),
-                        selected: themeProvider.textScaleFactor == _fontScales[index],
+                        selected:
+                            themeProvider.textScaleFactor == _fontScales[index],
                       ),
                     ),
                   ),
@@ -100,7 +103,8 @@ class _SettingFontPageState extends State<SettingFontPage> {
                           Container(
                             height: 80,
                             alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 15.0),
                             child: Row(
                               children: [
                                 Text(
@@ -110,17 +114,25 @@ class _SettingFontPageState extends State<SettingFontPage> {
                                 const Spacer(),
                                 Builder(builder: (context) {
                                   return ElevatedButton(
-                                    onPressed: themeProvider.fontFamily == model.fontKey
+                                    onPressed: themeProvider.fontFamily ==
+                                            model.fontKey
                                         ? null
                                         : () async {
                                             if (model.progress != 0.0) return;
                                             if (model.fontKey == 'system') {
-                                              themeProvider.setFontFamily(model.fontKey!);
+                                              themeProvider.setFontFamily(
+                                                  model.fontKey!);
                                               return;
                                             }
-                                            final fontUrl = '$_fontDownloadLink/${model.fontKey!}.${model.fontType}';
-                                            final res = await FontUtil().loadFont(fontUrl, model.fontKey!, progressCallback: (double progress) {
-                                              LogUtil.v('progress=========$progress');
+                                            final fontUrl =
+                                                '$_fontDownloadLink/${model.fontKey!}.${model.fontType}';
+                                            final res = await FontUtil()
+                                                .loadFont(
+                                                    fontUrl, model.fontKey!,
+                                                    progressCallback:
+                                                        (double progress) {
+                                              LogUtil.v(
+                                                  'progress=========$progress');
                                               setState(() {
                                                 model.progress = progress;
                                               });
@@ -129,26 +141,39 @@ class _SettingFontPageState extends State<SettingFontPage> {
                                               setState(() {
                                                 model.progress = 0.0;
                                               });
-                                              themeProvider.setFontFamily(model.fontKey!, fontUrl);
+                                              themeProvider.setFontFamily(
+                                                  model.fontKey!, fontUrl);
                                             }
                                           },
                                     style: ElevatedButton.styleFrom(
                                       fixedSize: const Size(80, 40),
                                       padding: EdgeInsets.zero,
-                                      disabledBackgroundColor: themeProvider.fontFamily == model.fontKey ? Colors.redAccent : null,
+                                      disabledBackgroundColor:
+                                          themeProvider.fontFamily ==
+                                                  model.fontKey
+                                              ? Colors.redAccent
+                                              : null,
                                     ),
                                     child: Text(
                                       model.progress != 0.0
                                           ? '下载中'
-                                          : themeProvider.fontFamily == model.fontKey
+                                          : themeProvider.fontFamily ==
+                                                  model.fontKey
                                               ? '使用中'
                                               : '使用',
-                                      style: TextStyle(color: themeProvider.fontFamily == model.fontKey ? Colors.white : null),
+                                      style: TextStyle(
+                                          color: themeProvider.fontFamily ==
+                                                  model.fontKey
+                                              ? Colors.white
+                                              : null),
                                     ),
                                     onFocusChange: (bool isFocus) {
                                       if (isFocus) {
                                         Scrollable.ensureVisible(context,
-                                            alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                                            alignment: 0.5,
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.easeIn);
                                       }
                                     },
                                   );

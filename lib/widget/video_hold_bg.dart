@@ -52,7 +52,7 @@ class VideoHoldBg extends StatelessWidget {
       },
       child: Column(
         children: [
-          const SpinKitSpinningLines(color: Colors.white, size: 40),
+          SpinKitSpinningLines(color: toastString == '' ? Colors.transparent : Colors.white, size: 40),
           const Spacer(),
           FittedBox(
             child: Padding(

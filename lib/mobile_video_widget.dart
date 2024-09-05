@@ -50,7 +50,9 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
         actions: [
           IconButton(
               onPressed: () async {
-                if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+                if (!EnvUtil.isMobile)
+                  windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+                      windowButtonVisibility: false);
                 final isPlaying = widget.controller?.value.isPlaying ?? false;
                 if (isPlaying) {
                   widget.controller?.pause();
@@ -61,16 +63,22 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
                 if (m3uData == '') {
                   widget.onChangeSubSource();
                 }
-                if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+                if (!EnvUtil.isMobile)
+                  windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+                      windowButtonVisibility: true);
               },
               icon: const Icon(Icons.add)),
           IconButton(
               onPressed: () async {
-                if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+                if (!EnvUtil.isMobile)
+                  windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+                      windowButtonVisibility: false);
                 widget.controller?.pause();
                 await Navigator.of(context).pushNamed(RouterKeys.setting);
                 widget.controller?.play();
-                if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+                if (!EnvUtil.isMobile)
+                  windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+                      windowButtonVisibility: true);
               },
               icon: const Icon(Icons.settings_outlined)),
         ],
@@ -86,9 +94,13 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
               aspectRatio: widget.aspectRatio,
               isBuffering: widget.isBuffering,
               isPlaying: widget.isPlaying,
+              drawerIsOpen: false,
             ),
           ),
-          Flexible(child: widget.toastString == 'UNKNOWN' ? EmptyPage(onRefresh: widget.onChangeSubSource) : widget.drawChild)
+          Flexible(
+              child: widget.toastString == 'UNKNOWN'
+                  ? EmptyPage(onRefresh: widget.onChangeSubSource)
+                  : widget.drawChild)
         ],
       ),
     );

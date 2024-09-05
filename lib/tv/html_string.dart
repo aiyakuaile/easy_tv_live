@@ -1,4 +1,4 @@
-String  getHtmlString(String ipAddress) => '''
+String getHtmlString(String ipAddress) => '''
 <!DOCTYPE html>
 <html lang="zh_CN">
 <head>

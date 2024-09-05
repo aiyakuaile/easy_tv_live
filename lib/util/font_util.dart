@@ -21,25 +21,30 @@ class FontUtil {
     return '$path/fonts';
   }
 
-  Future<Uint8List?> downloadFont(String url, {bool overwrite = false, ValueChanged<double>? progressCallback}) async {
+  Future<Uint8List?> downloadFont(String url,
+      {bool overwrite = false, ValueChanged<double>? progressCallback}) async {
     final uri = Uri.parse(url);
     final filename = uri.pathSegments.last;
     final dir = await getFontPath();
     final fontPath = '$dir/$filename';
     final file = File(fontPath);
     if (await file.exists() && !overwrite) {
-      LogUtil.v('****** font $filename already exists *****${await file.length()}');
+      LogUtil.v(
+          '****** font $filename already exists *****${await file.length()}');
       return file.readAsBytes();
     }
-    final bytes = await downloadBytes(url, filename, fontPath, progressCallback: progressCallback);
+    final bytes = await downloadBytes(url, filename, fontPath,
+        progressCallback: progressCallback);
     if (bytes != null) {
       file.writeAsBytes(bytes);
     }
     return bytes;
   }
 
-  Future<Uint8List?> downloadBytes(String url, String filename, String savePath, {ValueChanged<double>? progressCallback}) async {
-    final code = await HttpUtil().downloadFile(url, savePath, progressCallback: progressCallback);
+  Future<Uint8List?> downloadBytes(String url, String filename, String savePath,
+      {ValueChanged<double>? progressCallback}) async {
+    final code = await HttpUtil()
+        .downloadFile(url, savePath, progressCallback: progressCallback);
     if (code == 200) {
       return File(savePath).readAsBytes();
     } else {
@@ -57,8 +62,10 @@ class FontUtil {
     }
   }
 
-  Future<bool> loadFont(String url, String fontFamily, {ValueChanged<double>? progressCallback}) async {
-    final fontByte = await downloadFont(url, progressCallback: progressCallback);
+  Future<bool> loadFont(String url, String fontFamily,
+      {ValueChanged<double>? progressCallback}) async {
+    final fontByte =
+        await downloadFont(url, progressCallback: progressCallback);
     if (fontByte == null) return false;
     try {
       await loadFontFromList(fontByte, fontFamily: fontFamily);

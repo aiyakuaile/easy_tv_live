@@ -54,7 +54,8 @@ void main() async {
     child: const MyApp(),
   ));
   if (Platform.isAndroid) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   }
 }
 
@@ -63,8 +64,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<ThemeProvider, ({String fontFamily, double textScaleFactor})>(
-      selector: (_, provider) => (fontFamily: provider.fontFamily, textScaleFactor: provider.textScaleFactor),
+    return Selector<ThemeProvider,
+        ({String fontFamily, double textScaleFactor})>(
+      selector: (_, provider) => (
+        fontFamily: provider.fontFamily,
+        textScaleFactor: provider.textScaleFactor
+      ),
       builder: (context, data, child) {
         String? fontFamily = data.fontFamily;
         if (fontFamily == 'system') {
@@ -75,7 +80,8 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
               brightness: Brightness.dark,
               fontFamily: fontFamily,
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent, brightness: Brightness.dark),
+              colorScheme: ColorScheme.fromSeed(
+                  seedColor: Colors.redAccent, brightness: Brightness.dark),
               scaffoldBackgroundColor: Colors.black,
               appBarTheme: const AppBarTheme(
                 backgroundColor: Colors.black,
@@ -85,10 +91,13 @@ class MyApp extends StatelessWidget {
               ),
               useMaterial3: true),
           routes: {
-            RouterKeys.subScribe: (BuildContext context) => const SubScribePage(),
+            RouterKeys.subScribe: (BuildContext context) =>
+                const SubScribePage(),
             RouterKeys.setting: (BuildContext context) => const SettingPage(),
-            RouterKeys.settingFont: (BuildContext context) => const SettingFontPage(),
-            RouterKeys.settingBeautify: (BuildContext context) => const SettingBeautifyPage(),
+            RouterKeys.settingFont: (BuildContext context) =>
+                const SettingFontPage(),
+            RouterKeys.settingBeautify: (BuildContext context) =>
+                const SettingBeautifyPage(),
           },
           localizationsDelegates: const [
             S.delegate,
@@ -102,22 +111,28 @@ class MyApp extends StatelessWidget {
               return const Locale('en', 'US');
             }
             for (var supportedLocale in supportedLocales) {
-              if (supportedLocale.languageCode == locale.languageCode && supportedLocale.countryCode == locale.countryCode) {
+              if (supportedLocale.languageCode == locale.languageCode &&
+                  supportedLocale.countryCode == locale.countryCode) {
                 return supportedLocale;
               }
             }
             for (var supportedLocale in supportedLocales) {
-              if (supportedLocale.languageCode == locale.languageCode && supportedLocale.countryCode != locale.countryCode) {
+              if (supportedLocale.languageCode == locale.languageCode &&
+                  supportedLocale.countryCode != locale.countryCode) {
                 return supportedLocale;
               }
             }
             return const Locale('en', 'US');
           },
           debugShowCheckedModeBanner: false,
-          home: Platform.isWindows || Platform.isLinux ? const DragToResizeArea(child: DragToMoveArea(child: LiveHomePage())) : const LiveHomePage(),
+          home: Platform.isWindows || Platform.isLinux
+              ? const DragToResizeArea(
+                  child: DragToMoveArea(child: LiveHomePage()))
+              : const LiveHomePage(),
           builder: (context, child) {
             return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(data.textScaleFactor)),
+              data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(data.textScaleFactor)),
               child: FlutterEasyLoading(child: child),
             );
           },

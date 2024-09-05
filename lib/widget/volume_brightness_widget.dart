@@ -49,7 +49,8 @@ class _VolumeBrightnessWidgetState extends State<VolumeBrightnessWidget> {
             _volume = (_volume + (-details.delta.dy / 500)).clamp(0.0, 1.0);
             FlutterVolumeController.setVolume(_volume);
           } else {
-            _brightness = (_brightness + (-details.delta.dy / 500)).clamp(0.0, 1.0);
+            _brightness =
+                (_brightness + (-details.delta.dy / 500)).clamp(0.0, 1.0);
             ScreenBrightness().setScreenBrightness(_brightness);
           }
           setState(() {});
@@ -72,7 +73,8 @@ class _VolumeBrightnessWidgetState extends State<VolumeBrightnessWidget> {
               : Container(
                   width: 150,
                   height: 30,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(15),
@@ -81,7 +83,9 @@ class _VolumeBrightnessWidgetState extends State<VolumeBrightnessWidget> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        _controlType == 1 ? Icons.light_mode : Icons.volume_up_outlined,
+                        _controlType == 1
+                            ? Icons.light_mode
+                            : Icons.volume_up_outlined,
                         color: Colors.white,
                         size: 20,
                       ),

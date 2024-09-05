@@ -39,14 +39,18 @@ class _SettingPageState extends State<SettingPage> {
                 children: [
                   Text(
                     S.current.appName,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const Positioned(
                     top: 0,
                     right: -45,
                     child: Text(
                       'v${CheckVersionUtil.version}',
-                      style: TextStyle(fontSize: 12, color: Colors.redAccent, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.redAccent,
+                          fontWeight: FontWeight.bold),
                     ),
                   )
                 ],
@@ -77,10 +81,14 @@ class _SettingPageState extends State<SettingPage> {
               children: [
                 if (_latestVersionEntity != null)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(30)),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                        color: Colors.redAccent,
+                        borderRadius: BorderRadius.circular(30)),
                     child: Text(
-                      S.current.newVersion(_latestVersionEntity!.latestVersion!),
+                      S.current
+                          .newVersion(_latestVersionEntity!.latestVersion!),
                       style: const TextStyle(fontSize: 12, color: Colors.white),
                     ),
                   ),

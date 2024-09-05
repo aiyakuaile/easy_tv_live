@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:easy_tv_live/tv/tv_setting_page.dart';
-import 'package:easy_tv_live/util/date_util.dart';
+import 'package:easy_tv_live/widget/date_position_widget.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,6 +52,8 @@ class _TvPageState extends State<TvPage> {
 
   bool _debounce = true;
   Timer? _timer;
+
+  bool _drawerIsOpen = false;
 
   Future<bool?> _openAddSource() async {
     return Navigator.push<bool>(
@@ -174,6 +176,11 @@ class _TvPageState extends State<TvPage> {
       ),
       drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
       drawerScrimColor: Colors.transparent,
+      onDrawerChanged: (bool isOpen) {
+        setState(() {
+          _drawerIsOpen = isOpen;
+        });
+      },
       body: Builder(builder: (context) {
         return KeyboardListener(
           focusNode: _videoNode,
@@ -184,38 +191,28 @@ class _TvPageState extends State<TvPage> {
               : Container(
                   alignment: Alignment.center,
                   color: Colors.black,
-                  child: widget.controller?.value.isInitialized ?? false
-                      ? Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            AspectRatio(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      widget.controller?.value.isInitialized == true
+                          ? AspectRatio(
                               aspectRatio: widget.aspectRatio,
                               child: SizedBox(
                                 width: double.infinity,
                                 child: VideoPlayer(widget.controller!),
                               ),
-                            ),
-                            if (!widget.isPlaying)
-                              GestureDetector(
-                                  onTap: () {
-                                    widget.controller?.play();
-                                  },
-                                  child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50)),
-                            if (widget.isBuffering) const SpinKitSpinningLines(color: Colors.white),
-                            if (Scaffold.of(context).isDrawerOpen)
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: Column(
-                                  children: [
-                                    Text(DateUtil.formatDate(DateTime.now(), format: 'HH:mm')),
-                                    Text(DateUtil.formatDate(DateTime.now(), format: 'yyyy年MM月dd日')),
-                                  ],
-                                ),
-                              )
-                          ],
-                        )
-                      : VideoHoldBg(toastString: widget.toastString),
+                            )
+                          : VideoHoldBg(toastString: _drawerIsOpen ? '' : widget.toastString),
+                      if (_drawerIsOpen) const DatePositionWidget(),
+                      if (!widget.isPlaying && !_drawerIsOpen)
+                        GestureDetector(
+                            onTap: () {
+                              widget.controller?.play();
+                            },
+                            child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50)),
+                      if (widget.isBuffering && !_drawerIsOpen) const SpinKitSpinningLines(color: Colors.white),
+                    ],
+                  ),
                 ),
         );
       }),

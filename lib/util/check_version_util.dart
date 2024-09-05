@@ -17,15 +17,18 @@ class CheckVersionUtil {
   static final homeLink = EnvUtil.sourceHomeHost();
   static VersionEntity? latestVersionEntity;
 
-  static Future<VersionEntity?> checkRelease([bool isShowLoading = true, isShowLatestToast = true]) async {
+  static Future<VersionEntity?> checkRelease(
+      [bool isShowLoading = true, isShowLatestToast = true]) async {
     if (latestVersionEntity != null) return latestVersionEntity;
     try {
-      final res = await HttpUtil().getRequest(versionHost, isShowLoading: isShowLoading);
+      final res = await HttpUtil()
+          .getRequest(versionHost, isShowLoading: isShowLoading);
       if (res != null) {
         final latestVersion = res['tag_name'] as String?;
         final latestMsg = res['body'] as String?;
         if (latestVersion != null && latestVersion.compareTo(version) > 0) {
-          latestVersionEntity = VersionEntity(latestVersion: latestVersion, latestMsg: latestMsg);
+          latestVersionEntity =
+              VersionEntity(latestVersion: latestVersion, latestMsg: latestMsg);
           return latestVersionEntity;
         } else {
           if (isShowLatestToast) EasyLoading.showToast(S.current.latestVersion);
@@ -48,8 +51,11 @@ class CheckVersionUtil {
               decoration: BoxDecoration(
                   color: const Color(0xFF2B2D30),
                   borderRadius: BorderRadius.circular(8),
-                  gradient: const LinearGradient(
-                      colors: [Color(0xff6D6875), Color(0xffB4838D), Color(0xffE5989B)], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+                  gradient: const LinearGradient(colors: [
+                    Color(0xff6D6875),
+                    Color(0xffB4838D),
+                    Color(0xffE5989B)
+                  ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -57,28 +63,34 @@ class CheckVersionUtil {
                     padding: const EdgeInsets.all(20),
                     child: Text(
                       '${S.current.findNewVersion}🚀',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w500),
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    constraints: const BoxConstraints(minHeight: 200, minWidth: 300),
+                    constraints:
+                        const BoxConstraints(minHeight: 200, minWidth: 300),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           '🎒 v${CheckVersionUtil.latestVersionEntity!.latestVersion}${S.current.updateContent}',
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                          style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w500),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(20),
-                          child: Text('${CheckVersionUtil.latestVersionEntity!.latestMsg}'),
+                          child: Text(
+                              '${CheckVersionUtil.latestVersionEntity!.latestMsg}'),
                         )
                       ],
                     ),
                   ),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(fixedSize: const Size(260, 44), backgroundColor: Colors.redAccent),
+                    style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(260, 44),
+                        backgroundColor: Colors.redAccent),
                     onPressed: () {
                       Navigator.pop(context, true);
                     },
@@ -95,15 +107,18 @@ class CheckVersionUtil {
         });
   }
 
-  static checkVersion(BuildContext context, [bool isShowLoading = true, isShowLatestToast = true]) async {
+  static checkVersion(BuildContext context,
+      [bool isShowLoading = true, isShowLatestToast = true]) async {
     final res = await checkRelease(isShowLoading, isShowLatestToast);
     if (res != null) {
       final isUpdate = await showUpdateDialog(context);
       if (isUpdate == true) {
         if (Platform.isIOS) {
-          launchBrowserUrl('$downloadLink/${res!.latestVersion}/easyTV-${res!.latestVersion}.ipa');
+          launchBrowserUrl(
+              '$downloadLink/${res!.latestVersion}/easyTV-${res!.latestVersion}.ipa');
         } else if (Platform.isAndroid) {
-          launchBrowserUrl('$downloadLink/${res!.latestVersion}/easyTV-${res!.latestVersion}.apk');
+          launchBrowserUrl(
+              '$downloadLink/${res!.latestVersion}/easyTV-${res!.latestVersion}.apk');
         } else {
           launchBrowserUrl(releaseLink);
         }

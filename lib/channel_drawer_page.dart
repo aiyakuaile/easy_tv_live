@@ -27,6 +27,7 @@ class ChannelDrawerPage extends StatefulWidget {
 class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
   final _scrollController = ScrollController();
   final _scrollChannelController = ScrollController();
+  final _epgScrollController = ItemScrollController();
   List<EpgData>? _epgData;
   int _selEPGIndex = 0;
 
@@ -147,12 +148,14 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
   }
 
   Widget _buildOpenDrawer() {
-    double drawWidth = max(MediaQuery.of(context).size.width * 0.5 + MediaQuery.of(context).padding.left, 300);
+    double drawWidth = max(MediaQuery.of(context).size.width * 0.4 + MediaQuery.of(context).padding.left, 300);
     final screenWidth = MediaQuery.of(context).size.width;
-    _isShowEPG = (drawWidth + 200) < screenWidth;
+    double egpWidth = 260.0;
+    _isShowEPG = (drawWidth + egpWidth) < screenWidth;
     if (_isShowEPG && _epgData != null && _epgData!.isNotEmpty) {
-      drawWidth += 200;
+      drawWidth += egpWidth;
     }
+    bool isShowEpgWidget = _isShowEPG && _epgData != null && _epgData!.isNotEmpty;
     return Container(
       key: _viewPortKey,
       padding: EdgeInsets.only(left: MediaQuery.of(context).padding.left),
@@ -228,6 +231,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                       child: InkWell(
                         overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
                         canRequestFocus: isTV,
+                        autofocus: isTV && _channelIndex == index,
                         onTap: () async {
                           if (widget.playModel?.title == name) {
                             Scaffold.of(context).closeDrawer();
@@ -269,43 +273,73 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                 },
                 itemCount: _values[_groupIndex].length),
           ),
-        if (_isShowEPG) VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
-        if (_isShowEPG && _epgData != null && _epgData!.isNotEmpty)
+        if (isShowEpgWidget)
           SizedBox(
-            width: 200,
-            child: Column(
-              children: [
-                Container(
-                  height: 44,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    '节目单',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            width: egpWidth,
+            child: Material(
+              color: Colors.black.withOpacity(0.1),
+              child: Column(
+                children: [
+                  Container(
+                    height: 44,
+                    alignment: Alignment.center,
+                    child: const Text(
+                      '节目单',
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-                VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
-                Flexible(
-                  child: ScrollablePositionedList.builder(
-                      initialScrollIndex: _selEPGIndex,
-                      itemBuilder: (BuildContext context, int index) {
-                        final data = _epgData![index];
-                        final isSelect = index == _selEPGIndex;
-                        return Container(
-                          constraints: const BoxConstraints(
-                            minHeight: 40,
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            '${data.start}-${data.end}\n${data.title}',
-                            style: TextStyle(
-                                fontWeight: isSelect ? FontWeight.bold : FontWeight.normal, color: isSelect ? Colors.redAccent : Colors.white),
-                          ),
-                        );
-                      },
-                      itemCount: _epgData!.length),
-                ),
-              ],
+                  VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
+                  Flexible(
+                    child: ScrollablePositionedList.builder(
+                        initialScrollIndex: _selEPGIndex,
+                        itemScrollController: _epgScrollController,
+                        initialAlignment: 0.3,
+                        physics: const ClampingScrollPhysics(),
+                        padding: isTV ? EdgeInsets.only(bottom: MediaQuery.of(context).size.height) : null,
+                        itemBuilder: (BuildContext context, int index) {
+                          final data = _epgData![index];
+                          final isSelect = index == _selEPGIndex;
+                          Widget child = Container(
+                            constraints: const BoxConstraints(
+                              minHeight: 40,
+                            ),
+                            padding: const EdgeInsets.all(10),
+                            alignment: Alignment.centerLeft,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('${data.start}-${data.end}',
+                                    style: TextStyle(
+                                        fontWeight: isSelect ? FontWeight.bold : FontWeight.normal,
+                                        color: isSelect ? Colors.redAccent : Colors.white,
+                                        fontSize: isSelect ? 17 : 15)),
+                                Text('${data.title}',
+                                    style: TextStyle(
+                                        fontWeight: isSelect ? FontWeight.bold : FontWeight.normal,
+                                        color: isSelect ? Colors.redAccent : Colors.white,
+                                        fontSize: isSelect ? 17 : 15)),
+                              ],
+                            ),
+                          );
+                          if (isTV) {
+                            child = InkWell(
+                              onTap: () {},
+                              onFocusChange: (bool isFocus) {
+                                if (isFocus) {
+                                  _epgScrollController.scrollTo(index: index, alignment: 0.3, duration: const Duration(milliseconds: 220));
+                                }
+                              },
+                              overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
+                              child: child,
+                            );
+                          }
+                          return child;
+                        },
+                        itemCount: _epgData!.length),
+                  ),
+                ],
+              ),
             ),
           )
       ]),

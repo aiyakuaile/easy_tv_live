@@ -42,22 +42,29 @@ class EpgUtil {
         final channel = programme.getAttribute('channel');
         if (channel == model.id) {
           final start = programme.getAttribute('start')!;
-          final dateStart = DateUtil.formatDate(DateUtil.parseCustomDateTimeString(start), format: "HH:mm");
+          final dateStart = DateUtil.formatDate(
+              DateUtil.parseCustomDateTimeString(start),
+              format: "HH:mm");
           final stop = programme.getAttribute('stop')!;
-          final dateEnd = DateUtil.formatDate(DateUtil.parseCustomDateTimeString(stop), format: "HH:mm");
+          final dateEnd = DateUtil.formatDate(
+              DateUtil.parseCustomDateTimeString(stop),
+              format: "HH:mm");
           final title = programme.findAllElements('title').first.innerText;
-          epgModel.epgData!.add(EpgData(title: title, start: dateStart, end: dateEnd));
+          epgModel.epgData!
+              .add(EpgData(title: title, start: dateStart, end: dateEnd));
         }
       }
       if (epgModel.epgData!.isEmpty) return null;
-      epgModel.epgData!.sort((a, b) => a.start!.compareTo(b.start!));
       _EPGMap[channelKey] = epgModel;
       return epgModel;
     }
 
     _cancelToken?.cancel();
     _cancelToken ??= CancelToken();
-    final epgRes = await HttpUtil().getRequest('https://epg.v1.mk/json?ch=$channel&date=$date', cancelToken: _cancelToken, isShowLoading: false);
+    final epgRes = await HttpUtil().getRequest(
+        'https://epg.v1.mk/json?ch=$channel&date=$date',
+        cancelToken: _cancelToken,
+        isShowLoading: false);
     LogUtil.v('epgRes:::$epgRes');
     _cancelToken = null;
     if (epgRes != null) {
@@ -73,10 +80,12 @@ class EpgUtil {
 
   static Future<XmlDocument?> loadEPGXML(String url) async {
     int index = 0;
-    final urlLink = url.split(',');
+    final uStr = url.replaceAll('/h', ',h');
+    final urlLink = uStr.split(',');
     XmlDocument? tempXmlDocument;
     while (tempXmlDocument == null && index < urlLink.length) {
-      final res = await HttpUtil().getRequest(urlLink[index], isShowLoading: false);
+      final res =
+          await HttpUtil().getRequest(urlLink[index], isShowLoading: false);
       if (res != null) {
         LogUtil.v('****download EPG Xml success****');
         tempXmlDocument = XmlDocument.parse(res.toString());

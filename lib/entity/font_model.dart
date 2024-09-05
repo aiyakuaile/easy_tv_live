@@ -1,5 +1,6 @@
 class FontModel {
-  FontModel({this.id, this.fontName, this.fontKey, this.fontType, this.progress});
+  FontModel(
+      {this.id, this.fontName, this.fontKey, this.fontType, this.progress});
   FontModel.fromJson(dynamic json) {
     id = json['id'];
     fontName = json['font_name'];

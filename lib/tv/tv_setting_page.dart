@@ -65,8 +65,10 @@ class _TvSettingPageState extends State<TvSettingPage> {
           const Expanded(
             child: SubScribePage(isTV: true),
           ),
-        if (_selectedIndex == 1) const Expanded(child: SettingFontPage(isTV: true)),
-        if (_selectedIndex == 2) const Expanded(child: SettingBeautifyPage(isTV: true)),
+        if (_selectedIndex == 1)
+          const Expanded(child: SettingFontPage(isTV: true)),
+        if (_selectedIndex == 2)
+          const Expanded(child: SettingBeautifyPage(isTV: true)),
       ],
     );
   }

@@ -29,7 +29,9 @@ class EmptyPage extends StatelessWidget {
               backgroundColor: Colors.redAccent,
             ),
             onPressed: onRefresh,
-            child: Text('      ${EnvUtil.isTV() ? S.current.okRefresh : S.current.refresh}      ', style: const TextStyle(color: Colors.white)),
+            child: Text(
+                '      ${EnvUtil.isTV() ? S.current.okRefresh : S.current.refresh}      ',
+                style: const TextStyle(color: Colors.white)),
           )
         ],
       ),

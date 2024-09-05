@@ -1,5 +1,6 @@
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
+import 'package:easy_tv_live/widget/date_position_widget.dart';
 import 'package:easy_tv_live/widget/video_hold_bg.dart';
 import 'package:easy_tv_live/widget/volume_brightness_widget.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'generated/l10n.dart';
-import 'util/date_util.dart';
 
 class TableVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
@@ -19,22 +19,24 @@ class TableVideoWidget extends StatefulWidget {
   final bool isBuffering;
   final bool isPlaying;
   final double aspectRatio;
+  final bool drawerIsOpen;
   const TableVideoWidget(
-      {Key? key,
+      {super.key,
       required this.controller,
       required this.isBuffering,
       required this.isPlaying,
       required this.aspectRatio,
+      required this.drawerIsOpen,
       this.toastString,
       this.changeChannelSources,
-      this.isLandscape = true})
-      : super(key: key);
+      this.isLandscape = true});
 
   @override
   State<TableVideoWidget> createState() => _TableVideoWidgetState();
 }
 
-class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener {
+class _TableVideoWidgetState extends State<TableVideoWidget>
+    with WindowListener {
   bool _isShowMenuBar = true;
 
   @override
@@ -52,15 +54,18 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
   @override
   void onWindowEnterFullScreen() {
     super.onWindowEnterFullScreen();
-    windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+    windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+        windowButtonVisibility: true);
   }
 
   @override
   void onWindowLeaveFullScreen() {
     if (widget.isLandscape) {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+      windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+          windowButtonVisibility: false);
     } else {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+      windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+          windowButtonVisibility: true);
     }
   }
 
@@ -68,9 +73,11 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
   void onWindowResize() {
     LogUtil.v('onWindowResize:::::${widget.isLandscape}');
     if (widget.isLandscape) {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+      windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+          windowButtonVisibility: false);
     } else {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+      windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+          windowButtonVisibility: true);
     }
   }
 
@@ -111,28 +118,16 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                             onTap: () {
                               widget.controller?.play();
                             },
-                            child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50)),
-                      if (widget.isBuffering) const SpinKitSpinningLines(color: Colors.white)
+                            child: const Icon(Icons.play_circle_outline,
+                                color: Colors.white, size: 50)),
+                      if (widget.isBuffering)
+                        const SpinKitSpinningLines(color: Colors.white)
                     ],
                   )
                 : VideoHoldBg(toastString: widget.toastString),
           ),
         ),
-        if (Scaffold.of(context).isDrawerOpen)
-          Positioned(
-            top: 20,
-            right: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  DateUtil.formatDate(DateTime.now(), format: 'HH:mm'),
-                  style: TextStyle(fontSize: 30),
-                ),
-                Text(DateUtil.formatDate(DateTime.now(), format: 'yyyy年MM月dd日'), style: TextStyle(fontSize: 20)),
-              ],
-            ),
-          ),
+        if (widget.drawerIsOpen) const DatePositionWidget(),
         const VolumeBrightnessWidget(),
         if (widget.isLandscape)
           AnimatedPositioned(
@@ -148,7 +143,9 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                     const Spacer(),
                     IconButton(
                         tooltip: S.current.tipChannelList,
-                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(
+                            backgroundColor: Colors.black87,
+                            side: const BorderSide(color: Colors.white)),
                         icon: const Icon(
                           Icons.list_alt,
                           color: Colors.white,
@@ -162,7 +159,9 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                     const SizedBox(width: 12),
                     IconButton(
                         tooltip: S.current.tipChangeLine,
-                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(
+                            backgroundColor: Colors.black87,
+                            side: const BorderSide(color: Colors.white)),
                         icon: const Icon(
                           Icons.legend_toggle,
                           color: Colors.white,
@@ -178,14 +177,22 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                       tooltip: S.current.portrait,
                       onPressed: () async {
                         if (EnvUtil.isMobile) {
-                          SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+                          SystemChrome.setPreferredOrientations(
+                              [DeviceOrientation.portraitUp]);
                           return;
                         }
-                        await windowManager.setSize(const Size(414, 414 * 16 / 9), animate: true);
-                        await windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
-                        Future.delayed(const Duration(milliseconds: 500), () => windowManager.center(animate: true));
+                        await windowManager.setSize(
+                            const Size(414, 414 * 16 / 9),
+                            animate: true);
+                        await windowManager.setTitleBarStyle(
+                            TitleBarStyle.hidden,
+                            windowButtonVisibility: true);
+                        Future.delayed(const Duration(milliseconds: 500),
+                            () => windowManager.center(animate: true));
                       },
-                      style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
+                      style: IconButton.styleFrom(
+                          backgroundColor: Colors.black87,
+                          side: const BorderSide(color: Colors.white)),
                       icon: const Icon(
                         Icons.screen_rotation,
                         color: Colors.white,
@@ -196,17 +203,22 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                       IconButton(
                         tooltip: S.current.fullScreen,
                         onPressed: () async {
-                          final isFullScreen = await windowManager.isFullScreen();
+                          final isFullScreen =
+                              await windowManager.isFullScreen();
                           LogUtil.v('isFullScreen:::::$isFullScreen');
                           windowManager.setFullScreen(!isFullScreen);
                         },
-                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
+                        style: IconButton.styleFrom(
+                            backgroundColor: Colors.black87,
+                            side: const BorderSide(color: Colors.white)),
                         icon: FutureBuilder<bool>(
                           future: windowManager.isFullScreen(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Icon(
-                                snapshot.data! ? Icons.close_fullscreen : Icons.fit_screen_outlined,
+                                snapshot.data!
+                                    ? Icons.close_fullscreen
+                                    : Icons.fit_screen_outlined,
                                 color: Colors.white,
                               );
                             } else {
@@ -229,14 +241,21 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
               tooltip: S.current.landscape,
               onPressed: () async {
                 if (EnvUtil.isMobile) {
-                  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.landscapeLeft,
+                    DeviceOrientation.landscapeRight
+                  ]);
                   return;
                 }
-                await windowManager.setSize(const Size(800, 800 * 9 / 16), animate: true);
-                await windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
-                Future.delayed(const Duration(milliseconds: 500), () => windowManager.center(animate: true));
+                await windowManager.setSize(const Size(800, 800 * 9 / 16),
+                    animate: true);
+                await windowManager.setTitleBarStyle(TitleBarStyle.hidden,
+                    windowButtonVisibility: false);
+                Future.delayed(const Duration(milliseconds: 500),
+                    () => windowManager.center(animate: true));
               },
-              style: IconButton.styleFrom(backgroundColor: Colors.black45, iconSize: 20),
+              style: IconButton.styleFrom(
+                  backgroundColor: Colors.black45, iconSize: 20),
               icon: const Icon(Icons.screen_rotation, color: Colors.white),
             ),
           )

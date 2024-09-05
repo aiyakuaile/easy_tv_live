@@ -131,7 +131,8 @@ class _SubScribePageState extends State<SubScribePage> {
       } else {
         request.response
           ..statusCode = HttpStatus.methodNotAllowed
-          ..write('Unsupported request: ${request.method}. Only POST requests are allowed.')
+          ..write(
+              'Unsupported request: ${request.method}. Only POST requests are allowed.')
           ..close();
       }
     }
@@ -149,8 +150,10 @@ class _SubScribePageState extends State<SubScribePage> {
     try {
       for (var interface in await NetworkInterface.list()) {
         for (var addr in interface.addresses) {
-          LogUtil.v('Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
-          if (addr.type == InternetAddressType.IPv4 && addr.address.startsWith('192')) {
+          LogUtil.v(
+              'Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
+          if (addr.type == InternetAddressType.IPv4 &&
+              addr.address.startsWith('192')) {
             currentIP = addr.address;
           }
         }
@@ -195,65 +198,102 @@ class _SubScribePageState extends State<SubScribePage> {
             child: Row(
               children: [
                 SizedBox(
-                  width: widget.isTV ? MediaQuery.of(context).size.width * 0.3 : MediaQuery.of(context).size.width,
+                  width: widget.isTV
+                      ? MediaQuery.of(context).size.width * 0.3
+                      : MediaQuery.of(context).size.width,
                   child: ListView.separated(
                       padding: const EdgeInsets.all(10),
                       itemBuilder: (context, index) {
                         final model = _m3uList[index];
                         return Card(
-                          color: model.selected == true ? Colors.redAccent.withOpacity(0.5) : const Color(0xFF2B2D30),
+                          color: model.selected == true
+                              ? Colors.redAccent.withOpacity(0.5)
+                              : const Color(0xFF2B2D30),
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 20, left: 20, right: 10),
+                            padding: const EdgeInsets.only(
+                                top: 20, left: 20, right: 10),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  model.link == 'default' ? model.link! : model.link!.split('?').first.split('/').last.toString(),
+                                  model.link == 'default'
+                                      ? model.link!
+                                      : model.link!
+                                          .split('?')
+                                          .first
+                                          .split('/')
+                                          .last
+                                          .toString(),
                                   style: const TextStyle(fontSize: 20),
                                 ),
                                 const SizedBox(height: 20),
                                 Text(
                                   '${S.current.createTime}：${model.time}',
-                                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                                  style: TextStyle(
+                                      color: Colors.white.withOpacity(0.5),
+                                      fontSize: 12),
                                 ),
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     const Spacer(),
-                                    if (model.selected != true && model.link != 'default')
+                                    if (model.selected != true &&
+                                        model.link != 'default')
                                       TextButton(
                                           onPressed: () async {
                                             final isDelete = await showDialog(
                                                 context: context,
                                                 builder: (context) {
                                                   return AlertDialog(
-                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                                    backgroundColor: const Color(0xFF393B40),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8)),
+                                                    backgroundColor:
+                                                        const Color(0xFF393B40),
                                                     content: Text(
-                                                      S.current.dialogDeleteContent,
-                                                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                                                      S.current
+                                                          .dialogDeleteContent,
+                                                      style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 20),
                                                     ),
                                                     actions: [
                                                       TextButton(
                                                           onPressed: () {
-                                                            Navigator.pop(context, false);
+                                                            Navigator.pop(
+                                                                context, false);
                                                           },
                                                           child: Text(
-                                                            S.current.dialogCancel,
-                                                            style: const TextStyle(fontSize: 17),
+                                                            S.current
+                                                                .dialogCancel,
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        17),
                                                           )),
                                                       TextButton(
                                                           onPressed: () {
-                                                            Navigator.pop(context, true);
+                                                            Navigator.pop(
+                                                                context, true);
                                                           },
-                                                          child: Text(S.current.dialogConfirm, style: const TextStyle(fontSize: 17))),
+                                                          child: Text(
+                                                              S.current
+                                                                  .dialogConfirm,
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          17))),
                                                     ],
                                                   );
                                                 });
                                             if (isDelete == true) {
                                               _m3uList.removeAt(index);
-                                              await M3uUtil.saveLocalData(_m3uList);
+                                              await M3uUtil.saveLocalData(
+                                                  _m3uList);
                                               setState(() {});
                                             }
                                           },
@@ -266,13 +306,17 @@ class _SubScribePageState extends State<SubScribePage> {
                                               }
                                               if (model.selected != true) {
                                                 model.selected = true;
-                                                await SpUtil.remove('m3u_cache');
-                                                await M3uUtil.saveLocalData(_m3uList);
+                                                await SpUtil.remove(
+                                                    'm3u_cache');
+                                                await M3uUtil.saveLocalData(
+                                                    _m3uList);
                                                 setState(() {});
                                               }
                                             }
                                           : null,
-                                      child: Text(model.selected != true ? S.current.setDefault : S.current.inUse),
+                                      child: Text(model.selected != true
+                                          ? S.current.setDefault
+                                          : S.current.inUse),
                                     ),
                                   ],
                                 )
@@ -297,7 +341,8 @@ class _SubScribePageState extends State<SubScribePage> {
                       children: [
                         Text(
                           S.current.tvScanTip,
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         Container(
                           decoration: const BoxDecoration(color: Colors.white),
@@ -310,13 +355,17 @@ class _SubScribePageState extends State<SubScribePage> {
                                   data: _address!,
                                   decoration: const PrettyQrDecoration(
                                     image: PrettyQrDecorationImage(
-                                      image: AssetImage('assets/images/logo.png'),
+                                      image:
+                                          AssetImage('assets/images/logo.png'),
                                     ),
                                   ),
                                 ),
                         ),
                         if (_address != null)
-                          Container(margin: const EdgeInsets.only(bottom: 20), child: Text(S.current.pushAddress(_address ?? ''))),
+                          Container(
+                              margin: const EdgeInsets.only(bottom: 20),
+                              child:
+                                  Text(S.current.pushAddress(_address ?? ''))),
                         Text(S.current.tvPushContent),
                       ],
                     ),
@@ -343,7 +392,8 @@ class _SubScribePageState extends State<SubScribePage> {
     final res = await showModalBottomSheet<String>(
         context: context,
         isScrollControlled: true,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         builder: (context) {
           return SingleChildScrollView(
             child: LayoutBuilder(builder: (context, _) {
@@ -370,7 +420,8 @@ class _SubScribePageState extends State<SubScribePage> {
                     ),
                     Flexible(
                       child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
                         child: TextField(
                           controller: _textController,
                           autofocus: true,
@@ -405,7 +456,10 @@ class _SubScribePageState extends State<SubScribePage> {
     }
     if (res.startsWith('http') && hasIndex == -1) {
       LogUtil.v('添加：$res');
-      final sub = SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: res, selected: false);
+      final sub = SubScribeModel(
+          time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
+          link: res,
+          selected: false);
       _m3uList.add(sub);
       await M3uUtil.saveLocalData(_m3uList);
       setState(() {});
