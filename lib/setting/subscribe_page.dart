@@ -142,13 +142,6 @@ class _SubScribePageState extends State<SubScribePage> {
 
   _getData() async {
     final res = await M3uUtil.getLocalData();
-    res.addAll([
-      SubScribeModel(link: 'https://123.m3u', time: '2022-12-01 11:12:13'),
-      SubScribeModel(link: 'https://456.m3u', time: '2022-12-01 11:12:13'),
-      SubScribeModel(link: 'https://789.m3u', time: '2022-12-01 11:12:13'),
-      SubScribeModel(link: 'https://0012.m3u', time: '2022-12-01 11:12:13'),
-      SubScribeModel(link: 'https://5589.m3u', time: '2022-12-01 11:12:13'),
-    ]);
     setState(() {
       _m3uList = res;
     });
