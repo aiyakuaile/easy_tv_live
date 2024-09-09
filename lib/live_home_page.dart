@@ -1,4 +1,5 @@
 import 'package:easy_tv_live/util/epg_util.dart';
+import 'package:easy_tv_live/widget/focus_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -266,21 +267,16 @@ class _LiveHomePageState extends State<LiveHomePage> {
                   spacing: 10,
                   runSpacing: 10,
                   children: List.generate(sources.length, (index) {
-                    return OutlinedButton(
-                        autofocus: _sourceIndex == index,
-                        style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            side: BorderSide(color: _sourceIndex == index ? Colors.red : Colors.white),
-                            foregroundColor: Colors.redAccent),
-                        onPressed: _sourceIndex == index
-                            ? null
-                            : () {
-                                Navigator.pop(context, index);
-                              },
-                        child: Text(
-                          S.current.lineIndex(index + 1),
-                          style: TextStyle(fontSize: 12, color: _sourceIndex == index ? Colors.red : Colors.white),
-                        ));
+                    return FocusButton(
+                      autofocus: _sourceIndex == index,
+                      onTap: _sourceIndex == index
+                          ? null
+                          : () {
+                              Navigator.pop(context, index);
+                            },
+                      title: S.current.lineIndex(index + 1),
+                      selected: _sourceIndex == index,
+                    );
                   })),
             ),
           );
