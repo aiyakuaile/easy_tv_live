@@ -52,9 +52,9 @@ ok键：确认操作、显示频道列表
 
 <a href="https://buymeacoffee.com/aiyakuaile" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
+为了方便统计打赏名单，推荐使用微信扫一扫直接赞赏，感谢您的支持！
+![微信赞赏](https://fastly.jsdelivr.net/gh/aiyakuaile/images/appreciate.png)
 
-![微信支付](https://fastly.jsdelivr.net/gh/aiyakuaile/images/wxpay.png) | ![支付宝支付](https://fastly.jsdelivr.net/gh/aiyakuaile/images/Alipay.png)
----|---
 
 ## 贡献
 
