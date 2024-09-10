@@ -9,24 +9,27 @@
 
 #### 功能
 
-- 全平台支持的IPTV播放器
-- 可自主添加直播源链接
-- 干净简洁的UI交互
-- 增加对.m3u文件的解析支持
-- 增加对.txt文件的解析支持(v1.5.0新增)
-- 纯黑主题(v1.5.0新增)
-- 支持Android TV(v2.0.0新增，支持AndroidOS 5.0+)
-- 桌面端支持(v2.6.0新增)
-- 支持切换字体和字体大小
-- 支持使用Bing每日图片作为视频背景
+- [x] 全平台支持的IPTV播放器
+- [x] 可自主添加直播源链接
+- [x] 干净简洁的UI交互
+- [x] 增加对.m3u文件的解析支持
+- [x] 增加对.txt文件的解析支持(v1.5.0新增)
+- [x] 纯黑主题(v1.5.0新增)
+- [x] 支持Android TV(v2.0.0新增，支持AndroidOS 5.0+)
+- [x] 桌面端支持(v2.6.0新增)
+- [x] 支持切换字体和字体大小
+- [x] 支持使用Bing每日图片作为视频背景
+- [x] 相同频道自动合并，自动分组
 
-#### TV版交互
+### TV版交互
 
-上键：切换线路
-下键：切换频道或进入设置页面
-ok键：确认操作、显示频道列表
+⬆️上键：切换频道或线路
 
-#### 字体
+⬇️下键：切换频道或进入设置页面
+
+🆗ok键：确认操作、显示频道列表
+
+### 字体
 支持切换的字体需要使用[easy_tv_font](https://github.com/aiyakuaile/easy_tv_font)这个项目,
 您如果想要添加其他字体，请按照这个项目的提示进行操作。
 
@@ -62,7 +65,7 @@ ok键：确认操作、显示频道列表
   <img src="https://contrib.rocks/image?repo=aiyakuaile/easy_tv_live" />
 </a>
 
-### Star History
+## Star History
 <picture>
   <source
     media="(prefers-color-scheme: dark)"
