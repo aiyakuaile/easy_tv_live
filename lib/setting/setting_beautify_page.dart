@@ -18,13 +18,11 @@ class SettingBeautifyPage extends StatelessWidget {
       body: Align(
         alignment: Alignment.center,
         child: Container(
-          constraints: const BoxConstraints(
-            maxWidth: 500,
-          ),
           alignment: Alignment.center,
           child: ListView(
             children: [
               SwitchListTile(
+                autofocus: true,
                 title: const Text('每日Bing'),
                 value: context.watch<ThemeProvider>().isBingBg,
                 subtitle: const Text('未播放时的屏幕背景,每日更换图片'),

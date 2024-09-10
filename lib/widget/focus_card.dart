@@ -61,6 +61,7 @@ class _FocusCardState extends State<FocusCard> {
                             ),
                             actions: [
                               TextButton(
+                                autofocus: true,
                                 onPressed: () {
                                   Navigator.pop(context, false);
                                 },

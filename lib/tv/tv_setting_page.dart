@@ -1,5 +1,7 @@
 import 'package:easy_tv_live/setting/setting_font_page.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
+import 'package:easy_tv_live/tv/tv_appreciate_page.dart';
+import 'package:easy_tv_live/util/env_util.dart';
 import 'package:flutter/material.dart';
 
 import '../setting/setting_beautify_page.dart';
@@ -26,11 +28,22 @@ class _TvSettingPageState extends State<TvSettingPage> {
             ),
             body: ListView(
               children: [
+                if (EnvUtil.isChinese())
+                  ListTile(
+                    leading: const Icon(Icons.card_giftcard),
+                    title: const Text('扫码赞赏'),
+                    selected: _selectedIndex == -1,
+                    onTap: () {
+                      setState(() {
+                        _selectedIndex = -1;
+                      });
+                    },
+                  ),
                 ListTile(
                   leading: const Icon(Icons.subscriptions),
-                  title: const Text('订阅源'),
+                  title: const Text('订阅资源'),
                   selected: _selectedIndex == 0,
-                  autofocus: true,
+                  autofocus: _selectedIndex == 0,
                   onTap: () {
                     setState(() {
                       _selectedIndex = 0;
@@ -49,26 +62,28 @@ class _TvSettingPageState extends State<TvSettingPage> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.brush),
-                  title: const Text('美化'),
+                  title: const Text('背景美化'),
                   selected: _selectedIndex == 2,
                   onTap: () {
                     setState(() {
                       _selectedIndex = 2;
                     });
                   },
-                ),
+                )
               ],
             ),
           ),
         ),
+        if (_selectedIndex == -1)
+          const Expanded(
+            child: TvAppreciatePage(),
+          ),
         if (_selectedIndex == 0)
           const Expanded(
             child: SubScribePage(isTV: true),
           ),
-        if (_selectedIndex == 1)
-          const Expanded(child: SettingFontPage(isTV: true)),
-        if (_selectedIndex == 2)
-          const Expanded(child: SettingBeautifyPage(isTV: true)),
+        if (_selectedIndex == 1) const Expanded(child: SettingFontPage(isTV: true)),
+        if (_selectedIndex == 2) const Expanded(child: SettingBeautifyPage(isTV: true)),
       ],
     );
   }
