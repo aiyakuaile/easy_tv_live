@@ -1,6 +1,6 @@
 ![logo](https://fastly.jsdelivr.net/gh/aiyakuaile/images/tv-flow.png)
 
-[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-es.md)
+[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-en)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-blueviolet?style=for-the-badge)](README.md)
 
 # EasyTV

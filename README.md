@@ -1,6 +1,6 @@
 ![logo](https://fastly.jsdelivr.net/gh/aiyakuaile/images/tv-flow.png)
 
-[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-es.md)
+[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-en)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-blueviolet?style=for-the-badge)](README.md)
 
 # 极简TV
@@ -56,7 +56,9 @@
 <a href="https://buymeacoffee.com/aiyakuaile" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 为了方便统计打赏名单，推荐使用微信扫一扫直接赞赏，感谢您的支持！
-![微信赞赏](https://fastly.jsdelivr.net/gh/aiyakuaile/images/appreciate.png)
+
+<img src="https://fastly.jsdelivr.net/gh/aiyakuaile/images/appreciate.png" alt="微信赞赏" width="300">
+<img src="https://fastly.jsdelivr.net/gh/aiyakuaile/images/Alipay.png" alt="支付宝" width="300">
 
 
 ## 贡献
