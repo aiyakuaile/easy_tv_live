@@ -75,4 +75,12 @@ class EnvUtil {
       return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_font/main';
     }
   }
+
+  static String rewardLink() {
+    if (isChinese()) {
+      return 'https://gitee.com/AMuMuSir/easy_tv_live/raw/main/reward.txt';
+    } else {
+      return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/reward.txt';
+    }
+  }
 }

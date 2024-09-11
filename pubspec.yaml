@@ -52,6 +52,7 @@ dependencies:
   provider: ^6.1.2
   xml: ^6.5.0
   apk_installer: ^0.0.4
+  http: ^1.2.2
 
 
 dev_dependencies:
