@@ -61,7 +61,10 @@ class _SubScribePageState extends State<SubScribePage> {
     if (response != null) {
       EasyLoading.showToast('设备已连接');
     } else {
-      EasyLoading.showToast('连接服务失败');
+      setState(() {
+        _remoteIP = null;
+      });
+      EasyLoading.showToast('连接失败');
     }
   }
 
@@ -220,7 +223,7 @@ class _SubScribePageState extends State<SubScribePage> {
 
   @override
   void dispose() {
-    if (_remoteIP != null) HttpUtil().postRequest('http://$_remoteIP:$_port/exit', data: {'ip': _ip});
+    if (_remoteIP != null) HttpUtil().postRequest('http://$_remoteIP:$_port/exit', data: {'ip': _ip}, isShowLoading: false);
     _server?.close(force: true);
     _appLifecycleListener?.dispose();
     _scrollController.dispose();
@@ -442,7 +445,14 @@ class _SubScribePageState extends State<SubScribePage> {
       final sub = SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: res, selected: false);
       _m3uList.add(sub);
       await M3uUtil.saveLocalData(_m3uList);
-      setState(() {});
+      setState(() {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (_scrollController.positions.isNotEmpty) {
+            _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+          }
+        });
+      });
     } else {
       EasyLoading.showToast(S.current.addNoHttpLink);
     }

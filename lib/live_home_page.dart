@@ -233,7 +233,24 @@ class _LiveHomePageState extends State<LiveHomePage> {
                 });
               },
               body: toastString == 'UNKNOWN'
-                  ? EmptyPage(onRefresh: _parseData)
+                  ? InkWell(
+                      canRequestFocus: false,
+                      onTap: _parseData,
+                      onHover: (bool isHover) {
+                        if (isHover) {
+                          windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+                        } else {
+                          windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+                        }
+                      },
+                      child: EmptyPage(
+                        onRefresh: _parseData,
+                        onEnterSetting: () async {
+                          await M3uUtil.openAddSource(context);
+                          _parseData();
+                        },
+                      ),
+                    )
                   : TableVideoWidget(
                       toastString: toastString,
                       controller: _playerController,

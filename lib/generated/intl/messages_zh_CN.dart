@@ -88,7 +88,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "tvParsePushError": MessageLookupByLibrary.simpleMessage("请推送正确的链接"),
         "tvParseSuccess": MessageLookupByLibrary.simpleMessage("推送成功"),
         "tvPushContent": MessageLookupByLibrary.simpleMessage(
-            "1、使用极简TV手机版扫码可快速完成数据添加和双向同步\n2、使用其他App扫码则在扫码结果页，输入新的订阅源，点击页面中的推送即可添加成功"),
+            "注意：必须在同一WIFI网络环境下\n1、使用极简TV手机版扫码可快速完成数据添加和双向同步\n2、使用其他App扫码，在扫码结果页，输入新的订阅源，点击页面中的推送即可添加成功"),
         "tvScanTip": MessageLookupByLibrary.simpleMessage("扫码添加订阅源"),
         "update": MessageLookupByLibrary.simpleMessage("立即更新"),
         "updateContent": MessageLookupByLibrary.simpleMessage("更新内容")

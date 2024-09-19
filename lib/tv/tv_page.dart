@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:easy_tv_live/tv/tv_setting_page.dart';
+import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:easy_tv_live/widget/date_position_widget.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
@@ -55,31 +55,6 @@ class _TvPageState extends State<TvPage> {
 
   bool _drawerIsOpen = false;
 
-  Future<bool?> _openAddSource() async {
-    return Navigator.push<bool>(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return const TvSettingPage();
-        },
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          var begin = const Offset(0.0, -1.0);
-          var end = Offset.zero;
-          var curve = Curves.ease;
-
-          var tween = Tween(begin: begin, end: end).chain(
-            CurveTween(curve: curve),
-          );
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-      ),
-    );
-  }
-
   _focusEventHandle(BuildContext context, KeyEvent e) async {
     final isUpKey = e is KeyUpEvent;
     if (!isUpKey) return;
@@ -108,7 +83,7 @@ class _TvPageState extends State<TvPage> {
         LogUtil.v('按了下键');
         widget.controller?.pause();
         _videoNode.unfocus();
-        await _openAddSource();
+        await M3uUtil.openAddSource(context);
         final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
         if (m3uData == '') {
           widget.onChangeSubSource?.call();

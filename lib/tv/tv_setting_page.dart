@@ -21,7 +21,7 @@ class _TvSettingPageState extends State<TvSettingPage> {
     return Row(
       children: [
         SizedBox(
-          width: 200,
+          width: 240,
           child: Scaffold(
             appBar: AppBar(
               title: const Text('设置'),

@@ -1,5 +1,6 @@
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
+import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:easy_tv_live/widget/date_position_widget.dart';
 import 'package:easy_tv_live/widget/video_hold_bg.dart';
 import 'package:easy_tv_live/widget/volume_brightness_widget.dart';
@@ -11,7 +12,6 @@ import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'generated/l10n.dart';
-import 'tv/tv_setting_page.dart';
 
 class TableVideoWidget extends StatefulWidget {
   final VideoPlayerController? controller;
@@ -157,7 +157,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                             color: Colors.white,
                           ),
                           onPressed: () async {
-                            await _openAddSource();
+                            await M3uUtil.openAddSource(context);
                             final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
                             if (m3uData == '') {
                               widget.onChangeSubSource?.call();
@@ -251,31 +251,6 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
             )
         ]
       ],
-    );
-  }
-
-  Future<bool?> _openAddSource() async {
-    return Navigator.push<bool>(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return const TvSettingPage();
-        },
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          var begin = const Offset(0.0, -1.0);
-          var end = Offset.zero;
-          var curve = Curves.ease;
-
-          var tween = Tween(begin: begin, end: end).chain(
-            CurveTween(curve: curve),
-          );
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-      ),
     );
   }
 }
