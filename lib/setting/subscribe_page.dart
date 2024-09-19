@@ -189,12 +189,12 @@ class _SubScribePageState extends State<SubScribePage> {
   }
 
   _handleSyncPost(HttpRequest request, Map<String, dynamic> data) async {
-    await DeviceSyncUtil.applyAllSettings(context, data);
     request.response
       ..statusCode = HttpStatus.ok
       ..headers.contentType = ContentType.json
       ..write(json.encode({'msg': '同步成功'}))
       ..close();
+    await DeviceSyncUtil.applyAllSettings(context, data);
     _getData();
   }
 

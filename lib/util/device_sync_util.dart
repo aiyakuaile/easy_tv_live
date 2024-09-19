@@ -12,6 +12,7 @@ class DeviceSyncUtil {
   DeviceSyncUtil._();
 
   static applyAllSettings(BuildContext context, Map<String, dynamic> syncMap) async {
+    EasyLoading.show(status: '正在处理');
     final textScaleFactor = syncMap['textScaleFactor'];
     final fontFamily = syncMap['fontFamily'];
     final fontUrl = syncMap['fontUrl'];
@@ -38,7 +39,6 @@ class DeviceSyncUtil {
       await M3uUtil.saveLocalData(source.map((e) => SubScribeModel.fromJson(e)).toList());
       await SpUtil.remove('m3u_cache');
     }
-
     EasyLoading.showSuccess('同步成功');
   }
 
