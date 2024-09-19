@@ -50,5 +50,7 @@
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
+    <key>NSCameraUsageDescription</key>
+    <string>Can I use the camera please?</string>
 </dict>
 </plist>

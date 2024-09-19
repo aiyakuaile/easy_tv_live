@@ -53,7 +53,8 @@ dependencies:
   xml: ^6.5.0
   apk_installer: ^0.0.4
   http: ^1.2.2
-
+  network_info_plus: ^6.0.1
+  mobile_scanner: ^5.2.3
 
 dev_dependencies:
   flutter_test:

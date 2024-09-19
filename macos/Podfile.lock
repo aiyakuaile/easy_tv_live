@@ -7,6 +7,10 @@ PODS:
     - FlutterMacOS
     - mdk (~> 0.29.1)
   - mdk (0.29.1)
+  - mobile_scanner (5.2.3):
+    - FlutterMacOS
+  - network_info_plus (0.0.1):
+    - FlutterMacOS
   - package_info_plus (0.0.1):
     - FlutterMacOS
   - path_provider_foundation (0.0.1):
@@ -33,6 +37,8 @@ DEPENDENCIES:
   - flutter_volume_controller (from `Flutter/ephemeral/.symlinks/plugins/flutter_volume_controller/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - fvp (from `Flutter/ephemeral/.symlinks/plugins/fvp/darwin`)
+  - mobile_scanner (from `Flutter/ephemeral/.symlinks/plugins/mobile_scanner/macos`)
+  - network_info_plus (from `Flutter/ephemeral/.symlinks/plugins/network_info_plus/macos`)
   - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
   - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
   - screen_brightness_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_brightness_macos/macos`)
@@ -54,6 +60,10 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral
   fvp:
     :path: Flutter/ephemeral/.symlinks/plugins/fvp/darwin
+  mobile_scanner:
+    :path: Flutter/ephemeral/.symlinks/plugins/mobile_scanner/macos
+  network_info_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/network_info_plus/macos
   package_info_plus:
     :path: Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos
   path_provider_foundation:
@@ -78,6 +88,8 @@ SPEC CHECKSUMS:
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   fvp: 9a1ae80474142014d51f42b51a39b22b048b515b
   mdk: 3c49affb38303cf86fd9f8ea1e05fe029c4dc194
+  mobile_scanner: 0a05256215b047af27b9495db3b77640055e8824
+  network_info_plus: aeb9c4ed699cae128bc94b9d0f04f2389a414cbb
   package_info_plus: fa739dd842b393193c5ca93c26798dff6e3d0e0c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   screen_brightness_macos: 2d6d3af2165592d9a55ffcd95b7550970e41ebda

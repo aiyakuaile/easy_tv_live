@@ -410,10 +410,10 @@ class S {
     );
   }
 
-  /// `在扫码结果页，输入新的订阅源，点击页面中的推送即可添加成功`
+  /// `1、使用极简TV手机版扫码可快速完成数据添加和双向同步\n2、使用其他App扫码则在扫码结果页，输入新的订阅源，点击页面中的推送即可添加成功`
   String get tvPushContent {
     return Intl.message(
-      '在扫码结果页，输入新的订阅源，点击页面中的推送即可添加成功',
+      '1、使用极简TV手机版扫码可快速完成数据添加和双向同步\n2、使用其他App扫码则在扫码结果页，输入新的订阅源，点击页面中的推送即可添加成功',
       name: 'tvPushContent',
       desc: '',
       args: [],
@@ -587,14 +587,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'zh', countryCode: 'CN'),
-      Locale.fromSubtags(languageCode: 'de', countryCode: 'DE'),
       Locale.fromSubtags(languageCode: 'en', countryCode: 'US'),
-      Locale.fromSubtags(languageCode: 'es', countryCode: 'ES'),
-      Locale.fromSubtags(languageCode: 'ja', countryCode: 'JP'),
-      Locale.fromSubtags(languageCode: 'ko', countryCode: 'KR'),
-      Locale.fromSubtags(languageCode: 'th', countryCode: 'TH'),
-      Locale.fromSubtags(languageCode: 'zh', countryCode: 'HK'),
-      Locale.fromSubtags(languageCode: 'zh', countryCode: 'TW'),
     ];
   }
 

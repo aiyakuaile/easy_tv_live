@@ -242,6 +242,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                       aspectRatio: aspectRatio,
                       drawerIsOpen: _drawerIsOpen,
                       changeChannelSources: _changeChannelSources,
+                      onChangeSubSource: _parseData,
                       isLandscape: true),
             ),
           );
