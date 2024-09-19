@@ -277,6 +277,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.15.0"
+  mobile_scanner:
+    dependency: "direct main"
+    description:
+      name: mobile_scanner
+      sha256: d234581c090526676fd8fab4ada92f35c6746e3fb4f05a399665d75a399fb760
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "5.2.3"
   nested:
     dependency: transitive
     description:
@@ -285,6 +293,30 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.0"
+  network_info_plus:
+    dependency: "direct main"
+    description:
+      name: network_info_plus
+      sha256: "6a31fa47c1f6e240f1b60de0a57d65a092ac1af7515247660f03643576984eb8"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "6.0.1"
+  network_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: network_info_plus_platform_interface
+      sha256: b7f35f4a7baef511159e524499f3c15464a49faa5ec10e92ee0bce265e664906
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.1"
+  nm:
+    dependency: transitive
+    description:
+      name: nm
+      sha256: "2c9aae4127bdc8993206464fcc063611e0e36e72018696cd9631023a31b24254"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.0"
   package_info_plus:
     dependency: transitive
     description:

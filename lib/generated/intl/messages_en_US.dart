@@ -42,7 +42,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Please enter an http/https link"),
         "addRepeat": MessageLookupByLibrary.simpleMessage(
             "This subscription source has been added"),
-        "appName": MessageLookupByLibrary.simpleMessage("Minimal TV"),
+        "appName": MessageLookupByLibrary.simpleMessage("EasyTV"),
         "checkUpdate":
             MessageLookupByLibrary.simpleMessage("Check for Updates"),
         "createTime": MessageLookupByLibrary.simpleMessage("Creation Time"),

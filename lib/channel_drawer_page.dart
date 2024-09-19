@@ -229,9 +229,9 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                     return Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
-                        canRequestFocus: isTV,
-                        autofocus: isTV && _channelIndex == index,
+                        overlayColor: isTV && EnvUtil.isMobile ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
+                        canRequestFocus: isTV && EnvUtil.isMobile,
+                        autofocus: isTV && EnvUtil.isMobile && _channelIndex == index,
                         onTap: () async {
                           if (widget.playModel?.title == name) {
                             Scaffold.of(context).closeDrawer();
@@ -295,7 +295,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                         itemScrollController: _epgScrollController,
                         initialAlignment: 0.3,
                         physics: const ClampingScrollPhysics(),
-                        padding: isTV ? EdgeInsets.only(bottom: MediaQuery.of(context).size.height) : null,
+                        padding: isTV && EnvUtil.isMobile ? EdgeInsets.only(bottom: MediaQuery.of(context).size.height) : null,
                         itemBuilder: (BuildContext context, int index) {
                           final data = _epgData![index];
                           final isSelect = index == _selEPGIndex;
@@ -322,7 +322,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                               ],
                             ),
                           );
-                          if (isTV) {
+                          if (isTV && EnvUtil.isMobile) {
                             child = InkWell(
                               onTap: () {},
                               onFocusChange: (bool isFocus) {
@@ -330,7 +330,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                                   _epgScrollController.scrollTo(index: index, alignment: 0.3, duration: const Duration(milliseconds: 220));
                                 }
                               },
-                              overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
+                              overlayColor: isTV && EnvUtil.isMobile ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
                               child: child,
                             );
                           }

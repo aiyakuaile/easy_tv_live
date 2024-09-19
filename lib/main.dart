@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:easy_tv_live/provider/theme_provider.dart';
+import 'package:easy_tv_live/setting/qr_scan_page.dart';
 import 'package:easy_tv_live/setting/reward_page.dart';
 import 'package:easy_tv_live/setting/setting_font_page.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
@@ -29,7 +30,7 @@ void main() async {
   if (!EnvUtil.isMobile) {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
-      size: Size(414, 414 * 16 / 9),
+      size: Size(900, 900 * 9 / 16),
       minimumSize: Size(300, 300 * 9 / 16),
       center: true,
       backgroundColor: Colors.transparent,
@@ -93,6 +94,7 @@ class MyApp extends StatelessWidget {
             RouterKeys.settingFont: (BuildContext context) => const SettingFontPage(),
             RouterKeys.settingBeautify: (BuildContext context) => const SettingBeautifyPage(),
             RouterKeys.settingReward: (BuildContext context) => const RewardPage(),
+            RouterKeys.settingQrScan: (BuildContext context) => const QrScanPage(),
           },
           localizationsDelegates: const [
             S.delegate,

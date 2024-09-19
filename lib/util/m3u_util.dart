@@ -4,11 +4,13 @@ import 'package:easy_tv_live/entity/playlist_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sp_util/sp_util.dart';
 
 import '../entity/subScribe_model.dart';
 import '../generated/l10n.dart';
+import '../tv/tv_setting_page.dart';
 import 'log_util.dart';
 
 class M3uUtil {
@@ -18,12 +20,8 @@ class M3uUtil {
     String m3uData = '';
     final models = await getLocalData();
     if (models.isNotEmpty) {
-      final defaultModel = models.firstWhere(
-          (element) => element.selected == true,
-          orElse: () => models.first);
-      final newRes = await HttpUtil().getRequest(defaultModel.link == 'default'
-          ? EnvUtil.videoDefaultChannelHost()
-          : defaultModel.link!);
+      final defaultModel = models.firstWhere((element) => element.selected == true, orElse: () => models.first);
+      final newRes = await HttpUtil().getRequest(defaultModel.link == 'default' ? EnvUtil.videoDefaultChannelHost() : defaultModel.link!);
       if (newRes != null) {
         LogUtil.v('已获取新数据::::::');
         m3uData = newRes;
@@ -40,12 +38,7 @@ class M3uUtil {
       }
     } else {
       m3uData = await _fetchData();
-      await saveLocalData([
-        SubScribeModel(
-            time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
-            link: 'default',
-            selected: true)
-      ]);
+      await saveLocalData([SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: 'default', selected: true)]);
     }
     return _parseM3u(m3uData);
   }
@@ -53,9 +46,7 @@ class M3uUtil {
   // 获取本地m3u数据
   static Future<List<SubScribeModel>> getLocalData() async {
     Completer completer = Completer();
-    List<SubScribeModel> m3uList = SpUtil.getObjList(
-        'local_m3u', (v) => SubScribeModel.fromJson(v),
-        defValue: <SubScribeModel>[])!;
+    List<SubScribeModel> m3uList = SpUtil.getObjList('local_m3u', (v) => SubScribeModel.fromJson(v), defValue: <SubScribeModel>[])!;
     completer.complete(m3uList);
     final res = await completer.future;
     return res;
@@ -63,8 +54,7 @@ class M3uUtil {
 
   // 保存本地m3u数据
   static Future<bool> saveLocalData(List<SubScribeModel> models) async {
-    final res = await SpUtil.putObjectList(
-        'local_m3u', models.map((e) => e.toJson()).toList());
+    final res = await SpUtil.putObjectList('local_m3u', models.map((e) => e.toJson()).toList());
     return res ?? false;
   }
 
@@ -81,11 +71,7 @@ class M3uUtil {
 
   static bool isLiveLink(String link) {
     final tLink = link.toLowerCase();
-    if (tLink.startsWith('http') ||
-        tLink.startsWith('r') ||
-        tLink.startsWith('p') ||
-        tLink.startsWith('s') ||
-        tLink.startsWith('w')) {
+    if (tLink.startsWith('http') || tLink.startsWith('r') || tLink.startsWith('p') || tLink.startsWith('s') || tLink.startsWith('w')) {
       return true;
     }
     return false;
@@ -118,9 +104,7 @@ class M3uUtil {
         String line = lines[i];
         if (line.startsWith('#EXTM3U')) {
           List<String> params = line.replaceAll('"', '').split(' ');
-          final tvgUrl = params.firstWhere(
-              (element) => element.startsWith('x-tvg-url'),
-              orElse: () => '');
+          final tvgUrl = params.firstWhere((element) => element.startsWith('x-tvg-url'), orElse: () => '');
           if (tvgUrl.isNotEmpty) {
             playListModel.epgUrl = tvgUrl.split('=').last;
           }
@@ -130,19 +114,11 @@ class M3uUtil {
           }
           final lineList = line.split(',');
           List<String> params = lineList.first.replaceAll('"', '').split(' ');
-          final groupStr = params.firstWhere(
-              (element) => element.startsWith('group-title='),
-              orElse: () => 'group-title=${S.current.defaultText}');
-          String tvgLogo = params.firstWhere(
-              (element) => element.startsWith('tvg-logo='),
-              orElse: () => '');
-          String tvgId = params.firstWhere(
-              (element) => element.startsWith('tvg-name='),
-              orElse: () => '');
+          final groupStr = params.firstWhere((element) => element.startsWith('group-title='), orElse: () => 'group-title=${S.current.defaultText}');
+          String tvgLogo = params.firstWhere((element) => element.startsWith('tvg-logo='), orElse: () => '');
+          String tvgId = params.firstWhere((element) => element.startsWith('tvg-name='), orElse: () => '');
           if (tvgId.isEmpty) {
-            tvgId = params.firstWhere(
-                (element) => element.startsWith('tvg-id='),
-                orElse: () => '');
+            tvgId = params.firstWhere((element) => element.startsWith('tvg-id='), orElse: () => '');
           }
           if (tvgId.isNotEmpty) {
             tvgId = tvgId.split('=').last;
@@ -153,15 +129,9 @@ class M3uUtil {
           if (groupStr.isNotEmpty) {
             tempGroupTitle = groupStr.split('=').last;
             tempChannelName = lineList.last;
-            Map<String, PlayModel> group =
-                playListModel.playList![tempGroupTitle] ?? {};
-            PlayModel groupList = group[tempChannelName] ??
-                PlayModel(
-                    id: tvgId,
-                    group: tempGroupTitle,
-                    logo: tvgLogo,
-                    title: tempChannelName,
-                    urls: []);
+            Map<String, PlayModel> group = playListModel.playList![tempGroupTitle] ?? {};
+            PlayModel groupList =
+                group[tempChannelName] ?? PlayModel(id: tvgId, group: tempGroupTitle, logo: tvgLogo, title: tempChannelName, urls: []);
             final lineNext = lines[i + 1];
             if (isLiveLink(lineNext)) {
               groupList.urls!.add(lineNext);
@@ -176,8 +146,7 @@ class M3uUtil {
             }
           }
         } else if (isLiveLink(line)) {
-          playListModel.playList![tempGroupTitle]![tempChannelName]!.urls!
-              .add(line);
+          playListModel.playList![tempGroupTitle]![tempChannelName]!.urls!.add(line);
         }
       }
     } else {
@@ -189,21 +158,13 @@ class M3uUtil {
           final groupTitle = lineList[0];
           final channelLink = lineList[1];
           if (isLiveLink(channelLink)) {
-            Map<String, PlayModel> group =
-                playListModel.playList![tempGroup] ?? <String, PlayModel>{};
-            final chanelList = group[groupTitle] ??
-                PlayModel(
-                    group: tempGroup,
-                    id: groupTitle,
-                    title: groupTitle,
-                    urls: []);
+            Map<String, PlayModel> group = playListModel.playList![tempGroup] ?? <String, PlayModel>{};
+            final chanelList = group[groupTitle] ?? PlayModel(group: tempGroup, id: groupTitle, title: groupTitle, urls: []);
             chanelList.urls!.add(channelLink);
             group[groupTitle] = chanelList;
             playListModel.playList![tempGroup] = group;
           } else {
-            tempGroup = groupTitle == ''
-                ? '${S.current.defaultText}${i + 1}'
-                : groupTitle;
+            tempGroup = groupTitle == '' ? '${S.current.defaultText}${i + 1}' : groupTitle;
             if (playListModel.playList![tempGroup] == null) {
               playListModel.playList![tempGroup] = <String, PlayModel>{};
             }
@@ -217,5 +178,30 @@ class M3uUtil {
     }
 
     return playListModel;
+  }
+
+  static Future<bool?> openAddSource(BuildContext context) async {
+    return Navigator.push<bool>(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return const TvSettingPage();
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = const Offset(0.0, -1.0);
+          var end = Offset.zero;
+          var curve = Curves.ease;
+
+          var tween = Tween(begin: begin, end: end).chain(
+            CurveTween(curve: curve),
+          );
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
   }
 }

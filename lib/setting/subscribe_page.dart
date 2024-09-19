@@ -3,12 +3,15 @@ import 'dart:io';
 
 import 'package:easy_tv_live/tv/html_string.dart';
 import 'package:easy_tv_live/util/date_util.dart';
+import 'package:easy_tv_live/util/device_sync_util.dart';
+import 'package:easy_tv_live/util/http_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:easy_tv_live/widget/focus_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:sp_util/sp_util.dart';
 
@@ -18,8 +21,9 @@ import '../util/env_util.dart';
 
 class SubScribePage extends StatefulWidget {
   final bool isTV;
+  final String? remoteIp;
 
-  const SubScribePage({super.key, this.isTV = false});
+  const SubScribePage({super.key, this.isTV = false, this.remoteIp});
 
   @override
   State<SubScribePage> createState() => _SubScribePageState();
@@ -34,6 +38,7 @@ class _SubScribePageState extends State<SubScribePage> {
 
   String? _address;
   String? _ip;
+  late String? _remoteIP = widget.remoteIp;
   final _port = 8828;
 
   final _scrollController = ScrollController();
@@ -45,6 +50,22 @@ class _SubScribePageState extends State<SubScribePage> {
     _getData();
     _pasteClipboard();
     _addLifecycleListen();
+  }
+
+  _bindRemoteIP() async {
+    if (EnvUtil.isTV() || _remoteIP == null || _remoteIP == '') return;
+    final response = await HttpUtil().postRequest(
+      'http://$_remoteIP:$_port/ip',
+      data: {'ip': _ip},
+    );
+    if (response != null) {
+      EasyLoading.showToast('设备已连接');
+    } else {
+      setState(() {
+        _remoteIP = null;
+      });
+      EasyLoading.showToast('连接失败');
+    }
   }
 
   _addLifecycleListen() {
@@ -94,14 +115,14 @@ class _SubScribePageState extends State<SubScribePage> {
   }
 
   _localNet() async {
-    if (!EnvUtil.isTV()) return;
-    _ip = await getCurrentIP();
+    _ip = await NetworkInfo().getWifiIP();
     LogUtil.v('_ip::::$_ip');
     if (_ip == null) return;
+    await _bindRemoteIP();
     _server = await HttpServer.bind(_ip, _port);
     _address = 'http://$_ip:$_port';
     setState(() {});
-    await for (var request in _server!) {
+    await for (HttpRequest request in _server!) {
       if (request.method == 'GET') {
         request.response
           ..headers.contentType = ContentType.html
@@ -110,27 +131,30 @@ class _SubScribePageState extends State<SubScribePage> {
       } else if (request.method == 'POST') {
         String content = await utf8.decoder.bind(request).join();
         Map<String, dynamic> data = jsonDecode(content);
-        String rMsg = S.current.tvParseParma;
-        if (data.containsKey('url')) {
-          final url = data['url'] as String?;
-          if (url == '' || url == null || !url.startsWith('http')) {
-            EasyLoading.showError(S.current.tvParsePushError);
-            rMsg = S.current.tvParsePushError;
-          } else {
-            rMsg = S.current.tvParseSuccess;
-            _pareUrl(url);
-          }
-        } else {
-          LogUtil.v('Missing parameters');
+        switch (request.uri.path) {
+          case '/':
+            _handleRootPost(request, data);
+            break;
+          case '/sync':
+            _handleSyncPost(request, data);
+            break;
+          case '/ip':
+            _handleIpPost(request, data);
+            break;
+          case '/exit':
+            _handleIpExitPost();
+            request.response
+              ..statusCode = HttpStatus.ok
+              ..headers.contentType = ContentType.json
+              ..write(json.encode({'msg': 'exit success!!!'}))
+              ..close();
+            break;
+          default:
+            request.response
+              ..statusCode = HttpStatus.notFound
+              ..write('Not found')
+              ..close();
         }
-
-        final responseData = {'message': rMsg};
-
-        request.response
-          ..statusCode = HttpStatus.ok
-          ..headers.contentType = ContentType.json
-          ..write(json.encode(responseData))
-          ..close();
       } else {
         request.response
           ..statusCode = HttpStatus.methodNotAllowed
@@ -140,6 +164,56 @@ class _SubScribePageState extends State<SubScribePage> {
     }
   }
 
+  _handleRootPost(HttpRequest request, Map<String, dynamic> data) async {
+    String rMsg = S.current.tvParseParma;
+    if (data.containsKey('url')) {
+      final url = data['url'] as String?;
+      if (url == '' || url == null || !url.startsWith('http')) {
+        EasyLoading.showError(S.current.tvParsePushError);
+        rMsg = S.current.tvParsePushError;
+      } else {
+        rMsg = S.current.tvParseSuccess;
+        _pareUrl(url);
+      }
+    } else {
+      LogUtil.v('Missing parameters');
+    }
+
+    final responseData = {'message': rMsg};
+
+    request.response
+      ..statusCode = HttpStatus.ok
+      ..headers.contentType = ContentType.json
+      ..write(json.encode(responseData))
+      ..close();
+  }
+
+  _handleSyncPost(HttpRequest request, Map<String, dynamic> data) async {
+    await DeviceSyncUtil.applyAllSettings(context, data);
+    request.response
+      ..statusCode = HttpStatus.ok
+      ..headers.contentType = ContentType.json
+      ..write(json.encode({'msg': '同步成功'}))
+      ..close();
+    _getData();
+  }
+
+  _handleIpPost(HttpRequest request, Map<String, dynamic> data) async {
+    _remoteIP = data['ip'] as String?;
+    setState(() {});
+    request.response
+      ..statusCode = HttpStatus.ok
+      ..headers.contentType = ContentType.json
+      ..write(json.encode({'msg': 'bind Ip success'}))
+      ..close();
+  }
+
+  _handleIpExitPost() {
+    _remoteIP = null;
+    setState(() {});
+    EasyLoading.showToast('连接已断开');
+  }
+
   _getData() async {
     final res = await M3uUtil.getLocalData();
     setState(() {
@@ -147,25 +221,9 @@ class _SubScribePageState extends State<SubScribePage> {
     });
   }
 
-  Future<String> getCurrentIP() async {
-    String currentIP = '';
-    try {
-      for (var interface in await NetworkInterface.list()) {
-        for (var addr in interface.addresses) {
-          LogUtil.v('Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
-          if (addr.type == InternetAddressType.IPv4 && addr.address.startsWith('192')) {
-            currentIP = addr.address;
-          }
-        }
-      }
-    } catch (e) {
-      LogUtil.v(e.toString());
-    }
-    return currentIP;
-  }
-
   @override
   void dispose() {
+    if (_remoteIP != null) HttpUtil().postRequest('http://$_remoteIP:$_port/exit', data: {'ip': _ip}, isShowLoading: false);
     _server?.close(force: true);
     _appLifecycleListener?.dispose();
     _scrollController.dispose();
@@ -181,7 +239,7 @@ class _SubScribePageState extends State<SubScribePage> {
         title: Text(S.current.subscribe),
         centerTitle: true,
         leading: widget.isTV ? const SizedBox.shrink() : null,
-        actions: widget.isTV
+        actions: widget.isTV && EnvUtil.isMobile
             ? null
             : [
                 IconButton(
@@ -195,6 +253,14 @@ class _SubScribePageState extends State<SubScribePage> {
       ),
       body: Column(
         children: [
+          if ((Platform.isAndroid || Platform.isIOS) && !widget.isTV && _remoteIP != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              color: Colors.green.withOpacity(0.3),
+              child: Row(
+                children: [const Text('设备连接成功，可以同步啦！'), const Spacer(), TextButton(onPressed: _showSyncBottomSheet, child: const Text('立即同步'))],
+              ),
+            ),
           Flexible(
             child: Row(
               children: [
@@ -232,8 +298,8 @@ class _SubScribePageState extends State<SubScribePage> {
                       },
                       itemCount: _m3uList.length),
                 ),
-                if (widget.isTV) const VerticalDivider(),
-                if (widget.isTV)
+                if (widget.isTV || !EnvUtil.isMobile) const VerticalDivider(),
+                if ((widget.isTV || !EnvUtil.isMobile) && (_remoteIP == null || _remoteIP == ''))
                   Expanded(
                       child: Container(
                     padding: const EdgeInsets.all(30.0),
@@ -254,11 +320,6 @@ class _SubScribePageState extends State<SubScribePage> {
                               ? null
                               : PrettyQrView.data(
                                   data: _address!,
-                                  decoration: const PrettyQrDecoration(
-                                    image: PrettyQrDecorationImage(
-                                      image: AssetImage('assets/images/logo.png'),
-                                    ),
-                                  ),
                                 ),
                         ),
                         if (_address != null)
@@ -266,7 +327,37 @@ class _SubScribePageState extends State<SubScribePage> {
                         Text(S.current.tvPushContent),
                       ],
                     ),
-                  ))
+                  )),
+                if (widget.isTV && (_remoteIP != null && _remoteIP != ''))
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        const Text('设备连接成功\n您可以同步下列数据到移动端：'),
+                        const SizedBox(height: 12),
+                        ListTile(
+                          title: const Text('同步所有设置'),
+                          onTap: () {
+                            _syncData(0);
+                          },
+                        ),
+                        ListTile(
+                            title: const Text('同步订阅源'),
+                            onTap: () {
+                              _syncData(1);
+                            }),
+                        ListTile(
+                            title: const Text('同步字体设置'),
+                            onTap: () {
+                              _syncData(2);
+                            }),
+                        ListTile(
+                            title: const Text('同步美化设置'),
+                            onTap: () {
+                              _syncData(3);
+                            }),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
@@ -354,9 +445,76 @@ class _SubScribePageState extends State<SubScribePage> {
       final sub = SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: res, selected: false);
       _m3uList.add(sub);
       await M3uUtil.saveLocalData(_m3uList);
-      setState(() {});
+      setState(() {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (_scrollController.positions.isNotEmpty) {
+            _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+          }
+        });
+      });
     } else {
       EasyLoading.showToast(S.current.addNoHttpLink);
+    }
+  }
+
+  _showSyncBottomSheet() async {
+    final res = await showModalBottomSheet<int>(
+        context: context,
+        builder: (context) {
+          return Column(mainAxisSize: MainAxisSize.min, children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                '数据同步',
+                style: TextStyle(fontSize: 15),
+              ),
+            ),
+            const Divider(
+              thickness: 1,
+              height: 1,
+            ),
+            ListTile(
+              title: const Text('同步所有设置'),
+              onTap: () {
+                Navigator.pop(context, 0);
+              },
+            ),
+            ListTile(
+                title: const Text('同步订阅源'),
+                onTap: () {
+                  Navigator.pop(context, 1);
+                }),
+            ListTile(
+                title: const Text('同步字体设置'),
+                onTap: () {
+                  Navigator.pop(context, 2);
+                }),
+            ListTile(
+                title: const Text('同步美化设置'),
+                onTap: () {
+                  Navigator.pop(context, 3);
+                }),
+          ]);
+        });
+    if (res == null) return;
+    _syncData(res);
+  }
+
+  _syncData(int type) async {
+    EasyLoading.show(status: '开始同步');
+    Map<String, dynamic> params = switch (type) {
+      0 => await DeviceSyncUtil.syncAllSettings(context),
+      1 => await DeviceSyncUtil.syncVideoList(),
+      2 => await DeviceSyncUtil.syncFont(context),
+      3 => await DeviceSyncUtil.syncPrettify(context),
+      _ => {}
+    };
+    final response = await HttpUtil().postRequest('http://$_remoteIP:$_port/sync', data: params, isShowLoading: false);
+    if (response != null) {
+      EasyLoading.showSuccess('同步成功');
+    } else {
+      EasyLoading.showToast('同步失败');
     }
   }
 }

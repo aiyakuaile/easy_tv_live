@@ -1,11 +1,13 @@
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
+import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:easy_tv_live/widget/date_position_widget.dart';
 import 'package:easy_tv_live/widget/video_hold_bg.dart';
 import 'package:easy_tv_live/widget/volume_brightness_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -20,6 +22,7 @@ class TableVideoWidget extends StatefulWidget {
   final bool isPlaying;
   final double aspectRatio;
   final bool drawerIsOpen;
+  final GestureTapCallback onChangeSubSource;
   const TableVideoWidget(
       {super.key,
       required this.controller,
@@ -27,6 +30,7 @@ class TableVideoWidget extends StatefulWidget {
       required this.isPlaying,
       required this.aspectRatio,
       required this.drawerIsOpen,
+      required this.onChangeSubSource,
       this.toastString,
       this.changeChannelSources,
       this.isLandscape = true});
@@ -37,6 +41,8 @@ class TableVideoWidget extends StatefulWidget {
 
 class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener {
   bool _isShowMenuBar = true;
+
+  bool _isShowOpView = true;
 
   @override
   void initState() {
@@ -53,25 +59,27 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
   @override
   void onWindowEnterFullScreen() {
     super.onWindowEnterFullScreen();
-    windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+    windowManager.setTitleBarStyle(TitleBarStyle.normal, windowButtonVisibility: true);
   }
 
   @override
   void onWindowLeaveFullScreen() {
-    if (widget.isLandscape) {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
-    } else {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
-    }
+    windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
   }
 
   @override
-  void onWindowResize() {
+  void onWindowResize() async {
     LogUtil.v('onWindowResize:::::${widget.isLandscape}');
-    if (widget.isLandscape) {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+    final size = await windowManager.getSize();
+    await windowManager.setAspectRatio(16 / 9);
+    if (size.width < 600) {
+      if (!_isShowOpView) return;
+      _isShowOpView = false;
+      setState(() {});
     } else {
-      windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+      if (_isShowOpView) return;
+      _isShowOpView = true;
+      setState(() {});
     }
   }
 
@@ -79,7 +87,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        GestureDetector(
+        InkWell(
           onTap: widget.isLandscape
               ? () {
                   _isShowMenuBar = !_isShowMenuBar;
@@ -91,6 +99,13 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
               widget.controller?.pause();
             } else {
               widget.controller?.play();
+            }
+          },
+          onHover: (bool isHover) {
+            if (isHover) {
+              windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+            } else {
+              windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
             }
           },
           child: Container(
@@ -119,114 +134,122 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                 : VideoHoldBg(toastString: widget.drawerIsOpen ? '' : widget.toastString),
           ),
         ),
-        if (widget.drawerIsOpen || (!widget.drawerIsOpen && _isShowMenuBar && widget.isLandscape)) const DatePositionWidget(),
-        const VolumeBrightnessWidget(),
-        if (widget.isLandscape && !widget.drawerIsOpen)
-          AnimatedPositioned(
-              left: 0,
-              right: 0,
-              bottom: _isShowMenuBar || !widget.isPlaying ? 20 : -50,
-              duration: const Duration(milliseconds: 100),
-              child: Container(
-                height: 50,
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  children: [
-                    const Spacer(),
-                    IconButton(
-                        tooltip: S.current.tipChannelList,
-                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
-                        icon: const Icon(
-                          Icons.list_alt,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isShowMenuBar = false;
-                          });
-                          Scaffold.of(context).openDrawer();
-                        }),
-                    const SizedBox(width: 12),
-                    IconButton(
-                        tooltip: S.current.tipChangeLine,
-                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
-                        icon: const Icon(
-                          Icons.legend_toggle,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isShowMenuBar = false;
-                          });
-                          widget.changeChannelSources?.call();
-                        }),
-                    const SizedBox(width: 12),
-                    IconButton(
-                      tooltip: S.current.portrait,
-                      onPressed: () async {
-                        if (EnvUtil.isMobile) {
-                          SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-                          return;
-                        }
-                        await windowManager.setSize(const Size(414, 414 * 16 / 9), animate: true);
-                        await windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
-                        Future.delayed(const Duration(milliseconds: 500), () => windowManager.center(animate: true));
-                      },
-                      style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
-                      icon: const Icon(
-                        Icons.screen_rotation,
-                        color: Colors.white,
-                      ),
-                    ),
-                    if (!EnvUtil.isMobile) const SizedBox(width: 12),
-                    if (!EnvUtil.isMobile)
+        if (_isShowOpView) ...[
+          if (widget.drawerIsOpen || (!widget.drawerIsOpen && _isShowMenuBar && widget.isLandscape)) const DatePositionWidget(),
+          const VolumeBrightnessWidget(),
+          if (widget.isLandscape && !widget.drawerIsOpen)
+            AnimatedPositioned(
+                left: 0,
+                right: 0,
+                bottom: _isShowMenuBar || !widget.isPlaying ? 20 : -50,
+                duration: const Duration(milliseconds: 100),
+                child: Container(
+                  height: 50,
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    children: [
+                      const Spacer(),
                       IconButton(
-                        tooltip: S.current.fullScreen,
-                        onPressed: () async {
-                          final isFullScreen = await windowManager.isFullScreen();
-                          LogUtil.v('isFullScreen:::::$isFullScreen');
-                          windowManager.setFullScreen(!isFullScreen);
-                        },
-                        style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
-                        icon: FutureBuilder<bool>(
-                          future: windowManager.isFullScreen(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return Icon(
-                                snapshot.data! ? Icons.close_fullscreen : Icons.fit_screen_outlined,
-                                color: Colors.white,
-                              );
+                          tooltip: '进入设置',
+                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
+                          icon: const Icon(
+                            Icons.settings,
+                            color: Colors.white,
+                          ),
+                          onPressed: () async {
+                            await M3uUtil.openAddSource(context);
+                            final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
+                            if (m3uData == '') {
+                              widget.onChangeSubSource?.call();
                             } else {
-                              return const Icon(
-                                Icons.fit_screen_outlined,
-                                color: Colors.white,
-                              );
+                              widget.controller?.play();
                             }
+                          }),
+                      const SizedBox(width: 12),
+                      IconButton(
+                          tooltip: S.current.tipChannelList,
+                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
+                          icon: const Icon(
+                            Icons.list_alt,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isShowMenuBar = false;
+                            });
+                            Scaffold.of(context).openDrawer();
+                          }),
+                      const SizedBox(width: 12),
+                      IconButton(
+                          tooltip: S.current.tipChangeLine,
+                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
+                          icon: const Icon(
+                            Icons.legend_toggle,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isShowMenuBar = false;
+                            });
+                            widget.changeChannelSources?.call();
+                          }),
+                      if (EnvUtil.isMobile) const SizedBox(width: 12),
+                      if (EnvUtil.isMobile)
+                        IconButton(
+                          tooltip: S.current.portrait,
+                          onPressed: () async {
+                            SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
                           },
+                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
+                          icon: const Icon(
+                            Icons.screen_rotation,
+                            color: Colors.white,
+                          ),
                         ),
-                      )
-                  ],
-                ),
-              )),
-        if (!widget.isLandscape)
-          Positioned(
-            right: 15,
-            bottom: 15,
-            child: IconButton(
-              tooltip: S.current.landscape,
-              onPressed: () async {
-                if (EnvUtil.isMobile) {
+                      if (!EnvUtil.isMobile) const SizedBox(width: 12),
+                      if (!EnvUtil.isMobile)
+                        IconButton(
+                          tooltip: S.current.fullScreen,
+                          onPressed: () async {
+                            final isFullScreen = await windowManager.isFullScreen();
+                            LogUtil.v('isFullScreen:::::$isFullScreen');
+                            windowManager.setFullScreen(!isFullScreen);
+                          },
+                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
+                          icon: FutureBuilder<bool>(
+                            future: windowManager.isFullScreen(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Icon(
+                                  snapshot.data! ? Icons.close_fullscreen : Icons.fit_screen_outlined,
+                                  color: Colors.white,
+                                );
+                              } else {
+                                return const Icon(
+                                  Icons.fit_screen_outlined,
+                                  color: Colors.white,
+                                );
+                              }
+                            },
+                          ),
+                        )
+                    ],
+                  ),
+                )),
+          if (!widget.isLandscape)
+            Positioned(
+              right: 15,
+              bottom: 15,
+              child: IconButton(
+                tooltip: S.current.landscape,
+                onPressed: () async {
                   SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-                  return;
-                }
-                await windowManager.setSize(const Size(800, 800 * 9 / 16), animate: true);
-                await windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
-                Future.delayed(const Duration(milliseconds: 500), () => windowManager.center(animate: true));
-              },
-              style: IconButton.styleFrom(backgroundColor: Colors.black45, iconSize: 20),
-              icon: const Icon(Icons.screen_rotation, color: Colors.white),
-            ),
-          )
+                },
+                style: IconButton.styleFrom(backgroundColor: Colors.black45, iconSize: 20),
+                icon: const Icon(Icons.screen_rotation, color: Colors.white),
+              ),
+            )
+        ]
       ],
     );
   }

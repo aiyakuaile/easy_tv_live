@@ -1,5 +1,5 @@
 {
-  "appName": "Minimal TV",
+  "appName": "EasyTV",
   "loading": "Loading",
   "lineToast": "Line {line} playing: {channel}",
   "@lineToast": {

@@ -10,9 +10,7 @@ import '../generated/l10n.dart';
 class HttpUtil {
   static final HttpUtil _instance = HttpUtil._();
   late Dio _dio;
-  BaseOptions options = BaseOptions(
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10));
+  BaseOptions options = BaseOptions(connectTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10));
 
   CancelToken cancelToken = CancelToken();
 
@@ -21,9 +19,22 @@ class HttpUtil {
   }
 
   HttpUtil._() {
-    _dio = Dio(options)
-      ..interceptors.add(LogInterceptor(
-          requestBody: true, responseBody: true, logPrint: LogUtil.v));
+    _dio = Dio(options)..interceptors.add(LogInterceptor(requestBody: true, responseBody: true, logPrint: LogUtil.v));
+  }
+
+  Future<T?> postRequest<T>(String path,
+      {Object? data, Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress, bool isShowLoading = true}) async {
+    LogUtil.v('PostRequest::::::$path');
+    if (isShowLoading) EasyLoading.show();
+    Response? response;
+    try {
+      response = await _dio.post<T>(path, data: data, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+      if (isShowLoading) EasyLoading.dismiss();
+    } on DioException catch (e) {
+      if (isShowLoading) EasyLoading.dismiss();
+      formatError(e, isShowLoading);
+    }
+    return response?.data;
   }
 
   Future<T?> getRequest<T>(String path,
@@ -36,11 +47,8 @@ class HttpUtil {
     if (isShowLoading) EasyLoading.show();
     Response? response;
     try {
-      response = await _dio.get<T>(path,
-          queryParameters: queryParameters,
-          options: options,
-          cancelToken: cancelToken,
-          onReceiveProgress: onReceiveProgress);
+      response =
+          await _dio.get<T>(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
       if (isShowLoading) EasyLoading.dismiss();
     } on DioException catch (e) {
       if (isShowLoading) EasyLoading.dismiss();
@@ -49,8 +57,7 @@ class HttpUtil {
     return response?.data;
   }
 
-  Future<int?> downloadFile(String url, String savePath,
-      {ValueChanged<double>? progressCallback}) async {
+  Future<int?> downloadFile(String url, String savePath, {ValueChanged<double>? progressCallback}) async {
     Response? response;
     try {
       // await _dio.head(url);
@@ -71,9 +78,7 @@ class HttpUtil {
         },
       );
       if (response.statusCode != 200) {
-        throw DioException(
-            requestOptions: response.requestOptions,
-            error: 'status code ${response.statusCode}');
+        throw DioException(requestOptions: response.requestOptions, error: 'status code ${response.statusCode}');
       }
     } on DioException catch (e) {
       formatError(e, true);
@@ -92,8 +97,7 @@ void formatError(DioException e, bool isShowLoading) {
   } else if (e.type == DioExceptionType.receiveTimeout) {
     EasyLoading.showToast(S.current.netReceiveTimeout);
   } else if (e.type == DioExceptionType.badResponse) {
-    EasyLoading.showToast(
-        S.current.netBadResponse(e.response?.statusCode ?? ''));
+    EasyLoading.showToast(S.current.netBadResponse(e.response?.statusCode ?? ''));
   } else if (e.type == DioExceptionType.cancel) {
     EasyLoading.showToast(S.current.netCancel);
   } else {
