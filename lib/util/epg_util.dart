@@ -27,7 +27,7 @@ class EpgUtil {
       channelKey = model.id!;
     } else {
       channel = model.title!.replaceAll(' ', '').replaceAll('-', '');
-      date = DateUtil.formatDate(DateTime.now(), format: "yyMMdd");
+      date = DateUtil.formatDate(DateTime.now(), format: "yyyyMMdd");
       channelKey = "$date-$channel";
     }
 
@@ -55,18 +55,22 @@ class EpgUtil {
       return epgModel;
     }
 
-    _cancelToken?.cancel();
-    _cancelToken ??= CancelToken();
-    final epgRes = await HttpUtil().getRequest('https://epg.v1.mk/json?ch=$channel&date=$date', cancelToken: _cancelToken, isShowLoading: false);
-    LogUtil.v('epgRes:::$epgRes');
-    _cancelToken = null;
-    if (epgRes != null) {
-      LogUtil.v('epgRes:channelName::${epgRes['channel_name']}');
-      if (channel.contains(epgRes['channel_name'])) {
-        final epg = EpgModel.fromJson(epgRes);
-        _EPGMap[channelKey] = epg;
-        return epg;
+    try {
+      _cancelToken?.cancel();
+      _cancelToken ??= CancelToken();
+      final epgRes = await HttpUtil().getRequest('https://epg.v1.mk/json?ch=$channel&date=$date', cancelToken: _cancelToken, isShowLoading: false);
+      LogUtil.v('epgRes:::$epgRes');
+      _cancelToken = null;
+      if (epgRes != null) {
+        LogUtil.v('epgRes:channelName::${epgRes['channel_name']}');
+        if (channel.contains(epgRes['channel_name'])) {
+          final epg = EpgModel.fromJson(epgRes);
+          _EPGMap[channelKey] = epg;
+          return epg;
+        }
       }
+    } catch (e) {
+      LogUtil.v('epgRes:error::$e');
     }
     return null;
   }

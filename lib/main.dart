@@ -48,7 +48,7 @@ void main() async {
   await SpUtil.getInstance();
   fvp.registerWith(options: {
     'platforms': ['android', 'ios', 'windows', 'linux', 'macos'],
-    'video.decoders': ['FFmpeg']
+    'video.decoders': ['D3D11', 'NVDEC', 'FFmpeg']
   });
   runApp(MultiProvider(
     providers: [

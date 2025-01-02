@@ -164,7 +164,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
       if (_videoMap?.epgUrl != null && _videoMap?.epgUrl != '') {
         EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
       } else {
-        EpgUtil.resetEPGXML();
+        EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
       }
     } else {
       setState(() {

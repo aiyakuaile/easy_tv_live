@@ -6,7 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_volume_controller
   fvp
   screen_brightness_windows
-  screen_retriever
+  screen_retriever_windows
   url_launcher_windows
   window_manager
 )
