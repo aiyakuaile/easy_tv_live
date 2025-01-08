@@ -31,17 +31,22 @@ class _QrScanPageState extends State<QrScanPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MobileScanner(
-      controller: controller,
-      onDetect: (result) async {
-        if (_code != null && _code!.isNotEmpty) return;
-        _code = result.barcodes.first.displayValue;
-        if (_code != null && _code!.isNotEmpty) {
-          await controller.stop();
-          debugPrint('onCapture::::$_code');
-          Navigator.pop(context, _code);
-        }
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('扫一扫'),
+      ),
+      body: MobileScanner(
+        controller: controller,
+        onDetect: (result) async {
+          if (_code != null && _code!.isNotEmpty) return;
+          _code = result.barcodes.first.displayValue;
+          if (_code != null && _code!.isNotEmpty) {
+            await controller.stop();
+            debugPrint('onCapture::::$_code');
+            Navigator.pop(context, _code);
+          }
+        },
+      ),
     );
   }
 
