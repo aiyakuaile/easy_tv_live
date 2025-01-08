@@ -1,4 +1,3 @@
-import 'package:easy_tv_live/util/epg_util.dart';
 import 'package:easy_tv_live/widget/focus_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -162,9 +161,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
         _playVideo();
       });
       if (_videoMap?.epgUrl != null && _videoMap?.epgUrl != '') {
-        EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
+        // EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
       } else {
-        EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
+        // EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
       }
     } else {
       setState(() {

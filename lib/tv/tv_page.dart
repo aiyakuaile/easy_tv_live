@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_tv_live/tv/tv_channel_drawer_page.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:easy_tv_live/widget/date_position_widget.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
 
-import '../channel_drawer_page.dart';
 import '../entity/playlist_model.dart';
 import '../util/log_util.dart';
 import '../widget/video_hold_bg.dart';
@@ -143,7 +143,7 @@ class _TvPageState extends State<TvPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      drawer: ChannelDrawerPage(
+      drawer: TVChannelDrawerPage(
         videoMap: widget.videoMap,
         playModel: widget.playModel,
         onTapChannel: widget.onTapChannel,

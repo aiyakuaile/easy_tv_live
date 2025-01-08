@@ -49,7 +49,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
       _selEPGIndex = 0;
     });
     final res = await EpgUtil.getEpg(widget.playModel);
-    if (res == null || res!.epgData == null || res!.epgData!.isEmpty) return;
+    if (res == null || res.epgData == null || res.epgData!.isEmpty) return;
     _epgData = res.epgData!;
     final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
     final selectTimeData = _epgData!.where((element) => element.start!.compareTo(epgRangeTime) < 0).last.start;
@@ -77,7 +77,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
     Future.delayed(Duration.zero, () {
       if (_viewPortHeight == null) {
         final RenderBox? renderBox = _viewPortKey.currentContext?.findRenderObject() as RenderBox?;
-        final double height = renderBox?.size?.height ?? 0;
+        final double height = renderBox?.size.height ?? 0;
         _viewPortHeight = height * 0.5;
         LogUtil.v('ChannelDrawerPage:initState:_viewPortHeight::height=$height');
       }
@@ -174,7 +174,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                   return Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
+                      overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withValues(alpha: 0.2)) : null,
                       onTap: () {
                         if (_groupIndex != index) {
                           setState(() {
@@ -194,12 +194,14 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                           Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                         }
                       },
-                      splashColor: Colors.white.withOpacity(0.3),
+                      splashColor: Colors.white.withValues(alpha: 0.3),
                       child: Ink(
                         width: double.infinity,
                         height: _itemHeight,
                         decoration: BoxDecoration(
-                          gradient: _groupIndex == index ? LinearGradient(colors: [Colors.red.withOpacity(0.6), Colors.red.withOpacity(0.3)]) : null,
+                          gradient: _groupIndex == index
+                              ? LinearGradient(colors: [Colors.red.withValues(alpha: 0.6), Colors.red.withValues(alpha: 0.3)])
+                              : null,
                         ),
                         child: Align(
                           alignment: Alignment.center,
@@ -215,7 +217,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
               },
               itemCount: _keys.length),
         ),
-        VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
+        VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
         if (_values.isNotEmpty && _values[_groupIndex].isNotEmpty)
           Expanded(
             child: ListView.builder(
@@ -229,7 +231,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                     return Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        overlayColor: isTV && EnvUtil.isMobile ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
+                        overlayColor: isTV && EnvUtil.isMobile ? WidgetStateProperty.all(Colors.greenAccent.withValues(alpha: 0.2)) : null,
                         canRequestFocus: isTV && EnvUtil.isMobile,
                         autofocus: isTV && EnvUtil.isMobile && _channelIndex == index,
                         onTap: () async {
@@ -246,14 +248,15 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                             Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                           }
                         },
-                        splashColor: Colors.white.withOpacity(0.3),
+                        splashColor: Colors.white.withValues(alpha: 0.3),
                         child: Ink(
                           width: double.infinity,
                           height: _itemHeight,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            gradient:
-                                widget.playModel?.title == name ? LinearGradient(colors: [Colors.red.withOpacity(0.3), Colors.transparent]) : null,
+                            gradient: widget.playModel?.title == name
+                                ? LinearGradient(colors: [Colors.red.withValues(alpha: 0.3), Colors.transparent])
+                                : null,
                           ),
                           child: Row(
                             children: [
@@ -263,7 +266,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                                   style: TextStyle(color: widget.playModel?.title == name ? Colors.red : Colors.white, fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              if (widget.playModel?.title == name) SpinKitWave(size: 20, color: Colors.red.withOpacity(0.8))
+                              if (widget.playModel?.title == name) SpinKitWave(size: 20, color: Colors.red.withValues(alpha: 0.8))
                             ],
                           ),
                         ),
@@ -277,7 +280,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
           SizedBox(
             width: egpWidth,
             child: Material(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               child: Column(
                 children: [
                   Container(
@@ -288,7 +291,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                       style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  VerticalDivider(width: 0.1, color: Colors.white.withOpacity(0.1)),
+                  VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
                   Flexible(
                     child: ScrollablePositionedList.builder(
                         initialScrollIndex: _selEPGIndex,
@@ -330,7 +333,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                                   _epgScrollController.scrollTo(index: index, alignment: 0.3, duration: const Duration(milliseconds: 220));
                                 }
                               },
-                              overlayColor: isTV && EnvUtil.isMobile ? WidgetStateProperty.all(Colors.greenAccent.withOpacity(0.2)) : null,
+                              overlayColor: isTV && EnvUtil.isMobile ? WidgetStateProperty.all(Colors.greenAccent.withValues(alpha: 0.2)) : null,
                               child: child,
                             );
                           }
