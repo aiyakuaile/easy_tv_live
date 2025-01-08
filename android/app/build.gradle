@@ -60,14 +60,6 @@ android {
             signingConfig = signingConfigs.release
         }
     }
-    splits {
-        abi {
-            reset()
-            enable true
-            include "armeabi-v7a", "arm64-v8a"
-            universalApk false
-        }
-    }
 }
 
 flutter {
