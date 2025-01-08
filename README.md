@@ -37,7 +37,7 @@
 #### [查看国外Github已发布的版本](https://github.com/aiyakuaile/easy_tv_live/releases)
 #### [查看国内Gitee已发布的版本](https://gitee.com/AMuMuSir/easy_tv_live/releases)
 
-> ios 下载ipa后需要自行签名安装，例如：爱思助手,轻松签,巨魔等
+> ios 支持15.5.0+以上版本，下载ipa后需要自行签名安装，例如：爱思助手,轻松签,巨魔等
 
 > 如果添加的直播源是ipv6地址，请先确认您当前的网络是否可以正常访问ipv6地址
 > [ipv6测试地址](https://v6t.ipip.net/)
