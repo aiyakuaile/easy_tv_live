@@ -58,9 +58,14 @@ android {
         release {
             signingConfig = signingConfigs.debug
             signingConfig = signingConfigs.release
-            ndk {
-                abiFilters 'armeabi-v7a','arm64-v8a'
-            }
+        }
+    }
+    splits {
+        abi {
+            reset()
+            enable true
+            include "armeabi-v7a", "arm64-v8a"
+            universalApk false
         }
     }
 }
