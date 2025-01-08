@@ -15,6 +15,7 @@ import 'table_video_widget.dart';
 import 'tv/tv_page.dart';
 import 'util/check_version_util.dart';
 import 'util/env_util.dart';
+import 'util/epg_util.dart';
 import 'util/log_util.dart';
 import 'util/m3u_util.dart';
 import 'widget/empty_page.dart';
@@ -161,9 +162,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
         _playVideo();
       });
       if (_videoMap?.epgUrl != null && _videoMap?.epgUrl != '') {
-        // EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
+        EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
       } else {
-        // EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
+        EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
       }
     } else {
       setState(() {
