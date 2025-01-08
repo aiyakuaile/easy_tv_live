@@ -114,10 +114,37 @@ class _SubScribePageState extends State<SubScribePage> {
     }
   }
 
+  Future<String> getCurrentIP() async {
+    String currentIP = '';
+    try {
+      for (var interface in await NetworkInterface.list()) {
+        for (var addr in interface.addresses) {
+          LogUtil.v('Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
+          if (addr.type == InternetAddressType.IPv4 && addr.address.startsWith('192')) {
+            currentIP = addr.address;
+          }
+        }
+      }
+    } catch (e) {
+      LogUtil.v(e.toString());
+    }
+    return currentIP;
+  }
+
   _localNet() async {
-    _ip = await NetworkInfo().getWifiIP();
+    try {
+      _ip = await NetworkInfo().getWifiIP();
+    } catch (e) {
+      LogUtil.v(e.toString());
+    }
     LogUtil.v('_ip::::$_ip');
-    if (_ip == null) return;
+    if (_ip == null || _ip == '') {
+      _ip = await getCurrentIP();
+      if (_ip == null || _ip == '') {
+        EasyLoading.showToast('无法获取本机IP');
+        return;
+      }
+    }
     await _bindRemoteIP();
     _server = await HttpServer.bind(_ip, _port);
     _address = 'http://$_ip:$_port';

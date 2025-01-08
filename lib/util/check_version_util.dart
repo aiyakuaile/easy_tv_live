@@ -11,7 +11,7 @@ import 'http_util.dart';
 import 'log_util.dart';
 
 class CheckVersionUtil {
-  static const version = '2.7.7';
+  static const version = '2.8.0';
   static final versionHost = EnvUtil.checkVersionHost();
   static final downloadLink = EnvUtil.sourceDownloadHost();
   static final releaseLink = EnvUtil.sourceReleaseHost();

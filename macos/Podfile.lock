@@ -2,12 +2,12 @@ PODS:
   - flutter_volume_controller (0.0.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
-  - fvp (0.25.0):
+  - fvp (0.29.0):
     - Flutter
     - FlutterMacOS
-    - mdk (~> 0.29.1)
-  - mdk (0.29.1)
-  - mobile_scanner (5.2.3):
+    - mdk (~> 0.30.1)
+  - mdk (0.30.1)
+  - mobile_scanner (6.0.2):
     - FlutterMacOS
   - network_info_plus (0.0.1):
     - FlutterMacOS
@@ -18,7 +18,7 @@ PODS:
     - FlutterMacOS
   - screen_brightness_macos (0.1.0):
     - FlutterMacOS
-  - screen_retriever (0.0.1):
+  - screen_retriever_macos (0.0.1):
     - FlutterMacOS
   - shared_preferences_foundation (0.0.1):
     - Flutter
@@ -42,7 +42,7 @@ DEPENDENCIES:
   - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
   - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
   - screen_brightness_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_brightness_macos/macos`)
-  - screen_retriever (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos`)
+  - screen_retriever_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos`)
   - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
   - video_player_avfoundation (from `Flutter/ephemeral/.symlinks/plugins/video_player_avfoundation/darwin`)
@@ -70,8 +70,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
   screen_brightness_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/screen_brightness_macos/macos
-  screen_retriever:
-    :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos
+  screen_retriever_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos
   shared_preferences_foundation:
     :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
   url_launcher_macos:
@@ -86,16 +86,16 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   flutter_volume_controller: 25d09126b0d695560f11c80b1311d5063fed882f
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  fvp: 9a1ae80474142014d51f42b51a39b22b048b515b
-  mdk: 3c49affb38303cf86fd9f8ea1e05fe029c4dc194
-  mobile_scanner: 0a05256215b047af27b9495db3b77640055e8824
-  network_info_plus: aeb9c4ed699cae128bc94b9d0f04f2389a414cbb
-  package_info_plus: fa739dd842b393193c5ca93c26798dff6e3d0e0c
+  fvp: 3dd6ca00575184c8fb7675426e54b964c991b91c
+  mdk: 5b3a56ae10c666309c1796bd72968e91db4d670a
+  mobile_scanner: 07710d6b9b2c220ae899de2d7ecf5d77ffa56333
+  network_info_plus: 2cb02d8435635eae13b3b79279681985121cf30c
+  package_info_plus: 12f1c5c2cfe8727ca46cbd0b26677728972d9a5b
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   screen_brightness_macos: 2d6d3af2165592d9a55ffcd95b7550970e41ebda
-  screen_retriever: 59634572a57080243dd1bf715e55b6c54f241a38
+  screen_retriever_macos: 776e0fa5d42c6163d2bf772d22478df4b302b161
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
-  url_launcher_macos: 5f437abeda8c85500ceb03f5c1938a8c5a705399
+  url_launcher_macos: c82c93949963e55b228a30115bd219499a6fe404
   video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
   wakelock_plus: 4783562c9a43d209c458cb9b30692134af456269
   window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8
