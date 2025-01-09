@@ -5,82 +5,67 @@ on:
     tags:
       - '*'
 
-env:
-  FLUTTER_VERSION: '3.27.1'
-  JAVA_VERSION: '17'
-  KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
-  KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-  KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-  KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
-
 jobs:
-  setup:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-
-      - name: Setup Java (only for macOS)
-        if: ${{ matrix.os == 'macos-latest' }}
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: ${{ env.JAVA_VERSION }}
-
-      - name: Install Linux dependencies
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev libasound2-dev
-
-      - name: Configure Flutter for Desktop Platforms
-        run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            flutter config --enable-linux-desktop;
-          elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            flutter config --enable-windows-desktop;
-          fi
-
-      - name: Flutter Pub Get
-        run: flutter pub get
-
-  build_android:
-    needs: setup
+  build_android_and_tv:
     runs-on: macos-latest
     steps:
-      - name: Decode Keystore
-        run: echo "${{ env.KEYSTORE_FILE }}" | base64 --decode > keystore.jks
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.1'
+      - run: flutter pub get
 
-      - name: Build Android APK (Mobile)
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > keystore.jks
+
+      # Build Android Mobile
+      - name: Build Android APK Mobile
         run: flutter build apk --dart-define=isTV=false --release --split-per-abi
-      - name: Rename Mobile APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
+      - name: Rename Android APK
         run: mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
 
-      - name: Build Android APK (TV)
+      # Build Android TV
+      - name: Build Android APK TV
         run: flutter build apk --dart-define=isTV=true --release
-      - name: Rename TV APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
+
+      - name: Rename Android APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
 
-      - name: Upload Android Artifacts
+      - name: Upload android_and_tv artifact
         uses: actions/upload-artifact@v4
         with:
-          name: android-artifacts
+          name: android-and-tv-artifact
           path: |
             build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
             build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
 
   build_ios_macos:
-    needs: setup
     runs-on: macos-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.1'
+      - run: flutter pub get
+
+      # Build iOS
       - name: Build iOS
         run: |
           flutter build ios --dart-define=isTV=false --release --no-codesign
@@ -89,69 +74,93 @@ jobs:
           mv Runner.app Payload/
           zip -r easyTV-${{ github.ref_name }}.ipa Payload
 
+      # Build macOS
       - name: Build macOS
         run: |
           flutter build macos --dart-define=isTV=false --release
           cd build/macos/Build/Products/Release
-          create-dmg --overwrite --dmg-title="easyTV-${{ github.ref_name }}" easyTV.app
-          mv easyTV.dmg easyTV-${{ github.ref_name }}.dmg
+          zip -r easyTV-${{ github.ref_name }}-macos.zip *.app
 
-      - name: Upload iOS and macOS Artifacts
+      - name: Upload ios-macos artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-macos-artifacts
+          name: ios-macos-artifact
           path: |
             build/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
-            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}.dmg
+            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
 
   build_linux:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.1'
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev
+          sudo apt-get install -y libasound2-dev
+      - run: flutter config --enable-linux-desktop
+      - run: flutter pub get
       - name: Build Linux
         run: |
           flutter build linux --dart-define=isTV=false --release
           cd build/linux/x64/release/bundle
-          mkdir -p easyTV-${{ github.ref_name }}/usr/local/bin
-          mv * easyTV-${{ github.ref_name }}/usr/local/bin
-          dpkg-deb --build easyTV-${{ github.ref_name }}
+          zip -r easyTV-${{ github.ref_name }}-linux.zip *
 
-      - name: Upload Linux Artifact
+      - name: Upload linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-artifact
-          path: build/linux/x64/release/bundle/easyTV-${{ github.ref_name }}.deb
+          path: |
+            build/linux/x64/release/bundle/easyTV-${{ github.ref_name }}-linux.zip
+  
 
   build_windows:
-    needs: setup
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.1'
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
       - name: Build Windows
         run: |
           flutter build windows --dart-define=isTV=false --release
+          cp windows/system32/* build/windows/x64/runner/Release/
+          ls -l build/windows/x64/runner/Release
           cd build/windows/x64/runner/Release
-          iscc /DOutputDir=easyTV-${{ github.ref_name }}.exe setup_script.iss
+          7z a easyTV-${{ github.ref_name }}-windows.zip *
 
-      - name: Upload Windows Artifact
+      - name: Upload windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-artifact
-          path: build/windows/x64/runner/Release/easyTV-${{ github.ref_name }}.exe
+          path: |
+            build/windows/x64/runner/Release/easyTV-${{ github.ref_name }}-windows.zip
 
   create_release:
-    needs: [build_android, build_ios_macos, build_linux, build_windows]
+    needs: [ build_linux, build_windows, build_android_and_tv, build_ios_macos ]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download Artifacts
+      - name: Download artifact artifact
         uses: actions/download-artifact@v4
         with:
           path: release
-          merge: true
+          merge-multiple: true
+      - name: display Release dir
+        run: |
+          realpath release  
+          ls -l release
+          pwd
 
-      - name: Upload Release to GitHub
+      - name: Upload artifacts to Release
         uses: softprops/action-gh-release@v2
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -161,8 +170,9 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            release/**/*.apk
-            release/**/*.ipa
-            release/**/*.deb
-            release/**/*.dmg
-            release/**/*.exe
+            ./release/easyTV-${{ github.ref_name }}.apk
+            ./release/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
+            ./release/easyTV-${{ github.ref_name }}-tv.apk
+            ./release/easyTV-${{ github.ref_name }}-linux.zip
+            ./release/easyTV-${{ github.ref_name }}-windows.zip
+            ./release/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
