@@ -11,7 +11,7 @@ import 'http_util.dart';
 import 'log_util.dart';
 
 class CheckVersionUtil {
-  static const version = '2.8.1';
+  static const version = '2.8.0';
   static final versionHost = EnvUtil.checkVersionHost();
   static final downloadLink = EnvUtil.sourceDownloadHost();
   static final releaseLink = EnvUtil.sourceReleaseHost();
@@ -47,7 +47,7 @@ class CheckVersionUtil {
         builder: (BuildContext context) {
           return Center(
             child: Container(
-              width: isTV ? 600 : 300,
+              width: isTV || !EnvUtil.isMobile ? 600 : 300,
               decoration: BoxDecoration(
                   color: const Color(0xFF2B2D30),
                   borderRadius: BorderRadius.circular(8),
