@@ -51,7 +51,7 @@ void main() async {
     'video.decoders': ['FFmpeg'],
     'player': {
       'cc': '0',
-      'buffer': '8000+60000',
+      'buffer': '3000+60000',
       'avformat.rtsp_transport': 'udp',
     }
   });

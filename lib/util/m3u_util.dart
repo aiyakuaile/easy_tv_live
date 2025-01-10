@@ -95,9 +95,10 @@ class M3uUtil {
   // }
   static Future<PlaylistModel> _parseM3u(String m3u) async {
     final lines = m3u.split('\n');
-    final playListModel = PlaylistModel();
+    final playListModel = PlaylistModel(playListType: PlayListType.txt);
     playListModel.playList = <String, Map<String, PlayModel>>{};
     if (m3u.startsWith('#EXTM3U') || m3u.startsWith('#EXTINF')) {
+      playListModel.playListType = PlayListType.m3u;
       String tempGroupTitle = '';
       String tempChannelName = '';
       for (int i = 0; i < lines.length - 1; i++) {

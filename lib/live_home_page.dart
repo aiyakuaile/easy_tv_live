@@ -1,3 +1,4 @@
+import 'package:easy_tv_live/util/latency_checker_util.dart';
 import 'package:easy_tv_live/widget/focus_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,7 +54,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
     LogUtil.v('正在播放:$_sourceIndex::${_currentChannel!.toJson()}');
     try {
       _playerController?.removeListener(_videoListener);
-      _playerController?.dispose();
+      await _playerController?.dispose();
       _playerController = VideoPlayerController.networkUrl(
         Uri.parse(url),
         videoPlayerOptions: VideoPlayerOptions(
@@ -161,10 +162,12 @@ class _LiveHomePageState extends State<LiveHomePage> {
         _currentChannel = _videoMap!.playList![group]![channel];
         _playVideo();
       });
-      if (_videoMap?.epgUrl != null && _videoMap?.epgUrl != '') {
-        EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
-      } else {
-        EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
+      if (_videoMap!.playListType == PlayListType.m3u) {
+        if (_videoMap?.epgUrl != null && _videoMap?.epgUrl != '') {
+          EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
+        } else {
+          EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
+        }
       }
     } else {
       setState(() {
@@ -285,15 +288,37 @@ class _LiveHomePageState extends State<LiveHomePage> {
                   spacing: 10,
                   runSpacing: 10,
                   children: List.generate(sources.length, (index) {
-                    return FocusButton(
-                      autofocus: _sourceIndex == index,
-                      onTap: _sourceIndex == index
-                          ? null
-                          : () {
-                              Navigator.pop(context, index);
-                            },
-                      title: S.current.lineIndex(index + 1),
-                      selected: _sourceIndex == index,
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        FocusButton(
+                          autofocus: _sourceIndex == index,
+                          onTap: _sourceIndex == index
+                              ? null
+                              : () {
+                                  Navigator.pop(context, index);
+                                },
+                          title: S.current.lineIndex(index + 1),
+                          selected: _sourceIndex == index,
+                        ),
+                        Positioned(
+                          top: -2,
+                          right: 8,
+                          child: FutureBuilder<Color>(
+                              future: LatencyCheckerUtil.checkLatencies(sources[index]),
+                              initialData: Colors.transparent,
+                              builder: (BuildContext context, AsyncSnapshot<Color> snapshot) {
+                                return Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: snapshot.data,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                );
+                              }),
+                        )
+                      ],
                     );
                   })),
             ),

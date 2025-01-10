@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:easy_tv_live/tv/tv_channel_drawer_page.dart';
+import 'package:easy_tv_live/util/latency_checker_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:easy_tv_live/widget/date_position_widget.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
@@ -107,6 +108,7 @@ class _TvPageState extends State<TvPage> {
         }
         LogUtil.v('确认键:::打开频道列表');
         if (!Scaffold.of(context).isDrawerOpen) {
+          LatencyCheckerUtil.latencies.clear();
           Scaffold.of(context).openDrawer();
         }
         break;

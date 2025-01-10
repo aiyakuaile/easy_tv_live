@@ -1,11 +1,16 @@
+enum PlayListType {
+  m3u,
+  txt,
+}
+
 class PlaylistModel {
   PlaylistModel({
+    required this.playListType,
     this.epgUrl,
     this.playList,
   });
-
+  PlayListType playListType;
   String? epgUrl;
-  // {group-title: {channel:PlayModel}}
   Map<String, Map<String, PlayModel>>? playList;
 }
 
