@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:easy_tv_live/util/latency_checker_util.dart';
 import 'package:easy_tv_live/widget/focus_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fvp/fvp.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -46,15 +49,17 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   bool _drawerIsOpen = false;
 
+  late final List<String> _coders = _getDecoders();
+
   _playVideo() async {
     if (_currentChannel == null) return;
     toastString = S.current.lineToast(_sourceIndex + 1, _currentChannel!.title ?? '');
     setState(() {});
     final url = _currentChannel!.urls![_sourceIndex].toString();
     LogUtil.v('正在播放:$_sourceIndex::${_currentChannel!.toJson()}');
+    _playerController?.removeListener(_videoListener);
+    await _playerController?.dispose();
     try {
-      _playerController?.removeListener(_videoListener);
-      await _playerController?.dispose();
       _playerController = VideoPlayerController.networkUrl(
         Uri.parse(url),
         videoPlayerOptions: VideoPlayerOptions(
@@ -62,8 +67,12 @@ class _LiveHomePageState extends State<LiveHomePage> {
           mixWithOthers: false,
           webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
         ),
-      )..setVolume(1.0);
+      )
+        ..setVideoDecoders(_coders)
+        ..setVolume(1.0);
       await _playerController?.initialize();
+      // debugPrint('MediaInfo::::::${_playerController!.getMediaInfo().toString()}');
+      _playerController?.addListener(_videoListener);
       _playerController?.play();
       setState(() {
         toastString = S.current.loading;
@@ -85,7 +94,6 @@ class _LiveHomePageState extends State<LiveHomePage> {
         return;
       }
     }
-    _playerController?.addListener(_videoListener);
   }
 
   _videoListener() {
@@ -328,6 +336,20 @@ class _LiveHomePageState extends State<LiveHomePage> {
       _sourceIndex = selectedIndex;
       LogUtil.v('切换线路:====线路${_sourceIndex + 1}');
       _playVideo();
+    }
+  }
+
+  List<String> _getDecoders() {
+    switch (Platform.operatingSystem) {
+      case 'android':
+        return ["AMediaCodec", "FFmpeg", "dav1d"];
+      case 'ios':
+      case 'macos':
+        return ["VT", "hap", "FFmpeg", "dav1d"];
+      case 'windows':
+        return ["MFT:d3d=11", "hap", "D3D11", "DXVA", "CUDA", "FFmpeg", "dav1d"];
+      default:
+        return ["hap", "VAAPI", "CUDA", "VDPAU", "FFmpeg", "dav1d"];
     }
   }
 }

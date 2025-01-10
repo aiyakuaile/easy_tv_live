@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class LatencyCheckerUtil {
-  static const int goodThreshold = 100; // 毫秒
-  static const int averageThreshold = 300; // 毫秒
-  static const int poorThreshold = 500; // 毫秒
+  static const int goodThreshold = 1000;
+  static const int averageThreshold = 2000;
+  static const int poorThreshold = 3000;
   static const Duration timeoutDuration = Duration(seconds: 5); // 设置超时时间为5秒
   static Map<String, Color> latencies = {};
   static Future<Color> checkLatencies(String url) async {
@@ -17,18 +17,20 @@ class LatencyCheckerUtil {
     final client = http.Client();
     try {
       final stopwatch = Stopwatch()..start();
-      final response = await client.head(
+      await client.get(
         Uri.parse(url),
-        headers: {'Connection': 'close'},
+        headers: {'Connection': 'close', 'Range': 'bytes=0-99'},
       ).timeout(timeoutDuration);
-      LogUtil.v('url:::$url::\n:::${response.reasonPhrase}');
       stopwatch.stop();
       final duration = stopwatch.elapsed.inMilliseconds;
+      LogUtil.v('url:::成功:::$url::\n:::>>>>$duration');
       latencies[url] = classifyLatency(duration);
-    } on TimeoutException catch (_) {
+    } on TimeoutException catch (e) {
+      LogUtil.v('url:::超时:::$url::\n:::$e');
       latencies[url] = Colors.blueGrey;
     } catch (e) {
-      latencies[url] = Colors.blueGrey;
+      LogUtil.v('url:::报错:::$url::\n:::$e');
+      latencies[url] = Colors.redAccent;
     } finally {
       client.close();
     }
@@ -40,10 +42,8 @@ class LatencyCheckerUtil {
       return Colors.greenAccent;
     } else if (duration < averageThreshold) {
       return Colors.blueAccent;
-    } else if (duration < poorThreshold) {
-      return Colors.orangeAccent;
     } else {
-      return Colors.blueGrey;
+      return Colors.orangeAccent;
     }
   }
 }
