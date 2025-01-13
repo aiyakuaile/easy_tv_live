@@ -48,10 +48,10 @@ void main() async {
   await SpUtil.getInstance();
   fvp.registerWith(options: {
     'platforms': ['android', 'ios', 'windows', 'linux', 'macos'],
+    'video.decoders': ['AMediaCodec', 'FFmpeg'],
     'player': {
       'cc': '0',
       'buffer': '3000+60000',
-      'avformat.rtsp_transport': 'udp',
     }
   });
   runApp(MultiProvider(
