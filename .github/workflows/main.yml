@@ -25,13 +25,13 @@ jobs:
 
       # Build Android Mobile
       - name: Build Android APK Mobile
-        run: flutter build apk --dart-define=isTV=false --release --split-per-abi
+        run: flutter build apk --dart-define=isTV=false --release
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
       - name: Rename Android APK
-        run: mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
 
       # Build Android TV
       - name: Build Android APK TV
