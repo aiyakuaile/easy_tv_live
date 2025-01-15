@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:easy_tv_live/provider/download_provider.dart';
+import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/util/latency_checker_util.dart';
 import 'package:easy_tv_live/widget/focus_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -140,7 +145,21 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   _loadData() async {
     await _parseData();
-    CheckVersionUtil.checkVersion(context, false, false);
+    if (mounted) {
+      if (context.read<ThemeProvider>().useAutoUpdate && Platform.isAndroid) {
+        final url = await CheckVersionUtil.checkVersionAndAutoUpdate();
+        if (mounted && url != null) {
+          EasyLoading.showToast('新版本正在下载，稍后为您自动安装');
+          context.read<DownloadProvider>().downloadApk(url);
+        }
+      } else {
+        if (context.read<ThemeProvider>().useLightVersionCheck) {
+          CheckVersionUtil.checkLightVersion();
+        } else {
+          CheckVersionUtil.checkVersion(context, false, false);
+        }
+      }
+    }
   }
 
   @override

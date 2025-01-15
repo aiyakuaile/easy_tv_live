@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/util/font_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
@@ -19,9 +21,8 @@ class SettingFontPage extends StatefulWidget {
 
 class _SettingFontPageState extends State<SettingFontPage> {
   final _fontLink = EnvUtil.fontLink();
-  final _fontDownloadLink = EnvUtil.fontDownloadLink();
   final _fontList = <FontModel>[];
-  final _fontScales = [1.0, 1.2, 1.4, 1.6, 1.8];
+  final _fontScales = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0];
 
   @override
   void initState() {
@@ -32,9 +33,14 @@ class _SettingFontPageState extends State<SettingFontPage> {
   _loadFontList() async {
     final res = await HttpUtil().getRequest('$_fontLink/font.json');
     if (res != null) {
-      _fontList.clear();
-      _fontList.addAll((res as List).map((e) => FontModel.fromJson(e)).toList());
-      if (mounted) setState(() {});
+      try {
+        _fontList.clear();
+        List val = json.decode(res);
+        _fontList.addAll(val.map((e) => FontModel.fromJson(e)).toList());
+        if (mounted) setState(() {});
+      } catch (e) {
+        LogUtil.e(e);
+      }
     }
   }
 
@@ -112,14 +118,13 @@ class _SettingFontPageState extends State<SettingFontPage> {
                                     onTap: themeProvider.fontFamily == model.fontKey
                                         ? null
                                         : () async {
-                                            debugPrint('FocusButton::::onTap::::');
-
                                             if (model.progress != 0.0) return;
                                             if (model.fontKey == 'system') {
                                               themeProvider.setFontFamily(model.fontKey!);
                                               return;
                                             }
-                                            final fontUrl = '$_fontDownloadLink/${model.fontKey!}.${model.fontType}';
+                                            final fontUrl = '$_fontLink/fonts/${model.fontKey!}.${model.fontType}';
+                                            debugPrint('FocusButton::::onTap::::$fontUrl');
                                             final res = await FontUtil().loadFont(fontUrl, model.fontKey!, progressCallback: (double progress) {
                                               LogUtil.v('progress=========$progress');
                                               setState(() {

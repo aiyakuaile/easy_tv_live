@@ -1,8 +1,10 @@
 import 'package:easy_tv_live/router_keys.dart';
 import 'package:easy_tv_live/util/check_version_util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
+import '../provider/theme_provider.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -113,12 +115,13 @@ class _SettingPageState extends State<SettingPage> {
               Navigator.pushNamed(context, RouterKeys.settingFont);
             },
           ),
-          ListTile(
-            title: const Text('美化'),
-            leading: const Icon(Icons.ac_unit),
-            trailing: const Icon(Icons.arrow_right),
-            onTap: () {
-              Navigator.pushNamed(context, RouterKeys.settingBeautify);
+          SwitchListTile(
+            autofocus: true,
+            title: const Text('背景美化'),
+            value: context.watch<ThemeProvider>().isBingBg,
+            subtitle: const Text('未播放时的屏幕背景,每日更换图片'),
+            onChanged: (value) {
+              context.read<ThemeProvider>().setBingBg(value);
             },
           ),
         ],

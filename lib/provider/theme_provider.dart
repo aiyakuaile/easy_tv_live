@@ -8,13 +8,22 @@ class ThemeProvider extends ChangeNotifier {
   double _textScaleFactor = 1.0;
   String _fontUrl = '';
   bool _isBingBg = false;
+  bool _useLightVersionCheck = true;
+  bool _useDataProxy = true;
+  bool _useAutoUpdate = false;
 
+  bool get useAutoUpdate => _useAutoUpdate;
+  bool get useLightVersionCheck => _useLightVersionCheck;
+  bool get useDataProxy => _useDataProxy;
   String get fontFamily => _fontFamily;
   double get textScaleFactor => _textScaleFactor;
   String get fontUrl => _fontUrl;
   bool get isBingBg => _isBingBg;
 
   ThemeProvider() {
+    _useAutoUpdate = SpUtil.getBool('autoUpdate', defValue: false)!;
+    _useLightVersionCheck = SpUtil.getBool('lightVersionCheck', defValue: true)!;
+    _useDataProxy = SpUtil.getBool('dataProxy', defValue: true)!;
     _fontFamily = SpUtil.getString('appFontFamily', defValue: 'system')!;
     _fontUrl = SpUtil.getString('appFontUrl', defValue: '')!;
     _textScaleFactor = SpUtil.getDouble('fontScale', defValue: 1.0)!;
@@ -41,6 +50,24 @@ class ThemeProvider extends ChangeNotifier {
   void setBingBg(bool isOpen) {
     SpUtil.putBool('bingBg', isOpen);
     _isBingBg = isOpen;
+    notifyListeners();
+  }
+
+  void setLightVersionCheck(bool isOpen) {
+    SpUtil.putBool('lightVersionCheck', isOpen);
+    _useLightVersionCheck = isOpen;
+    notifyListeners();
+  }
+
+  void setDataProxy(bool isOpen) {
+    SpUtil.putBool('dataProxy', isOpen);
+    _useDataProxy = isOpen;
+    notifyListeners();
+  }
+
+  void setAutoUpdate(bool isOpen) {
+    SpUtil.putBool('autoUpdate', isOpen);
+    _useAutoUpdate = isOpen;
     notifyListeners();
   }
 }

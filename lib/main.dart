@@ -22,7 +22,6 @@ import 'generated/l10n.dart';
 import 'live_home_page.dart';
 import 'provider/download_provider.dart';
 import 'router_keys.dart';
-import 'setting/setting_beautify_page.dart';
 import 'setting/setting_page.dart';
 
 void main() async {
@@ -44,7 +43,7 @@ void main() async {
     });
   }
   WakelockPlus.enable();
-  LogUtil.init(isDebug: kDebugMode, tag: 'EasyTV');
+  LogUtil.init(isDebug: !kDebugMode, tag: 'EasyTV');
   await SpUtil.getInstance();
   fvp.registerWith(options: {
     'platforms': ['android', 'ios', 'windows', 'linux', 'macos'],
@@ -97,7 +96,6 @@ class MyApp extends StatelessWidget {
             RouterKeys.subScribe: (BuildContext context) => const SubScribePage(),
             RouterKeys.setting: (BuildContext context) => const SettingPage(),
             RouterKeys.settingFont: (BuildContext context) => const SettingFontPage(),
-            RouterKeys.settingBeautify: (BuildContext context) => const SettingBeautifyPage(),
             RouterKeys.settingReward: (BuildContext context) => const RewardPage(),
             RouterKeys.settingQrScan: (BuildContext context) => const QrScanPage(),
           },

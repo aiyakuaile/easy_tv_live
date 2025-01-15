@@ -1,12 +1,16 @@
 import 'dart:io';
-import 'dart:ui';
+
+import 'package:sp_util/sp_util.dart';
 
 class EnvUtil {
   static bool? _isMobile;
+  static const String proxy = 'https://easytv.suntengfei.top/';
 
   static bool isTV() {
     return const bool.fromEnvironment('isTV');
   }
+
+  static bool get _isUseProxy => SpUtil.getBool('proxy', defValue: true)!;
 
   static bool get isMobile {
     if (_isMobile != null) return _isMobile!;
@@ -14,73 +18,31 @@ class EnvUtil {
     return _isMobile!;
   }
 
-  static bool isChinese() {
-    final systemLocale = PlatformDispatcher.instance.locale;
-    bool isChinese = systemLocale.languageCode == 'zh';
-    return isChinese;
-  }
-
   static String sourceDownloadHost() {
-    if (isChinese()) {
-      return 'https://gitee.com/AMuMuSir/easy_tv_live/releases/download';
-    } else {
-      return 'https://github.com/aiyakuaile/easy_tv_live/releases/download';
-    }
+    return '${_isUseProxy ? proxy : ''}https://github.com/aiyakuaile/easy_tv_live/releases/download';
   }
 
   static String sourceReleaseHost() {
-    if (isChinese()) {
-      return 'https://gitee.com/AMuMuSir/easy_tv_live/releases';
-    } else {
-      return 'https://github.com/aiyakuaile/easy_tv_live/releases';
-    }
+    return 'https://github.com/aiyakuaile/easy_tv_live/releases';
   }
 
   static String sourceHomeHost() {
-    if (isChinese()) {
-      return 'https://gitee.com/AMuMuSir/easy_tv_live';
-    } else {
-      return 'https://github.com/aiyakuaile/easy_tv_live';
-    }
+    return 'https://github.com/aiyakuaile/easy_tv_live';
   }
 
   static String videoDefaultChannelHost() {
-    if (isChinese()) {
-      return 'https://gitee.com/AMuMuSir/easy_tv_live/raw/main/temp';
-    } else {
-      return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/temp';
-    }
+    return '${_isUseProxy ? proxy : ''}https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/temp';
   }
 
   static String checkVersionHost() {
-    if (isChinese()) {
-      return 'https://gitee.com/api/v5/repos/AMuMuSir/easy_tv_live/releases/latest';
-    } else {
-      return 'https://api.github.com/repos/aiyakuaile/easy_tv_live/releases/latest';
-    }
+    return '${_isUseProxy ? proxy : ''}https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/versions.json';
   }
 
   static String fontLink() {
-    if (isChinese()) {
-      return 'https://gitee.com/AMuMuSir/easy_tv_font/raw/main';
-    } else {
-      return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_font/main';
-    }
-  }
-
-  static String fontDownloadLink() {
-    if (isChinese()) {
-      return 'https://gitee.com/AMuMuSir/easy_tv_font/releases/download/fonts';
-    } else {
-      return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_font/main';
-    }
+    return '${_isUseProxy ? proxy : ''}https://raw.githubusercontent.com/aiyakuaile/easy_tv_font/main';
   }
 
   static String rewardLink() {
-    if (isChinese()) {
-      return 'https://gitee.com/AMuMuSir/easy_tv_live/raw/main/reward.txt';
-    } else {
-      return 'https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/reward.txt';
-    }
+    return '${_isUseProxy ? proxy : ''}https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/reward.txt';
   }
 }
