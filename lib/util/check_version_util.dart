@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_tv_live/widget/update_download_btn.dart';
@@ -11,7 +12,7 @@ import 'http_util.dart';
 import 'log_util.dart';
 
 class CheckVersionUtil {
-  static const version = '2.8.1';
+  static const version = '2.8.3';
   static final releaseLink = EnvUtil.sourceReleaseHost();
   static final homeLink = EnvUtil.sourceHomeHost();
   static VersionEntity? latestVersionEntity;
@@ -30,7 +31,7 @@ class CheckVersionUtil {
   static checkLightVersion() async {
     final latestVersionEntity = await checkRelease(false, false);
     if (latestVersionEntity != null) {
-      EasyLoading.showToast('发现新版本，请及时更新哦！');
+      EasyLoading.showToast('发现新版本，请及时更新哦！', toastPosition: EasyLoadingToastPosition.top);
     }
   }
 
@@ -39,13 +40,14 @@ class CheckVersionUtil {
     try {
       final res = await HttpUtil().getRequest(EnvUtil.checkVersionHost(), isShowLoading: isShowLoading);
       if (res != null) {
-        final latestVersion = res['latest_version'] as String?;
-        final latestMsg = res['update_log'] as String?;
+        final resMap = json.decode(res);
+        final latestVersion = resMap['latest_version'] as String?;
+        final latestMsg = resMap['update_log'] as String?;
         if (latestVersion != null && latestVersion.compareTo(version) > 0) {
           latestVersionEntity = VersionEntity(latestVersion: latestVersion, latestMsg: latestMsg);
           return latestVersionEntity;
         } else {
-          if (isShowLatestToast) EasyLoading.showToast(S.current.latestVersion);
+          if (isShowLatestToast) EasyLoading.showToast(S.current.latestVersion, toastPosition: EasyLoadingToastPosition.top);
           LogUtil.v('已是最新版::::::::');
         }
       }

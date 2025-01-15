@@ -58,8 +58,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
     final url = _currentChannel!.urls![_sourceIndex].toString();
     LogUtil.v('正在播放:$_sourceIndex::${_currentChannel!.toJson()}');
     try {
+      await _playerController?.pause();
       _playerController?.removeListener(_videoListener);
-      _playerController?.dispose();
+      await _playerController?.dispose();
       _playerController = VideoPlayerController.networkUrl(
         Uri.parse(url),
         videoPlayerOptions: VideoPlayerOptions(
@@ -149,7 +150,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
       if (context.read<ThemeProvider>().useAutoUpdate && Platform.isAndroid) {
         final url = await CheckVersionUtil.checkVersionAndAutoUpdate();
         if (mounted && url != null) {
-          EasyLoading.showToast('新版本正在下载，稍后为您自动安装');
+          EasyLoading.showToast('新版本开始下载，稍后为您自动安装', toastPosition: EasyLoadingToastPosition.top);
           context.read<DownloadProvider>().downloadApk(url);
         }
       } else {

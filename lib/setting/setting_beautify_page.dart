@@ -1,3 +1,4 @@
+import 'package:easy_tv_live/provider/download_provider.dart';
 import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/util/check_version_util.dart';
 import 'package:flutter/material.dart';
@@ -49,20 +50,29 @@ class SettingBeautifyPage extends StatelessWidget {
               SwitchListTile(
                 title: const Text('数据代理'),
                 value: context.watch<ThemeProvider>().useDataProxy,
-                subtitle: const Text('Github访问受限的用户可开启'),
+                subtitle: const Text('Github访问受限的用户需开启'),
                 onChanged: (value) {
                   context.read<ThemeProvider>().setDataProxy(value);
                 },
               ),
-              ListTile(
-                title: const Text('检查更新'),
-                trailing: CheckVersionUtil.latestVersionEntity == null
-                    ? const Text('已是最新版本')
-                    : Text('🔴 发现新版本:${CheckVersionUtil.latestVersionEntity?.latestVersion}'),
-                onTap: () {
-                  CheckVersionUtil.checkVersion(context, true, true);
-                },
-              ),
+              Builder(builder: (ctx) {
+                final provider = context.watch<DownloadProvider>();
+                return ListTile(
+                  title: const Text('检查更新'),
+                  trailing: CheckVersionUtil.latestVersionEntity == null
+                      ? const Text('已是最新版本')
+                      : provider.isDownloading
+                          ? Text(
+                              '新版本正在下载中...${(provider.progress * 100).toStringAsFixed(1)}%',
+                            )
+                          : Text('🔴 发现新版本：v${CheckVersionUtil.latestVersionEntity?.latestVersion}'),
+                  onTap: () {
+                    if (!context.read<DownloadProvider>().isDownloading) {
+                      CheckVersionUtil.checkVersion(context, true, true);
+                    }
+                  },
+                );
+              }),
               if (!CheckVersionUtil.isTV)
                 ListTile(
                   title: const Text('应用主页'),

@@ -10,7 +10,7 @@ class EnvUtil {
     return const bool.fromEnvironment('isTV');
   }
 
-  static bool get _isUseProxy => SpUtil.getBool('proxy', defValue: true)!;
+  static bool get _isUseProxy => SpUtil.getBool('dataProxy', defValue: true)!;
 
   static bool get isMobile {
     if (_isMobile != null) return _isMobile!;

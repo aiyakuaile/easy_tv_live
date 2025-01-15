@@ -43,7 +43,7 @@ void main() async {
     });
   }
   WakelockPlus.enable();
-  LogUtil.init(isDebug: !kDebugMode, tag: 'EasyTV');
+  LogUtil.init(isDebug: kDebugMode, tag: 'EasyTV');
   await SpUtil.getInstance();
   fvp.registerWith(options: {
     'platforms': ['android', 'ios', 'windows', 'linux', 'macos'],

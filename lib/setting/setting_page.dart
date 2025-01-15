@@ -124,6 +124,30 @@ class _SettingPageState extends State<SettingPage> {
               context.read<ThemeProvider>().setBingBg(value);
             },
           ),
+          SwitchListTile(
+            title: const Text('更新提示免打扰'),
+            value: context.watch<ThemeProvider>().useLightVersionCheck,
+            subtitle: const Text('开启后,播放页面的更新弹窗将会变成普通的消息提醒'),
+            onChanged: (value) {
+              context.read<ThemeProvider>().setLightVersionCheck(value);
+            },
+          ),
+          SwitchListTile(
+            title: const Text('自动更新'),
+            value: context.watch<ThemeProvider>().useAutoUpdate,
+            subtitle: const Text('发现新版本将会自动下载并安装'),
+            onChanged: (value) {
+              context.read<ThemeProvider>().setAutoUpdate(value);
+            },
+          ),
+          SwitchListTile(
+            title: const Text('数据代理'),
+            value: context.watch<ThemeProvider>().useDataProxy,
+            subtitle: const Text('Github访问受限的用户需开启'),
+            onChanged: (value) {
+              context.read<ThemeProvider>().setDataProxy(value);
+            },
+          ),
         ],
       ),
     );

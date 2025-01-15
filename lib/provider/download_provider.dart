@@ -25,7 +25,9 @@ class DownloadProvider extends ChangeNotifier {
       notifyListeners();
     });
     if (code == 200) {
+      _isDownloading = false;
       await ApkInstaller.installApk(filePath: savePath);
+      notifyListeners();
     } else {
       _isDownloading = false;
       notifyListeners();
