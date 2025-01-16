@@ -15,8 +15,14 @@ import 'log_util.dart';
 
 class M3uUtil {
   M3uUtil._();
+
+  static final Map<String, Channel> _serialNumMap = {};
+
+  static Map<String, Channel> get serialNumMap => _serialNumMap;
+
   // 获取默认的m3u文件
   static Future<PlayChannelListModel?> getDefaultM3uData() async {
+    _serialNumMap.clear();
     String m3uData = '';
     final models = await getLocalData();
     if (models.isNotEmpty) {
@@ -40,7 +46,24 @@ class M3uUtil {
       m3uData = await _fetchData();
       await saveLocalData([SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: 'default', selected: true)]);
     }
-    return _parseM3u(m3uData);
+    final channelModels = await _parseM3u(m3uData);
+    if (channelModels.playList!.isNotEmpty) {
+      int index = 1;
+      for (int i = 0; i < channelModels.playList!.length; i++) {
+        final playModel = channelModels.playList![i];
+        if (playModel.channel?.isNotEmpty ?? false) {
+          for (int j = 0; j < playModel.channel!.length; j++) {
+            final channel = playModel.channel![j];
+            channel.serialNum = index;
+            channel.groupIndex = i;
+            channel.channelIndex = j;
+            _serialNumMap[index.toString()] = channel;
+            index += 1;
+          }
+        }
+      }
+    }
+    return channelModels;
   }
 
   // 获取本地m3u数据

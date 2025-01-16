@@ -182,19 +182,19 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
 
   void _handleGroupKeyEvent(KeyDownEvent event) {
     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      if (_groupIndex > 0) {
-        setState(() {
-          _groupIndex--;
-        });
-        _ensureGroupItemVisible();
+      _groupIndex -= 1;
+      if (_groupIndex < 0) {
+        _groupIndex = widget.channelListModel!.playList!.length - 1;
       }
+      setState(() {});
+      _ensureGroupItemVisible();
     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      if (_groupIndex < widget.channelListModel!.playList!.length - 1) {
-        setState(() {
-          _groupIndex++;
-        });
-        _ensureGroupItemVisible();
+      _groupIndex++;
+      if (_groupIndex > widget.channelListModel!.playList!.length - 1) {
+        _groupIndex = 0;
       }
+      setState(() {});
+      _ensureGroupItemVisible();
     } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
       setState(() {
         _currentFocusColumn = FocusColumn.channel;
@@ -228,15 +228,23 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
         setState(() {
           _channelIndex--;
         });
-        _ensureChannelItemVisible();
+      } else {
+        setState(() {
+          _channelIndex = widget.channelListModel!.playList![_groupIndex].channel!.length - 1;
+        });
       }
+      _ensureChannelItemVisible();
     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
       if (_channelIndex < widget.channelListModel!.playList![_groupIndex].channel!.length - 1) {
         setState(() {
           _channelIndex++;
         });
-        _ensureChannelItemVisible();
+      } else {
+        setState(() {
+          _channelIndex = 0;
+        });
       }
+      _ensureChannelItemVisible();
     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       setState(() {
         _currentFocusColumn = FocusColumn.group;
@@ -378,8 +386,10 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
                 controller: _scrollChannelController,
                 physics: const ScrollPhysics(),
                 itemBuilder: (context, index) {
-                  final name = widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel![index].title!;
-                  return _buildChannelItem(index, name);
+                  final channel = widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel![index];
+                  final name = channel.title!;
+                  final serialNum = channel.serialNum!;
+                  return _buildChannelItem(index, '$serialNum $name');
                 },
                 itemCount: widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel!.length),
           ),

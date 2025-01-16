@@ -76,6 +76,9 @@ class Channel {
     this.logo,
     this.title,
     this.urls,
+    this.serialNum,
+    this.groupIndex,
+    this.channelIndex,
   });
 
   Channel.fromJson(dynamic json) {
@@ -83,24 +86,35 @@ class Channel {
     logo = json['logo'];
     title = json['title'];
     urls = json['urls'] != null ? json['urls'].cast<String>() : [];
+    serialNum = json['serialNum'];
+    groupIndex = json['groupIndex'];
+    channelIndex = json['channelIndex'];
   }
-
+  int? serialNum;
   String? id;
   String? logo;
   String? title;
   List<String>? urls;
+  int? groupIndex;
+  int? channelIndex;
 
   Channel copyWith({
     String? id,
     String? logo,
     String? title,
     List<String>? urls,
+    int? serialNum,
+    int? groupIndex,
+    int? channelIndex,
   }) =>
       Channel(
         id: id ?? this.id,
         logo: logo ?? this.logo,
         title: title ?? this.title,
         urls: urls ?? this.urls,
+        serialNum: serialNum ?? this.serialNum,
+        groupIndex: groupIndex ?? this.groupIndex,
+        channelIndex: channelIndex ?? this.channelIndex,
       );
 
   Map<String, dynamic> toJson() {
@@ -109,6 +123,9 @@ class Channel {
     map['logo'] = logo;
     map['title'] = title;
     map['urls'] = urls;
+    map['serialNum'] = serialNum;
+    map['groupIndex'] = groupIndex;
+    map['channelIndex'] = channelIndex;
     return map;
   }
 }

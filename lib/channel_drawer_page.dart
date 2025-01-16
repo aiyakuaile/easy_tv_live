@@ -193,6 +193,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                 itemBuilder: (context, index) {
                   final channel = widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel![index];
                   final name = channel.title;
+                  final serialNum = channel.serialNum;
                   return Builder(builder: (context) {
                     return Material(
                       color: Colors.transparent,
@@ -231,7 +232,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  name!,
+                                  '$serialNum $name',
                                   style: TextStyle(
                                       color: widget.channelListModel!.playChannelIndex == index ? Colors.red : Colors.white,
                                       fontWeight: FontWeight.bold),
