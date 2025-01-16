@@ -76,22 +76,22 @@ class EpgUtil {
   }
 
   static loadEPGXML(String url) async {
-    // LogUtil.v('****start download EPG Xml ****');
-    // int index = 0;
-    // final uStr = url.replaceAll('/h', ',h');
-    // final urlLink = uStr.split(',');
-    // XmlDocument? tempXmlDocument;
-    // while (tempXmlDocument == null && index < urlLink.length) {
-    //   final res = await HttpUtil().getRequest(urlLink[index], isShowLoading: false);
-    //   if (res != null) {
-    //     LogUtil.v('****download EPG Xml success****');
-    //     tempXmlDocument = XmlDocument.parse(res.toString());
-    //   } else {
-    //     tempXmlDocument = null;
-    //     index += 1;
-    //   }
-    // }
-    // _programmes = tempXmlDocument?.findAllElements('programme');
+    LogUtil.v('****start download EPG Xml ****');
+    int index = 0;
+    final uStr = url.replaceAll('/h', ',h');
+    final urlLink = uStr.split(',');
+    XmlDocument? tempXmlDocument;
+    while (tempXmlDocument == null && index < urlLink.length) {
+      final res = await HttpUtil().getRequest(urlLink[index], isShowLoading: false);
+      if (res != null) {
+        LogUtil.v('****download EPG Xml success****');
+        tempXmlDocument = XmlDocument.parse(res.toString());
+      } else {
+        tempXmlDocument = null;
+        index += 1;
+      }
+    }
+    _programmes = tempXmlDocument?.findAllElements('programme');
   }
 
   static resetEPGXML() {
