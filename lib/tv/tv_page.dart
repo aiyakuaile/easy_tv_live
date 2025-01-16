@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_tv_live/entity/play_channel_list_model.dart';
 import 'package:easy_tv_live/tv/tv_channel_drawer_page.dart';
 import 'package:easy_tv_live/util/latency_checker_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
@@ -11,14 +12,12 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
 
-import '../entity/playlist_model.dart';
 import '../util/log_util.dart';
 import '../widget/video_hold_bg.dart';
 
 class TvPage extends StatefulWidget {
-  final PlaylistModel? videoMap;
-  final PlayModel? playModel;
-  final Function(PlayModel? newModel)? onTapChannel;
+  final PlayChannelListModel? channelListModel;
+  final Function(Channel? newChannel)? onTapChannel;
 
   final VideoPlayerController? controller;
   final Future<void> Function()? changeChannelSources;
@@ -31,10 +30,9 @@ class TvPage extends StatefulWidget {
 
   const TvPage({
     super.key,
-    this.videoMap,
+    this.channelListModel,
     this.onTapChannel,
     this.controller,
-    this.playModel,
     this.changeChannelSources,
     this.onChangeSubSource,
     this.toastString,
@@ -146,10 +144,8 @@ class _TvPageState extends State<TvPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       drawer: TVChannelDrawerPage(
-        videoMap: widget.videoMap,
-        playModel: widget.playModel,
+        channelListModel: widget.channelListModel,
         onTapChannel: widget.onTapChannel,
-        isLandscape: true,
       ),
       drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
       drawerScrimColor: Colors.transparent,

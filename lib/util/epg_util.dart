@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:easy_tv_live/entity/playlist_model.dart';
+import 'package:easy_tv_live/entity/play_channel_list_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
@@ -15,7 +15,7 @@ class EpgUtil {
   static Iterable<XmlElement>? _programmes;
   static CancelToken? _cancelToken;
 
-  static Future<EpgModel?> getEpg(PlayModel? model) async {
+  static Future<EpgModel?> getEpg(Channel? model) async {
     if (model == null) return null;
 
     String channelKey = '';

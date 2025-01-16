@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_tv_live/entity/play_channel_list_model.dart';
 import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/epg_util.dart';
@@ -10,23 +11,15 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import '../entity/playlist_model.dart';
 import '../util/env_util.dart';
 
 enum FocusColumn { group, channel, epg }
 
 class TVChannelDrawerPage extends StatefulWidget {
-  final PlaylistModel? videoMap;
-  final PlayModel? playModel;
-  final bool isLandscape;
-  final Function(PlayModel? newModel)? onTapChannel;
+  final PlayChannelListModel? channelListModel;
+  final Function(Channel? newChannel)? onTapChannel;
 
-  const TVChannelDrawerPage(
-      {super.key,
-      this.videoMap,
-      this.playModel,
-      this.onTapChannel,
-      this.isLandscape = true});
+  const TVChannelDrawerPage({super.key, this.channelListModel, this.onTapChannel});
 
   @override
   State<TVChannelDrawerPage> createState() => _TVChannelDrawerPageState();
@@ -42,84 +35,64 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
   final _viewPortKey = GlobalKey();
   double? _viewPortHeight;
 
-  late List<String> _keys;
-  late List<Map> _values;
-  late int _groupIndex = 0;
-  late int _channelIndex = 0;
+  int _groupIndex = 0;
+  int _channelIndex = 0;
+
   final _itemHeight = 50.0;
   bool _isShowEPG = true;
-  final isTV = EnvUtil.isTV();
+  final isTV = true;
 
   final _focusNode = FocusNode();
-  FocusColumn _currentFocusColumn = FocusColumn.group;
-
-  late int _selectedGroupIndex = 0;
+  FocusColumn _currentFocusColumn = FocusColumn.channel;
 
   _loadEPGMsg() async {
-    if (!_isShowEPG) return;
+    if (!_isShowEPG || widget.channelListModel == null) return;
     setState(() {
       _epgData = null;
       _selEPGIndex = 0;
     });
-    final res = await EpgUtil.getEpg(widget.playModel);
-    if (res == null || res.epgData == null || res.epgData!.isEmpty) return;
-    _epgData = res.epgData!;
-    final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
-    final selectTimeData = _epgData!
-        .where((element) => element.start!.compareTo(epgRangeTime) < 0)
-        .last
-        .start;
-    final selIndex =
-        _epgData!.indexWhere((element) => element.start == selectTimeData);
-    _selEPGIndex = selIndex;
-    setState(() {});
+    Future.delayed(const Duration(milliseconds: 300), () async {
+      final playGroupIndex = widget.channelListModel!.playGroupIndex!;
+      final playChannelIndex = widget.channelListModel!.playChannelIndex!;
+      final channel = widget.channelListModel!.playList![playGroupIndex].channel![playChannelIndex];
+      final res = await EpgUtil.getEpg(channel);
+      if (res == null || res.epgData == null || res.epgData!.isEmpty) return;
+      _epgData = res.epgData!;
+      final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
+      final selectTimeData = _epgData!.where((element) => element.start!.compareTo(epgRangeTime) < 0).last.start;
+      final selIndex = _epgData!.indexWhere((element) => element.start == selectTimeData);
+      _selEPGIndex = selIndex;
+      setState(() {});
+    });
   }
 
   @override
   void initState() {
     LogUtil.v('ChannelDrawerPage:isTV:::$isTV');
-    _keys = widget.videoMap?.playList?.keys.toList() ?? <String>[];
-    _values = widget.videoMap?.playList?.values.toList().cast<Map>() ?? <Map>[];
-    _groupIndex = _keys
-        .indexWhere((element) => element == (widget.playModel?.group ?? ''));
-    if (_groupIndex != -1) {
-      _channelIndex = _values[_groupIndex]
-          .keys
-          .toList()
-          .indexWhere((element) => element == widget.playModel!.title);
-    }
-    if (_groupIndex == -1) {
-      _groupIndex = 0;
-    }
-    if (_channelIndex == -1) {
-      _channelIndex = 0;
-    }
-    LogUtil.v(
-        'ChannelDrawerPage:initState:::groupIndex=$_groupIndex==channelIndex=$_channelIndex');
+    final playGroupIndex = widget.channelListModel!.playGroupIndex!;
+    final playChannelIndex = widget.channelListModel!.playChannelIndex!;
+    _groupIndex = playGroupIndex;
+    _channelIndex = playChannelIndex;
     Future.delayed(Duration.zero, () {
       if (_viewPortHeight == null) {
-        final RenderBox? renderBox =
-            _viewPortKey.currentContext?.findRenderObject() as RenderBox?;
+        final RenderBox? renderBox = _viewPortKey.currentContext?.findRenderObject() as RenderBox?;
         final double height = renderBox?.size.height ?? 0;
         _viewPortHeight = height * 0.5;
-        LogUtil.v(
-            'ChannelDrawerPage:initState:_viewPortHeight::height=$height');
+        LogUtil.v('ChannelDrawerPage:initState:_viewPortHeight::height=$height');
       }
-      if (_groupIndex != 0) {
+
+      if (playGroupIndex != 0) {
         final maxScrollExtent = _scrollController.position.maxScrollExtent;
-        final shouldOffset =
-            _groupIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
+        final shouldOffset = playGroupIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
         if (shouldOffset < maxScrollExtent) {
           _scrollController.jumpTo(max(0.0, shouldOffset));
         } else {
           _scrollController.jumpTo(maxScrollExtent);
         }
       }
-      if (_channelIndex != 0) {
-        final maxScrollExtent =
-            _scrollChannelController.position.maxScrollExtent;
-        final shouldOffset =
-            _channelIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
+      if (playChannelIndex != 0) {
+        final maxScrollExtent = _scrollChannelController.position.maxScrollExtent;
+        final shouldOffset = playChannelIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
         if (shouldOffset < maxScrollExtent) {
           _scrollChannelController.jumpTo(max(0.0, shouldOffset));
         } else {
@@ -129,7 +102,6 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
     });
     _loadEPGMsg();
     _focusNode.requestFocus();
-    _selectedGroupIndex = _groupIndex;
     super.initState();
   }
 
@@ -139,36 +111,6 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
     _scrollChannelController.dispose();
     _focusNode.dispose();
     super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant TVChannelDrawerPage oldWidget) {
-    if (widget.playModel != oldWidget.playModel) {
-      setState(() {
-        _keys = widget.videoMap?.playList?.keys.toList() ?? <String>[];
-        _values =
-            widget.videoMap?.playList?.values.toList().cast<Map>() ?? <Map>[];
-
-        if (widget.playModel != null) {
-          int newGroupIndex =
-              _keys.indexWhere((element) => element == widget.playModel?.group);
-          int newChannelIndex = -1;
-
-          if (newGroupIndex != -1) {
-            newChannelIndex = _values[newGroupIndex]
-                .keys
-                .toList()
-                .indexWhere((element) => element == widget.playModel?.title);
-          }
-
-          _groupIndex = newGroupIndex != -1 ? newGroupIndex : 0;
-          _selectedGroupIndex = _groupIndex;
-          _channelIndex = newChannelIndex != -1 ? newChannelIndex : 0;
-        }
-      });
-      _loadEPGMsg();
-    }
-    super.didUpdateWidget(oldWidget);
   }
 
   void _handleKeyEvent(KeyEvent event) {
@@ -198,8 +140,7 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
     Future.delayed(Duration(milliseconds: 300), () {
       if (_scrollController.hasClients) {
         final maxScrollExtent = _scrollController.position.maxScrollExtent;
-        final shouldOffset =
-            _groupIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
+        final shouldOffset = _groupIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
         if (shouldOffset < maxScrollExtent) {
           _scrollController.animateTo(
             max(0.0, shouldOffset),
@@ -220,10 +161,8 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
   void _ensureChannelItemVisible() {
     Future.delayed(Duration(milliseconds: 300), () {
       if (_scrollChannelController.hasClients) {
-        final maxScrollExtent =
-            _scrollChannelController.position.maxScrollExtent;
-        final shouldOffset =
-            _channelIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
+        final maxScrollExtent = _scrollChannelController.position.maxScrollExtent;
+        final shouldOffset = _channelIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
         if (shouldOffset < maxScrollExtent) {
           _scrollChannelController.animateTo(
             max(0.0, shouldOffset),
@@ -250,58 +189,35 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
         _ensureGroupItemVisible();
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      if (_groupIndex < _keys.length - 1) {
+      if (_groupIndex < widget.channelListModel!.playList!.length - 1) {
         setState(() {
           _groupIndex++;
         });
         _ensureGroupItemVisible();
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-      if (widget.playModel != null) {
-        final playingGroupIndex =
-            _keys.indexWhere((element) => element == widget.playModel?.group);
-        if (playingGroupIndex != -1) {
-          setState(() {
-            _groupIndex = playingGroupIndex;
-          });
-          _ensureGroupItemVisible();
-        }
-      }
-
       setState(() {
         _currentFocusColumn = FocusColumn.channel;
-        if (widget.playModel != null &&
-            widget.playModel?.group == _keys[_selectedGroupIndex]) {
-          _channelIndex = _values[_selectedGroupIndex]
-              .keys
-              .toList()
-              .indexWhere((element) => element == widget.playModel?.title);
-          if (_channelIndex == -1) {
-            _channelIndex = 0;
-          }
-        }
+        _groupIndex = widget.channelListModel?.playGroupIndex ?? 0;
+        _channelIndex = widget.channelListModel?.playChannelIndex ?? 0;
       });
+      _ensureGroupItemVisible();
       _ensureChannelItemVisible();
-    } else if (event.logicalKey == LogicalKeyboardKey.select ||
-        event.logicalKey == LogicalKeyboardKey.enter) {
-      if (widget.playModel?.group == _keys[_groupIndex]) {
+    } else if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) {
+      if (_groupIndex == widget.channelListModel?.playGroupIndex) {
         Navigator.of(context).pop();
         return;
       }
-
       setState(() {
-        _selectedGroupIndex = _groupIndex;
+        widget.channelListModel!.playGroupIndex = _groupIndex;
+        widget.channelListModel!.playChannelIndex = 0;
         _channelIndex = 0;
         _currentFocusColumn = FocusColumn.channel;
-
-        final name = _values[_selectedGroupIndex].keys.toList()[0].toString();
-        final newModel =
-            widget.videoMap!.playList![_keys[_selectedGroupIndex]]![name];
-        widget.onTapChannel?.call(newModel);
-
+        widget.onTapChannel?.call(widget.channelListModel!.playList![_groupIndex].channel![_channelIndex]);
         if (_scrollChannelController.hasClients) {
           _scrollChannelController.jumpTo(0);
         }
+        _loadEPGMsg();
       });
     }
   }
@@ -315,59 +231,27 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
         _ensureChannelItemVisible();
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      if (_channelIndex < _values[_selectedGroupIndex].length - 1) {
+      if (_channelIndex < widget.channelListModel!.playList![_groupIndex].channel!.length - 1) {
         setState(() {
           _channelIndex++;
         });
         _ensureChannelItemVisible();
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      if (widget.playModel != null) {
-        final playingChannelIndex = _values[_selectedGroupIndex]
-            .keys
-            .toList()
-            .indexWhere((element) => element == widget.playModel?.title);
-        if (playingChannelIndex != -1) {
-          setState(() {
-            _channelIndex = playingChannelIndex;
-          });
-          _ensureChannelItemVisible();
-        }
-      }
-
       setState(() {
         _currentFocusColumn = FocusColumn.group;
-        if (widget.playModel != null) {
-          _groupIndex =
-              _keys.indexWhere((element) => element == widget.playModel?.group);
-          if (_groupIndex == -1) {
-            _groupIndex = 0;
-          }
-        }
+        _channelIndex = widget.channelListModel?.playChannelIndex ?? 0;
       });
+      _ensureChannelItemVisible();
       _ensureGroupItemVisible();
     } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-      if (widget.playModel != null) {
-        final playingChannelIndex = _values[_selectedGroupIndex]
-            .keys
-            .toList()
-            .indexWhere((element) => element == widget.playModel?.title);
-        if (playingChannelIndex != -1) {
-          setState(() {
-            _channelIndex = playingChannelIndex;
-          });
-          _ensureChannelItemVisible();
-        }
-      }
-
-      if (_isShowEPG && _epgData != null && _epgData!.isNotEmpty) {
-        setState(() {
+      setState(() {
+        if (_isShowEPG && _epgData != null && _epgData!.isNotEmpty) {
+          _channelIndex = widget.channelListModel?.playChannelIndex ?? 0;
           _currentFocusColumn = FocusColumn.epg;
-          final epgRangeTime =
-              DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
-          final currentEpgIndex = _epgData!.indexWhere((element) =>
-              element.start!.compareTo(epgRangeTime) <= 0 &&
-              element.end!.compareTo(epgRangeTime) > 0);
+          final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
+          final currentEpgIndex =
+              _epgData!.indexWhere((element) => element.start!.compareTo(epgRangeTime) <= 0 && element.end!.compareTo(epgRangeTime) > 0);
           if (currentEpgIndex != -1) {
             _selEPGIndex = currentEpgIndex;
             _epgScrollController.scrollTo(
@@ -377,21 +261,18 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
               curve: Curves.linear,
             );
           }
-        });
-      }
-    } else if (event.logicalKey == LogicalKeyboardKey.select ||
-        event.logicalKey == LogicalKeyboardKey.enter) {
-      final name =
-          _values[_selectedGroupIndex].keys.toList()[_channelIndex].toString();
-
-      if (widget.playModel?.title == name) {
+          _ensureChannelItemVisible();
+        }
+      });
+    } else if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) {
+      if (widget.channelListModel?.playChannelIndex == _channelIndex) {
         Navigator.of(context).pop();
         return;
       }
-
-      final newModel =
-          widget.videoMap!.playList![_keys[_selectedGroupIndex]]![name];
+      widget.channelListModel!.playChannelIndex = _channelIndex;
+      final newModel = widget.channelListModel!.playList![_groupIndex].channel![_channelIndex];
       widget.onTapChannel?.call(newModel);
+      _loadEPGMsg();
     }
   }
 
@@ -428,9 +309,8 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
-      final currentEpgIndex = _epgData!.indexWhere((element) =>
-          element.start!.compareTo(epgRangeTime) <= 0 &&
-          element.end!.compareTo(epgRangeTime) > 0);
+      final currentEpgIndex =
+          _epgData!.indexWhere((element) => element.start!.compareTo(epgRangeTime) <= 0 && element.end!.compareTo(epgRangeTime) > 0);
       if (currentEpgIndex != -1) {
         setState(() {
           _selEPGIndex = currentEpgIndex;
@@ -442,18 +322,8 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
           curve: Curves.linear,
         );
       }
-
       setState(() {
         _currentFocusColumn = FocusColumn.channel;
-        if (widget.playModel != null) {
-          _channelIndex = _values[_selectedGroupIndex]
-              .keys
-              .toList()
-              .indexWhere((element) => element == widget.playModel?.title);
-          if (_channelIndex == -1) {
-            _channelIndex = 0;
-          }
-        }
       });
       _ensureChannelItemVisible();
     }
@@ -472,24 +342,19 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
   }
 
   Widget _buildOpenDrawer() {
-    double drawWidth = max(
-        MediaQuery.of(context).size.width * 0.4 +
-            MediaQuery.of(context).padding.left,
-        300);
+    double drawWidth = max(MediaQuery.of(context).size.width * 0.4 + MediaQuery.of(context).padding.left, 300);
     final screenWidth = MediaQuery.of(context).size.width;
     double egpWidth = 260.0;
     _isShowEPG = (drawWidth + egpWidth) < screenWidth;
     if (_isShowEPG && _epgData != null && _epgData!.isNotEmpty) {
       drawWidth += egpWidth;
     }
-    bool isShowEpgWidget =
-        _isShowEPG && _epgData != null && _epgData!.isNotEmpty;
+    bool isShowEpgWidget = _isShowEPG && _epgData != null && _epgData!.isNotEmpty;
     return Container(
       key: _viewPortKey,
       padding: EdgeInsets.only(left: MediaQuery.of(context).padding.left),
-      width: widget.isLandscape ? drawWidth : screenWidth,
-      decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: [Colors.black, Colors.transparent])),
+      width: drawWidth,
+      decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.black, Colors.transparent])),
       child: Row(children: [
         SizedBox(
           width: 100 * context.read<ThemeProvider>().textScaleFactor,
@@ -498,13 +363,14 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
               padding: const EdgeInsets.only(bottom: 100.0),
               controller: _scrollController,
               itemBuilder: (context, index) {
-                final title = _keys[index];
+                final title = widget.channelListModel!.playList![index].group!;
                 return _buildGroupItem(index, title);
               },
-              itemCount: _keys.length),
+              itemCount: widget.channelListModel?.playList?.length ?? 0),
         ),
         VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
-        if (_values.isNotEmpty && _values[_selectedGroupIndex].isNotEmpty)
+        if ((widget.channelListModel?.playList?.length ?? 0) > 0 &&
+            (widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel?.length ?? 0) > 0)
           Expanded(
             child: ListView.builder(
                 padding: const EdgeInsets.only(bottom: 100.0),
@@ -512,13 +378,10 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
                 controller: _scrollChannelController,
                 physics: const ScrollPhysics(),
                 itemBuilder: (context, index) {
-                  final name = _values[_selectedGroupIndex]
-                      .keys
-                      .toList()[index]
-                      .toString();
+                  final name = widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel![index].title!;
                   return _buildChannelItem(index, name);
                 },
-                itemCount: _values[_selectedGroupIndex].length),
+                itemCount: widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel!.length),
           ),
         if (isShowEpgWidget)
           SizedBox(
@@ -532,22 +395,17 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
                     alignment: Alignment.center,
                     child: const Text(
                       '节目单',
-                      style:
-                          TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  VerticalDivider(
-                      width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
+                  VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
                   Flexible(
                     child: ScrollablePositionedList.builder(
                       initialScrollIndex: _selEPGIndex,
                       itemScrollController: _epgScrollController,
                       initialAlignment: 0.3,
                       physics: const ClampingScrollPhysics(),
-                      padding: isTV && EnvUtil.isMobile
-                          ? EdgeInsets.only(
-                              bottom: MediaQuery.of(context).size.height)
-                          : null,
+                      padding: isTV && EnvUtil.isMobile ? EdgeInsets.only(bottom: MediaQuery.of(context).size.height) : null,
                       itemBuilder: (BuildContext context, int index) {
                         final data = _epgData![index];
                         return _buildEpgItem(data, index);
@@ -564,9 +422,8 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
   }
 
   Widget _buildGroupItem(int index, String title) {
-    final bool isSelected = widget.playModel?.group == _keys[index];
-    final bool isFocused =
-        _currentFocusColumn == FocusColumn.group && index == _groupIndex;
+    final bool isSelected = widget.channelListModel!.playGroupIndex == index;
+    final bool isFocused = _currentFocusColumn == FocusColumn.group && index == _groupIndex;
 
     return Container(
       width: double.infinity,
@@ -588,20 +445,15 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
       child: Center(
         child: Text(
           title,
-          style: TextStyle(
-              color: isFocused
-                  ? Colors.white
-                  : (isSelected ? Colors.red : Colors.white),
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: isFocused ? Colors.white : (isSelected ? Colors.red : Colors.white), fontWeight: FontWeight.bold),
         ),
       ),
     );
   }
 
   Widget _buildChannelItem(int index, String name) {
-    final bool isSelected = widget.playModel?.title == name;
-    final bool isFocused =
-        _currentFocusColumn == FocusColumn.channel && index == _channelIndex;
+    final bool isSelected = widget.channelListModel!.playChannelIndex == index;
+    final bool isFocused = _currentFocusColumn == FocusColumn.channel && index == _channelIndex;
 
     return Container(
       width: double.infinity,
@@ -626,15 +478,10 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
           Expanded(
             child: Text(
               name,
-              style: TextStyle(
-                  color: isFocused
-                      ? Colors.white
-                      : (isSelected ? Colors.red : Colors.white),
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(color: isFocused ? Colors.white : (isSelected ? Colors.red : Colors.white), fontWeight: FontWeight.bold),
             ),
           ),
-          if (isSelected)
-            SpinKitWave(size: 20, color: Colors.red.withValues(alpha: 0.8))
+          if (isSelected) SpinKitWave(size: 20, color: Colors.red.withValues(alpha: 0.8))
         ],
       ),
     );
@@ -642,8 +489,7 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
 
   Widget _buildEpgItem(EpgData data, int index) {
     final bool isCurrentPlaying = _isCurrentPlayingEpg(data);
-    final bool isFocused =
-        _currentFocusColumn == FocusColumn.epg && index == _selEPGIndex;
+    final bool isFocused = _currentFocusColumn == FocusColumn.epg && index == _selEPGIndex;
 
     return Container(
       constraints: const BoxConstraints(
@@ -669,8 +515,7 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
           Text(
             '${data.start}-${data.end}',
             style: TextStyle(
-              fontWeight:
-                  isCurrentPlaying ? FontWeight.bold : FontWeight.normal,
+              fontWeight: isCurrentPlaying ? FontWeight.bold : FontWeight.normal,
               color: isCurrentPlaying ? Colors.red : Colors.white,
               fontSize: isCurrentPlaying ? 17 : 15,
             ),
@@ -678,8 +523,7 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
           Text(
             '${data.title}',
             style: TextStyle(
-              fontWeight:
-                  isCurrentPlaying ? FontWeight.bold : FontWeight.normal,
+              fontWeight: isCurrentPlaying ? FontWeight.bold : FontWeight.normal,
               color: isCurrentPlaying ? Colors.red : Colors.white,
               fontSize: isCurrentPlaying ? 17 : 15,
             ),

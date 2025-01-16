@@ -14,7 +14,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'channel_drawer_page.dart';
-import 'entity/playlist_model.dart';
+import 'entity/play_channel_list_model.dart';
 import 'generated/l10n.dart';
 import 'mobile_video_widget.dart';
 import 'table_video_widget.dart';
@@ -36,9 +36,9 @@ class LiveHomePage extends StatefulWidget {
 class _LiveHomePageState extends State<LiveHomePage> {
   String toastString = S.current.loading;
 
-  PlaylistModel? _videoMap;
+  PlayChannelListModel? _channelListModel;
 
-  PlayModel? _currentChannel;
+  Channel? _currentChannel;
 
   int _sourceIndex = 0;
 
@@ -58,9 +58,12 @@ class _LiveHomePageState extends State<LiveHomePage> {
     final url = _currentChannel!.urls![_sourceIndex].toString();
     LogUtil.v('正在播放:$_sourceIndex::${_currentChannel!.toJson()}');
     try {
-      await _playerController?.pause();
-      _playerController?.removeListener(_videoListener);
-      await _playerController?.dispose();
+      if (_playerController != null) {
+        _playerController?.removeListener(_videoListener);
+        await _playerController?.pause();
+        await _playerController?.dispose();
+        _playerController = null;
+      }
       _playerController = VideoPlayerController.networkUrl(
         Uri.parse(url),
         videoPlayerOptions: VideoPlayerOptions(
@@ -97,6 +100,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   _videoListener() {
     if (_playerController == null) return;
+    // LogUtil.v('播放状态:::::${_playerController!.value.toString()}');
     if (_playerController!.value.hasError) {
       _sourceIndex += 1;
       if (_sourceIndex > _currentChannel!.urls!.length - 1) {
@@ -125,7 +129,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
     }
   }
 
-  _onTapChannel(PlayModel? model) {
+  _onTapChannel(Channel? model) {
     _currentChannel = model;
     _sourceIndex = 0;
     LogUtil.v('onTapChannel:::::${_currentChannel?.toJson()}');
@@ -174,18 +178,17 @@ class _LiveHomePageState extends State<LiveHomePage> {
   _parseData() async {
     final resMap = await M3uUtil.getDefaultM3uData();
     LogUtil.v('_parseData:::::$resMap');
-    _videoMap = resMap;
+    _channelListModel = resMap;
     _sourceIndex = 0;
-    if (_videoMap?.playList?.isNotEmpty ?? false) {
+    if ((_channelListModel?.playList?.isNotEmpty) ?? false) {
       setState(() {
-        String group = _videoMap!.playList!.keys.first.toString();
-        String channel = _videoMap!.playList![group]!.keys.first;
-        _currentChannel = _videoMap!.playList![group]![channel];
+        final firstPlayList = _channelListModel!.playList!.first;
+        _currentChannel = firstPlayList.channel!.first;
         _playVideo();
       });
-      if (_videoMap!.playListType == PlayListType.m3u) {
-        if (_videoMap?.epgUrl != null && _videoMap?.epgUrl != '') {
-          EpgUtil.loadEPGXML(_videoMap!.epgUrl!);
+      if (_channelListModel!.type == PlayListType.m3u) {
+        if (_channelListModel?.epgUrl != null && _channelListModel?.epgUrl != '') {
+          EpgUtil.loadEPGXML(_channelListModel!.epgUrl!);
         } else {
           EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
         }
@@ -204,8 +207,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   Widget build(BuildContext context) {
     if (EnvUtil.isTV()) {
       return TvPage(
-        videoMap: _videoMap,
-        playModel: _currentChannel,
+        channelListModel: _channelListModel,
         onTapChannel: _onTapChannel,
         toastString: toastString,
         controller: _playerController,
@@ -230,8 +232,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
             aspectRatio: aspectRatio,
             onChangeSubSource: _parseData,
             drawChild: ChannelDrawerPage(
-              videoMap: _videoMap,
-              playModel: _currentChannel,
+              channelListModel: _channelListModel,
               onTapChannel: _onTapChannel,
               isLandscape: false,
             ),
@@ -248,7 +249,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
               }
             },
             child: Scaffold(
-              drawer: ChannelDrawerPage(videoMap: _videoMap, playModel: _currentChannel, onTapChannel: _onTapChannel, isLandscape: true),
+              drawer: ChannelDrawerPage(channelListModel: _channelListModel, onTapChannel: _onTapChannel, isLandscape: true),
               drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
               drawerScrimColor: Colors.transparent,
               onDrawerChanged: (bool isOpened) {
@@ -293,7 +294,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   Future<void> _changeChannelSources() async {
-    List<String> sources = _videoMap!.playList![_currentChannel!.group]![_currentChannel!.title]!.urls!;
+    List<String> sources = _currentChannel!.urls!;
     final selectedIndex = await showModalBottomSheet(
         context: context,
         useRootNavigator: true,

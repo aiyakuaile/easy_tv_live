@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:easy_tv_live/entity/playlist_model.dart';
+import 'package:easy_tv_live/entity/play_channel_list_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
@@ -16,7 +16,7 @@ import 'log_util.dart';
 class M3uUtil {
   M3uUtil._();
   // 获取默认的m3u文件
-  static Future<PlaylistModel?> getDefaultM3uData() async {
+  static Future<PlayChannelListModel?> getDefaultM3uData() async {
     String m3uData = '';
     final models = await getLocalData();
     if (models.isNotEmpty) {
@@ -77,28 +77,12 @@ class M3uUtil {
     return false;
   }
 
-  // 解析m3u文件为Map
-  // {
-  //     "epgUrl": "http://epg.xml",
-  //     "playList": {
-  //         "央视": {
-  //             "CCTV-1": {
-  //                 "id": "cctv1",
-  //                 "logo": "https://tv.cctv.com/live/cctv1/logo.png",
-  //                 "title": "CCTV-1"
-  //                 "urls": [
-  //                     "http://live.cctv.com/live/cctv1/index.m3u8"
-  //                 ]
-  //             },
-  //         }
-  //     }
-  // }
-  static Future<PlaylistModel> _parseM3u(String m3u) async {
+  // 解析m3u文件
+  static Future<PlayChannelListModel> _parseM3u(String m3u) async {
     final lines = m3u.split('\n');
-    final playListModel = PlaylistModel(playListType: PlayListType.txt);
-    playListModel.playList = <String, Map<String, PlayModel>>{};
+    PlayChannelListModel playListModel = PlayChannelListModel(type: PlayListType.txt, playList: []);
     if (m3u.startsWith('#EXTM3U') || m3u.startsWith('#EXTINF')) {
-      playListModel.playListType = PlayListType.m3u;
+      playListModel.type = PlayListType.m3u;
       String tempGroupTitle = '';
       String tempChannelName = '';
       for (int i = 0; i < lines.length - 1; i++) {
@@ -130,24 +114,40 @@ class M3uUtil {
           if (groupStr.isNotEmpty) {
             tempGroupTitle = groupStr.split('=').last;
             tempChannelName = lineList.last;
-            Map<String, PlayModel> group = playListModel.playList![tempGroupTitle] ?? {};
-            PlayModel groupList =
-                group[tempChannelName] ?? PlayModel(id: tvgId, group: tempGroupTitle, logo: tvgLogo, title: tempChannelName, urls: []);
+            final playModel = playListModel.playList!.firstWhere((model) => model.group == tempGroupTitle, orElse: () {
+              final model = PlayModel(
+                group: tempGroupTitle,
+                channel: [],
+              );
+              playListModel.playList!.add(model);
+              return model;
+            });
+            final channel = playModel.channel!.firstWhere((element) => element.title == tempChannelName, orElse: () {
+              final model = Channel(
+                id: tvgId,
+                logo: tvgLogo,
+                title: tempChannelName,
+                urls: [],
+              );
+              playModel.channel!.add(model);
+              return model;
+            });
             final lineNext = lines[i + 1];
             if (isLiveLink(lineNext)) {
-              groupList.urls!.add(lineNext);
-              group[tempChannelName] = groupList;
-              playListModel.playList![tempGroupTitle] = group;
+              channel.urls!.add(lineNext);
               i += 1;
             } else if (isLiveLink(lines[i + 2])) {
-              groupList.urls!.add(lines[i + 2].toString());
-              group[tempChannelName] = groupList;
-              playListModel.playList![tempGroupTitle] = group;
+              channel.urls!.add(lines[i + 2].toString());
               i += 2;
             }
           }
         } else if (isLiveLink(line)) {
-          playListModel.playList![tempGroupTitle]![tempChannelName]!.urls!.add(line);
+          playListModel.playList!
+              .firstWhere((model) => model.group == tempGroupTitle)
+              .channel!
+              .firstWhere((element) => element.title == tempChannelName)!
+              .urls!
+              .add(line);
         }
       }
     } else {
@@ -159,15 +159,32 @@ class M3uUtil {
           final groupTitle = lineList[0];
           final channelLink = lineList[1];
           if (isLiveLink(channelLink)) {
-            Map<String, PlayModel> group = playListModel.playList![tempGroup] ?? <String, PlayModel>{};
-            final chanelList = group[groupTitle] ?? PlayModel(group: tempGroup, id: groupTitle, title: groupTitle, urls: []);
-            chanelList.urls!.add(channelLink);
-            group[groupTitle] = chanelList;
-            playListModel.playList![tempGroup] = group;
+            final playModel = playListModel.playList!.firstWhere((model) => model.group == tempGroup, orElse: () {
+              final model = PlayModel(
+                group: tempGroup,
+                channel: [],
+              );
+              playListModel.playList!.add(model);
+              return model;
+            });
+            final channel = playModel.channel!.firstWhere((element) => element.title == groupTitle, orElse: () {
+              final model = Channel(
+                id: groupTitle,
+                title: groupTitle,
+                urls: [],
+              );
+              playModel.channel!.add(model);
+              return model;
+            });
+            channel.urls!.add(channelLink);
           } else {
             tempGroup = groupTitle == '' ? '${S.current.defaultText}${i + 1}' : groupTitle;
-            if (playListModel.playList![tempGroup] == null) {
-              playListModel.playList![tempGroup] = <String, PlayModel>{};
+            int index = playListModel.playList!.indexWhere((e) => e.group == tempGroup);
+            if (index == -1) {
+              playListModel.playList!.add(PlayModel(
+                group: tempGroup,
+                channel: [],
+              ));
             }
           }
         }
