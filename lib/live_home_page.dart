@@ -66,22 +66,25 @@ class _LiveHomePageState extends State<LiveHomePage> {
         await _playerController?.pause();
         await _playerController?.dispose();
         _playerController = null;
+        setState(() {});
       }
-      _playerController = VideoPlayerController.networkUrl(
-        Uri.parse(url),
-        videoPlayerOptions: VideoPlayerOptions(
-          allowBackgroundPlayback: false,
-          mixWithOthers: false,
-          webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
-        ),
-      )..setVolume(1.0);
-      await _playerController!.initialize();
-      // debugPrint('MediaInfo::::::${_playerController!.getMediaInfo().toString()}');
-      _playerController!.addListener(_videoListener);
-      _playerController!.play();
-      setState(() {
-        toastString = S.current.loading;
-        aspectRatio = _playerController?.value.aspectRatio ?? 1.78;
+      Future.delayed(Duration.zero, () async {
+        _playerController = VideoPlayerController.networkUrl(
+          Uri.parse(url),
+          videoPlayerOptions: VideoPlayerOptions(
+            allowBackgroundPlayback: false,
+            mixWithOthers: false,
+            webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
+          ),
+        )..setVolume(1.0);
+        await _playerController!.initialize();
+        // debugPrint('MediaInfo::::::${_playerController!.getMediaInfo().toString()}');
+        _playerController!.addListener(_videoListener);
+        _playerController!.play();
+        setState(() {
+          toastString = S.current.loading;
+          aspectRatio = _playerController?.value.aspectRatio ?? 1.78;
+        });
       });
     } catch (e) {
       LogUtil.v('播放出错:::::$e');
@@ -180,7 +183,6 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   _parseData() async {
     final resMap = await M3uUtil.getDefaultM3uData();
-    LogUtil.v('_parseData:::::$resMap');
     _channelListModel = resMap;
     _sourceIndex = 0;
     if ((_channelListModel?.playList?.isNotEmpty) ?? false) {
@@ -297,7 +299,8 @@ class _LiveHomePageState extends State<LiveHomePage> {
     );
   }
 
-  Future<void> _changeChannelSources() async {
+  Future<void> _changeChannelSources([FocusNode? videoNode]) async {
+    videoNode?.unfocus();
     List<String> sources = _currentChannel!.urls!;
     final selectedIndex = await showModalBottomSheet(
         context: context,
@@ -350,6 +353,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
             ),
           );
         });
+    videoNode?.requestFocus();
     if (selectedIndex != null && _sourceIndex != selectedIndex) {
       _sourceIndex = selectedIndex;
       LogUtil.v('切换线路:====线路${_sourceIndex + 1}');

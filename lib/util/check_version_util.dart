@@ -42,7 +42,7 @@ class CheckVersionUtil {
       if (res != null) {
         final resMap = json.decode(res);
         final latestVersion = resMap['latest_version'] as String?;
-        final latestMsg = (resMap['update_log'] as List<String>?)?.join('\n');
+        final latestMsg = (resMap['update_log'] as List?)?.join('\n');
         if (latestVersion != null && latestVersion.compareTo(version) > 0) {
           latestVersionEntity = VersionEntity(latestVersion: latestVersion, latestMsg: latestMsg);
           return latestVersionEntity;
@@ -53,6 +53,7 @@ class CheckVersionUtil {
       }
       return null;
     } catch (e) {
+      LogUtil.e('检查更新错误:::::$e');
       return null;
     }
   }

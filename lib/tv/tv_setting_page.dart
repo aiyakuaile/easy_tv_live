@@ -2,7 +2,6 @@ import 'package:easy_tv_live/setting/setting_font_page.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/tv/tv_appreciate_page.dart';
 import 'package:easy_tv_live/util/check_version_util.dart';
-import 'package:easy_tv_live/util/env_util.dart';
 import 'package:flutter/material.dart';
 
 import '../setting/setting_beautify_page.dart';
@@ -36,7 +35,7 @@ class _TvSettingPageState extends State<TvSettingPage> {
                         leading: const Icon(Icons.card_giftcard),
                         title: const Text('扫码赞赏'),
                         selected: _selectedIndex == -1,
-                        autofocus: EnvUtil.isTV() ? _selectedIndex == -1 : false,
+                        autofocus: true,
                         onTap: () {
                           setState(() {
                             _selectedIndex = -1;

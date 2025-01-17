@@ -22,7 +22,7 @@ class MobileVideoWidget extends StatefulWidget {
   final GestureTapCallback onChangeSubSource;
 
   const MobileVideoWidget({
-    Key? key,
+    super.key,
     required this.controller,
     required this.drawChild,
     required this.isBuffering,
@@ -34,7 +34,7 @@ class MobileVideoWidget extends StatefulWidget {
     // 线路切换
     this.changeChannelSources,
     this.isLandscape = true,
-  }) : super(key: key);
+  });
 
   @override
   State<MobileVideoWidget> createState() => _MobileVideoWidgetState();

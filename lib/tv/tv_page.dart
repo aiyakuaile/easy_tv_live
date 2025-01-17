@@ -22,7 +22,7 @@ class TvPage extends StatefulWidget {
   final Function(Channel? newChannel)? onTapChannel;
   final int channelSerialNum;
   final VideoPlayerController? controller;
-  final Future<void> Function()? changeChannelSources;
+  final Future<void> Function([FocusNode? videoNode])? changeChannelSources;
   final GestureTapCallback? onChangeSubSource;
   final String? toastString;
   final bool isLandscape;
@@ -75,9 +75,7 @@ class _TvPageState extends State<TvPage> {
         if (_digitSelValue.value.isNotEmpty) return;
         LogUtil.v('按了右键');
         if (isUseLeftRightSelect) {
-          _videoNode.unfocus();
-          await widget.changeChannelSources?.call();
-          Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
+          await widget.changeChannelSources?.call(_videoNode);
         }
         break;
       case LogicalKeyboardKey.arrowLeft:
@@ -85,7 +83,6 @@ class _TvPageState extends State<TvPage> {
         LogUtil.v('按了左键');
         if (isUseLeftRightSelect) {
           widget.controller?.pause();
-          _videoNode.unfocus();
           await M3uUtil.openAddSource(context);
           final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
           if (m3uData == '') {
@@ -93,7 +90,6 @@ class _TvPageState extends State<TvPage> {
           } else {
             widget.controller?.play();
           }
-          Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
         }
         break;
       case LogicalKeyboardKey.arrowUp:
@@ -116,9 +112,7 @@ class _TvPageState extends State<TvPage> {
             _digitSelValue.value = '';
           });
         } else {
-          _videoNode.unfocus();
-          await widget.changeChannelSources?.call();
-          Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
+          await widget.changeChannelSources?.call(_videoNode);
         }
         break;
       case LogicalKeyboardKey.arrowDown:
@@ -142,7 +136,6 @@ class _TvPageState extends State<TvPage> {
           });
         } else {
           widget.controller?.pause();
-          _videoNode.unfocus();
           await M3uUtil.openAddSource(context);
           final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
           if (m3uData == '') {
@@ -150,7 +143,6 @@ class _TvPageState extends State<TvPage> {
           } else {
             widget.controller?.play();
           }
-          Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
         }
         break;
       case LogicalKeyboardKey.select:
@@ -160,7 +152,8 @@ class _TvPageState extends State<TvPage> {
           return;
         }
         LogUtil.v('按了确认键:::isPlaying:${widget.isPlaying}:::video:value:${widget.controller?.value}');
-        if (widget.controller!.value.isInitialized == true &&
+        if (widget.controller != null &&
+            widget.controller!.value.isInitialized == true &&
             widget.controller!.value.isPlaying == false &&
             widget.controller!.value.isBuffering == false) {
           widget.controller?.play();
