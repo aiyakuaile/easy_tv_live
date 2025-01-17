@@ -12,7 +12,7 @@ import 'http_util.dart';
 import 'log_util.dart';
 
 class CheckVersionUtil {
-  static const version = '2.8.3';
+  static const version = '2.9.0';
   static final releaseLink = EnvUtil.sourceReleaseHost();
   static final homeLink = EnvUtil.sourceHomeHost();
   static VersionEntity? latestVersionEntity;
@@ -42,7 +42,7 @@ class CheckVersionUtil {
       if (res != null) {
         final resMap = json.decode(res);
         final latestVersion = resMap['latest_version'] as String?;
-        final latestMsg = resMap['update_log'] as String?;
+        final latestMsg = (resMap['update_log'] as List<String>?)?.join('\n');
         if (latestVersion != null && latestVersion.compareTo(version) > 0) {
           latestVersionEntity = VersionEntity(latestVersion: latestVersion, latestMsg: latestMsg);
           return latestVersionEntity;

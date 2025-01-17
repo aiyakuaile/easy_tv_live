@@ -51,8 +51,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   bool _drawerIsOpen = false;
 
+  int _channelSerialNum = 1;
+
   _playVideo() async {
     if (_currentChannel == null) return;
+    _channelSerialNum = _currentChannel!.serialNum ?? 1;
     toastString = S.current.lineToast(_sourceIndex + 1, _currentChannel!.title ?? '');
     setState(() {});
     final url = _currentChannel!.urls![_sourceIndex].toString();
@@ -207,6 +210,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   Widget build(BuildContext context) {
     if (EnvUtil.isTV()) {
       return TvPage(
+        channelSerialNum: _channelSerialNum,
         channelListModel: _channelListModel,
         onTapChannel: _onTapChannel,
         toastString: toastString,

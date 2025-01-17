@@ -65,7 +65,7 @@ class _TvSettingPageState extends State<TvSettingPage> {
                       ),
                       ListTile(
                         leading: const Icon(Icons.account_balance_outlined),
-                        title: Text('关于我们 ${CheckVersionUtil.latestVersionEntity == null ? '' : '🔴'}'),
+                        title: Text('实验设置 ${CheckVersionUtil.latestVersionEntity == null ? '' : '🔴'}'),
                         selected: _selectedIndex == 2,
                         onTap: () {
                           setState(() {

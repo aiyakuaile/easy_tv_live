@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:easy_tv_live/entity/play_channel_list_model.dart';
+import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/tv/tv_channel_drawer_page.dart';
 import 'package:easy_tv_live/util/latency_checker_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
@@ -9,6 +10,7 @@ import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
 
@@ -18,7 +20,7 @@ import '../widget/video_hold_bg.dart';
 class TvPage extends StatefulWidget {
   final PlayChannelListModel? channelListModel;
   final Function(Channel? newChannel)? onTapChannel;
-
+  final int channelSerialNum;
   final VideoPlayerController? controller;
   final Future<void> Function()? changeChannelSources;
   final GestureTapCallback? onChangeSubSource;
@@ -40,6 +42,7 @@ class TvPage extends StatefulWidget {
     this.isBuffering = false,
     this.isPlaying = false,
     this.aspectRatio = 16 / 9,
+    required this.channelSerialNum,
   });
 
   @override
@@ -66,33 +69,89 @@ class _TvPageState extends State<TvPage> {
       _timer?.cancel();
       _timer = null;
     });
+    final isUseLeftRightSelect = context.read<ThemeProvider>().useLeftRightSelect;
     switch (e.logicalKey) {
       case LogicalKeyboardKey.arrowRight:
+        if (_digitSelValue.value.isNotEmpty) return;
         LogUtil.v('按了右键');
+        if (isUseLeftRightSelect) {
+          _videoNode.unfocus();
+          await widget.changeChannelSources?.call();
+          Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
+        }
         break;
       case LogicalKeyboardKey.arrowLeft:
+        if (_digitSelValue.value.isNotEmpty) return;
         LogUtil.v('按了左键');
+        if (isUseLeftRightSelect) {
+          widget.controller?.pause();
+          _videoNode.unfocus();
+          await M3uUtil.openAddSource(context);
+          final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
+          if (m3uData == '') {
+            widget.onChangeSubSource?.call();
+          } else {
+            widget.controller?.play();
+          }
+          Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
+        }
         break;
       case LogicalKeyboardKey.arrowUp:
         LogUtil.v('按了上键');
         if (_digitSelValue.value.isNotEmpty) return;
-        _videoNode.unfocus();
-        await widget.changeChannelSources?.call();
-        Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
+        if (isUseLeftRightSelect) {
+          final lastIndex = widget.channelSerialNum - 1;
+          final channel = M3uUtil.serialNumMap[lastIndex.toString()];
+          if (channel != null) {
+            _digitSelValue.value = '【${channel.serialNum}】${channel.title}';
+            widget.channelListModel!.playChannelIndex = channel.channelIndex;
+            widget.channelListModel!.playGroupIndex = channel.groupIndex;
+            widget.onTapChannel?.call(channel);
+          } else {
+            _digitSelValue.value = '已是最新频道';
+          }
+          _cancelTimer = Timer(const Duration(milliseconds: 2000), () {
+            _cancelTimer?.cancel();
+            _cancelTimer = null;
+            _digitSelValue.value = '';
+          });
+        } else {
+          _videoNode.unfocus();
+          await widget.changeChannelSources?.call();
+          Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
+        }
         break;
       case LogicalKeyboardKey.arrowDown:
         LogUtil.v('按了下键');
         if (_digitSelValue.value.isNotEmpty) return;
-        widget.controller?.pause();
-        _videoNode.unfocus();
-        await M3uUtil.openAddSource(context);
-        final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
-        if (m3uData == '') {
-          widget.onChangeSubSource?.call();
+        if (isUseLeftRightSelect) {
+          final lastIndex = widget.channelSerialNum + 1;
+          final channel = M3uUtil.serialNumMap[lastIndex.toString()];
+          if (channel != null) {
+            _digitSelValue.value = '【${channel.serialNum}】${channel.title}';
+            widget.channelListModel!.playChannelIndex = channel.channelIndex;
+            widget.channelListModel!.playGroupIndex = channel.groupIndex;
+            widget.onTapChannel?.call(channel);
+          } else {
+            _digitSelValue.value = '已是最后一个频道';
+          }
+          _cancelTimer = Timer(const Duration(milliseconds: 2000), () {
+            _cancelTimer?.cancel();
+            _cancelTimer = null;
+            _digitSelValue.value = '';
+          });
         } else {
-          widget.controller?.play();
+          widget.controller?.pause();
+          _videoNode.unfocus();
+          await M3uUtil.openAddSource(context);
+          final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
+          if (m3uData == '') {
+            widget.onChangeSubSource?.call();
+          } else {
+            widget.controller?.play();
+          }
+          Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
         }
-        Future.delayed(const Duration(seconds: 1), () => _videoNode.requestFocus());
         break;
       case LogicalKeyboardKey.select:
         if (_digitSelValue.value.isNotEmpty) return;

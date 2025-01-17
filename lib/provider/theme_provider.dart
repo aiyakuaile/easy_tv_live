@@ -11,6 +11,7 @@ class ThemeProvider extends ChangeNotifier {
   bool _useLightVersionCheck = true;
   bool _useDataProxy = true;
   bool _useAutoUpdate = false;
+  bool _useLeftRightSelect = false;
 
   bool get useAutoUpdate => _useAutoUpdate;
   bool get useLightVersionCheck => _useLightVersionCheck;
@@ -19,6 +20,7 @@ class ThemeProvider extends ChangeNotifier {
   double get textScaleFactor => _textScaleFactor;
   String get fontUrl => _fontUrl;
   bool get isBingBg => _isBingBg;
+  bool get useLeftRightSelect => _useLeftRightSelect;
 
   ThemeProvider() {
     _useAutoUpdate = SpUtil.getBool('autoUpdate', defValue: false)!;
@@ -28,6 +30,7 @@ class ThemeProvider extends ChangeNotifier {
     _fontUrl = SpUtil.getString('appFontUrl', defValue: '')!;
     _textScaleFactor = SpUtil.getDouble('fontScale', defValue: 1.0)!;
     _isBingBg = SpUtil.getBool('bingBg', defValue: false)!;
+    _useLeftRightSelect = SpUtil.getBool('leftRightSelect', defValue: false)!;
     if (_fontFamily != 'system') {
       FontUtil().loadFont(_fontUrl, _fontFamily);
     }
@@ -68,6 +71,12 @@ class ThemeProvider extends ChangeNotifier {
   void setAutoUpdate(bool isOpen) {
     SpUtil.putBool('autoUpdate', isOpen);
     _useAutoUpdate = isOpen;
+    notifyListeners();
+  }
+
+  void setLeftRightSelect(bool isOpen) {
+    SpUtil.putBool('leftRightSelect', isOpen);
+    _useLeftRightSelect = isOpen;
     notifyListeners();
   }
 }
