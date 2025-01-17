@@ -12,6 +12,7 @@ class ThemeProvider extends ChangeNotifier {
   bool _useDataProxy = true;
   bool _useAutoUpdate = false;
   bool _useLeftRightSelect = false;
+  int _prePlaySerialNum = 1;
 
   bool get useAutoUpdate => _useAutoUpdate;
   bool get useLightVersionCheck => _useLightVersionCheck;
@@ -21,6 +22,7 @@ class ThemeProvider extends ChangeNotifier {
   String get fontUrl => _fontUrl;
   bool get isBingBg => _isBingBg;
   bool get useLeftRightSelect => _useLeftRightSelect;
+  int get prePlaySerialNum => _prePlaySerialNum;
 
   ThemeProvider() {
     _useAutoUpdate = SpUtil.getBool('autoUpdate', defValue: false)!;
@@ -31,6 +33,7 @@ class ThemeProvider extends ChangeNotifier {
     _textScaleFactor = SpUtil.getDouble('fontScale', defValue: 1.0)!;
     _isBingBg = SpUtil.getBool('bingBg', defValue: false)!;
     _useLeftRightSelect = SpUtil.getBool('leftRightSelect', defValue: false)!;
+    _prePlaySerialNum = SpUtil.getInt('prePlaySerialNum', defValue: 1)!;
     if (_fontFamily != 'system') {
       FontUtil().loadFont(_fontUrl, _fontFamily);
     }
@@ -77,6 +80,12 @@ class ThemeProvider extends ChangeNotifier {
   void setLeftRightSelect(bool isOpen) {
     SpUtil.putBool('leftRightSelect', isOpen);
     _useLeftRightSelect = isOpen;
+    notifyListeners();
+  }
+
+  void setPrePlaySerialNum(int serialNum) {
+    SpUtil.putInt('prePlaySerialNum', serialNum);
+    _prePlaySerialNum = serialNum;
     notifyListeners();
   }
 }

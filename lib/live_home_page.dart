@@ -56,6 +56,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
   _playVideo() async {
     if (_currentChannel == null) return;
     _channelSerialNum = _currentChannel!.serialNum ?? 1;
+    if (mounted) {
+      context.read<ThemeProvider>().setPrePlaySerialNum(_channelSerialNum);
+    }
     toastString = S.current.lineToast(_sourceIndex + 1, _currentChannel!.title ?? '');
     setState(() {});
     final url = _currentChannel!.urls![_sourceIndex].toString();
@@ -138,7 +141,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
   _onTapChannel(Channel? model) {
     _currentChannel = model;
     _sourceIndex = 0;
-    LogUtil.v('onTapChannel:::::${_currentChannel?.toJson()}');
+    if (_channelListModel != null && model != null) {
+      _channelListModel!.playGroupIndex = model.groupIndex;
+      _channelListModel!.playChannelIndex = model.channelIndex;
+    }
+    LogUtil.v('切换频道:::::${_currentChannel?.toJson()}');
     _playVideo();
   }
 
@@ -186,16 +193,16 @@ class _LiveHomePageState extends State<LiveHomePage> {
     _channelListModel = resMap;
     _sourceIndex = 0;
     if ((_channelListModel?.playList?.isNotEmpty) ?? false) {
-      setState(() {
-        final firstPlayList = _channelListModel!.playList!.first;
-        _currentChannel = firstPlayList.channel!.first;
-        _playVideo();
-      });
-      if (_channelListModel!.type == PlayListType.m3u) {
-        if (_channelListModel?.epgUrl != null && _channelListModel?.epgUrl != '') {
-          EpgUtil.loadEPGXML(_channelListModel!.epgUrl!);
-        } else {
-          EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
+      if (mounted) {
+        final preNum = context.read<ThemeProvider>().prePlaySerialNum;
+        final channel = M3uUtil.serialNumMap[preNum.toString()];
+        _onTapChannel(channel ?? M3uUtil.serialNumMap['1']);
+        if (_channelListModel!.type == PlayListType.m3u) {
+          if (_channelListModel?.epgUrl != null && _channelListModel?.epgUrl != '') {
+            EpgUtil.loadEPGXML(_channelListModel!.epgUrl!);
+          } else {
+            EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
+          }
         }
       }
     } else {
