@@ -16,6 +16,12 @@ EasyTV is a lightweight IPTV player that supports all platforms and Android TV l
 - Supports Android TV (added in v2.0.0, supports Android OS 5.0+)
 - Desktop support (added in v2.6.0)
 
+- [x] Support switching fonts and font sizes
+- [x] Support using Bing daily images as video backgrounds
+- [x] Automatically merge and group the same channels
+- [x] Support channel switching via number keys
+- [x] Support channel switching with up and down keys (needs to be manually enabled in '设置->实现设置->上下键切换频道')
+
 #### TV Version Interaction
 - Up key: Switch lines
 - Down key: Modify or add subscription sources

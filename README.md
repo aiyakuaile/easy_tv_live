@@ -37,7 +37,6 @@
 
 
 #### [查看国外Github已发布的版本](https://github.com/aiyakuaile/easy_tv_live/releases)
-#### [查看国内Gitee已发布的版本](https://gitee.com/AMuMuSir/easy_tv_live/releases)
 
 > ios 支持15.5.0+以上版本，下载ipa后需要自行签名安装，例如：爱思助手,轻松签,巨魔等
 
