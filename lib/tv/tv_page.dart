@@ -8,7 +8,6 @@ import 'package:easy_tv_live/widget/date_position_widget.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
@@ -53,14 +52,13 @@ class _TvPageState extends State<TvPage> {
   bool _debounce = true;
   Timer? _timer;
   Timer? _digitTimer;
+  Timer? _cancelTimer;
 
   bool _drawerIsOpen = false;
 
   final ValueNotifier<String> _digitSelValue = ValueNotifier('');
 
-  _focusEventHandle(BuildContext context, KeyEvent e) async {
-    final isUpKey = e is KeyUpEvent;
-    if (!isUpKey) return;
+  _focusControlEvent(KeyEvent e) async {
     if (!_debounce) return;
     _debounce = false;
     _timer = Timer(const Duration(milliseconds: 500), () {
@@ -68,7 +66,6 @@ class _TvPageState extends State<TvPage> {
       _timer?.cancel();
       _timer = null;
     });
-
     switch (e.logicalKey) {
       case LogicalKeyboardKey.arrowRight:
         LogUtil.v('按了右键');
@@ -135,57 +132,43 @@ class _TvPageState extends State<TvPage> {
       case LogicalKeyboardKey.f5:
         LogUtil.v('按了语音键');
         break;
-      case LogicalKeyboardKey.digit0:
-        _handleDigitInput(context, 0);
-        break;
-      case LogicalKeyboardKey.digit1:
-        _handleDigitInput(context, 1);
-        break;
-      case LogicalKeyboardKey.digit2:
-        _handleDigitInput(context, 2);
-        break;
-      case LogicalKeyboardKey.digit3:
-        _handleDigitInput(context, 3);
-        break;
-      case LogicalKeyboardKey.digit4:
-        _handleDigitInput(context, 4);
-        break;
-      case LogicalKeyboardKey.digit5:
-        _handleDigitInput(context, 5);
-        break;
-      case LogicalKeyboardKey.digit6:
-        _handleDigitInput(context, 6);
-        break;
-      case LogicalKeyboardKey.digit7:
-        _handleDigitInput(context, 7);
-        break;
-      case LogicalKeyboardKey.digit8:
-        _handleDigitInput(context, 8);
-        break;
-      case LogicalKeyboardKey.digit9:
-        _handleDigitInput(context, 9);
-        break;
     }
   }
 
-  _handleDigitInput(BuildContext context, int digitNum) {
-    if (widget.channelListModel == null) return;
+  _focusEventHandle(BuildContext context, KeyEvent e) async {
+    final isUpKey = e is KeyUpEvent;
+    if (!isUpKey) return;
+    LogUtil.v('e.logicalKey.keyLabel:::::${e.logicalKey.keyLabel}');
+    if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].contains(e.logicalKey.keyLabel)) {
+      _handleDigitInput(context, e.logicalKey.keyLabel);
+    } else {
+      _focusControlEvent(e);
+    }
+  }
+
+  _handleDigitInput(BuildContext context, String digitNum) {
+    if (widget.channelListModel == null || _cancelTimer != null) return;
+    if (digitNum == '0' && _digitSelValue.value.isEmpty) return;
     _digitTimer?.cancel();
     _digitTimer = null;
-    _digitSelValue.value += digitNum.toString();
+    _digitSelValue.value += digitNum;
     _digitTimer = Timer(const Duration(milliseconds: 2000), () {
       _digitTimer?.cancel();
       _digitTimer = null;
       final channel = M3uUtil.serialNumMap[_digitSelValue.value];
       if (channel == null) {
-        EasyLoading.showToast('无节目数据，请重新选台');
+        _digitSelValue.value = '无节目数据，请重新选台';
       } else {
-        EasyLoading.showToast('开始播放：${channel.title}');
+        _digitSelValue.value = '开始播放：${channel.title}';
         widget.channelListModel!.playChannelIndex = channel.channelIndex;
         widget.channelListModel!.playGroupIndex = channel.groupIndex;
         widget.onTapChannel?.call(channel);
       }
-      _digitSelValue.value = '';
+      _cancelTimer = Timer(const Duration(milliseconds: 2000), () {
+        _cancelTimer?.cancel();
+        _cancelTimer = null;
+        _digitSelValue.value = '';
+      });
     });
   }
 
@@ -193,6 +176,8 @@ class _TvPageState extends State<TvPage> {
   void dispose() {
     _timer?.cancel();
     _timer = null;
+    _cancelTimer?.cancel();
+    _cancelTimer = null;
     _digitTimer?.cancel();
     _digitTimer = null;
     _videoNode.dispose();
@@ -238,12 +223,6 @@ class _TvPageState extends State<TvPage> {
                             )
                           : VideoHoldBg(toastString: _drawerIsOpen ? '' : widget.toastString),
                       if (_drawerIsOpen) const DatePositionWidget(),
-                      if (!widget.isPlaying && !_drawerIsOpen)
-                        GestureDetector(
-                            onTap: () {
-                              widget.controller?.play();
-                            },
-                            child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50)),
                       if (widget.isBuffering && !_drawerIsOpen) const SpinKitSpinningLines(color: Colors.white),
                       ValueListenableBuilder(
                           valueListenable: _digitSelValue,
@@ -251,7 +230,7 @@ class _TvPageState extends State<TvPage> {
                             if (value.isNotEmpty) {
                               return Positioned(
                                   top: 30,
-                                  left: 30,
+                                  right: 30,
                                   child: Container(
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(10)),
