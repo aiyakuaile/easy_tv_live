@@ -58,7 +58,7 @@ class _TvPageState extends State<TvPage> {
 
   final ValueNotifier<String> _digitSelValue = ValueNotifier('');
 
-  _focusControlEvent(KeyEvent e) async {
+  _focusControlEvent(BuildContext context, KeyEvent e) async {
     if (!_debounce) return;
     _debounce = false;
     _timer = Timer(const Duration(milliseconds: 500), () {
@@ -142,7 +142,7 @@ class _TvPageState extends State<TvPage> {
     if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].contains(e.logicalKey.keyLabel)) {
       _handleDigitInput(context, e.logicalKey.keyLabel);
     } else {
-      _focusControlEvent(e);
+      _focusControlEvent(context, e);
     }
   }
 
