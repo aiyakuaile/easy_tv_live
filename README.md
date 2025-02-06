@@ -62,7 +62,6 @@
 为了方便统计打赏名单，推荐使用微信扫一扫直接赞赏，感谢您的支持！
 
 <img src="https://fastly.jsdelivr.net/gh/aiyakuaile/images/appreciate.png" alt="微信赞赏" width="300">
-<img src="https://fastly.jsdelivr.net/gh/aiyakuaile/images/Alipay.png" alt="支付宝" width="300">
 
 
 ## 贡献

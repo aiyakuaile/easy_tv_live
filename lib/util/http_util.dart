@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -43,7 +44,19 @@ class HttpUtil {
       CancelToken? cancelToken,
       ProgressCallback? onReceiveProgress,
       bool isShowLoading = true}) async {
-    LogUtil.v('GetRequest::::::$path');
+    if (path.contains('@')) {
+      final us = extractCredentials(path);
+      if (us != null) {
+        if (options == null) {
+          options = Options(headers: {
+            HttpHeaders.authorizationHeader: 'Basic $us',
+          });
+        } else {
+          options.headers ??= {};
+          options.headers![HttpHeaders.authorizationHeader] = 'Basic $us';
+        }
+      }
+    }
     if (isShowLoading) EasyLoading.show();
     Response? response;
     try {
@@ -85,6 +98,16 @@ class HttpUtil {
     }
     return response?.statusCode ?? 500;
   }
+}
+
+String? extractCredentials(String url) {
+  final regex = RegExp(r'^(https?):\/\/([^:\/]+:[^@]+)@');
+  final match = regex.firstMatch(url);
+  final us = match?.group(2);
+  if (us != null && !us.contains('/')) {
+    return base64Encode(utf8.encode(us));
+  }
+  return match?.group(2);
 }
 
 void formatError(DioException e, bool isShowLoading) {
