@@ -44,19 +44,7 @@ class HttpUtil {
       CancelToken? cancelToken,
       ProgressCallback? onReceiveProgress,
       bool isShowLoading = true}) async {
-    if (path.contains('@')) {
-      final us = extractCredentials(path);
-      if (us != null) {
-        if (options == null) {
-          options = Options(headers: {
-            HttpHeaders.authorizationHeader: 'Basic $us',
-          });
-        } else {
-          options.headers ??= {};
-          options.headers![HttpHeaders.authorizationHeader] = 'Basic $us';
-        }
-      }
-    }
+    path = extractCredentials(path, options);
     if (isShowLoading) EasyLoading.show();
     Response? response;
     try {
@@ -100,14 +88,25 @@ class HttpUtil {
   }
 }
 
-String? extractCredentials(String url) {
+String extractCredentials(String url, Options? options) {
+  if (!url.contains('@')) return url;
   final regex = RegExp(r'^(https?):\/\/([^:\/]+:[^@]+)@');
   final match = regex.firstMatch(url);
   final us = match?.group(2);
   if (us != null && !us.contains('/')) {
-    return base64Encode(utf8.encode(us));
+    final base64Us = base64Encode(utf8.encode(us));
+    if (us != null) {
+      if (options == null) {
+        options = Options(headers: {
+          HttpHeaders.authorizationHeader: 'Basic $base64Us',
+        });
+      } else {
+        options.headers ??= {};
+        options.headers![HttpHeaders.authorizationHeader] = 'Basic $base64Us';
+      }
+    }
   }
-  return match?.group(2);
+  return url;
 }
 
 void formatError(DioException e, bool isShowLoading) {
