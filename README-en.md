@@ -1,20 +1,20 @@
 ![logo](https://fastly.jsdelivr.net/gh/aiyakuaile/images/tv-flow.png)
 
-[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-en)
+[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-en.md)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-blueviolet?style=for-the-badge)](README.md)
 
 # EasyTV
 EasyTV is a lightweight IPTV player that supports all platforms and Android TV large screens. It is simple and easy to use. Welcome to download and experience!
 
 #### Features
-- IPTV player that supports all platforms
-- Ability to add live source links independently
-- Clean and simple UI interaction
-- Support for parsing .m3u files
-- Support for parsing .txt files (added in v1.5.0)
-- Pure black theme (added in v1.5.0)
-- Supports Android TV (added in v2.0.0, supports Android OS 5.0+)
-- Desktop support (added in v2.6.0)
+- [x] IPTV player that supports all platforms
+- [x] Ability to add live source links independently
+- [x] Clean and simple UI interaction
+- [x] Support for parsing .m3u files
+- [x] Support for parsing .txt files (added in v1.5.0)
+- [x] Pure black theme (added in v1.5.0)
+- [x] Supports Android TV (added in v2.0.0, supports Android OS 5.0+)
+- [x] Desktop support (added in v2.6.0)
 
 - [x] Support switching fonts and font sizes
 - [x] Support using Bing daily images as video backgrounds
@@ -30,7 +30,6 @@ EasyTV is a lightweight IPTV player that supports all platforms and Android TV l
 #### Fonts
 The fonts that support switching need to use the [easy_tv_font](https://github.com/aiyakuaile/easy_tv_font) project. If you want to add other fonts, please follow the instructions in this project.
 
-#### [View the released version on GitHub](https://github.com/aiyakuaile/easy_tv_live/releases)
 > For iOS, after downloading the ipa, you need to sign it for installation using tools.
 > If the added live source is an IPv6 address, please confirm that your current network can access IPv6 addresses normally.
 > [IPv6 Test Address](https://v6t.ipip.net/)
@@ -48,9 +47,8 @@ If you find this project useful, consider sponsoring me for a cup of coffee ❤
 
 <a href="https://buymeacoffee.com/aiyakuaile" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-
-![微信支付](https://fastly.jsdelivr.net/gh/aiyakuaile/images/wxpay.png) | ![支付宝支付](https://fastly.jsdelivr.net/gh/aiyakuaile/images/Alipay.png)
----|---
+For easier tracking of sponsors, we recommend using WeChat Scan to make a direct donation. Thank
+<img src="https://fastly.jsdelivr.net/gh/aiyakuaile/images/appreciate.png" alt="微信赞赏" width="300">
 
 ## 贡献
 

@@ -1,6 +1,6 @@
 ![logo](https://fastly.jsdelivr.net/gh/aiyakuaile/images/tv-flow.png)
 
-[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-en)
+[![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README-en.md)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-blueviolet?style=for-the-badge)](README.md)
 
 # 极简TV
@@ -37,9 +37,6 @@
 ### 字体
 支持切换的字体需要使用[easy_tv_font](https://github.com/aiyakuaile/easy_tv_font)这个项目,
 您如果想要添加其他字体，请按照这个项目的提示进行操作。
-
-
-#### [查看国外Github已发布的版本](https://github.com/aiyakuaile/easy_tv_live/releases)
 
 > ios 支持15.5.0+以上版本，下载ipa后需要自行签名安装，例如：爱思助手,轻松签,巨魔等
 
