@@ -51,10 +51,6 @@
 
 
 ## 赞助
-如果觉得此项目有用，可以考虑赞助我喝杯咖啡❤
-
-<a href="https://buymeacoffee.com/aiyakuaile" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
 为了方便统计打赏名单，推荐使用微信扫一扫直接赞赏，感谢您的支持！
 
 <img src="https://fastly.jsdelivr.net/gh/aiyakuaile/images/appreciate.png" alt="微信赞赏" width="300">
