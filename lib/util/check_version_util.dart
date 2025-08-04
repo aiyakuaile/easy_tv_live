@@ -22,7 +22,7 @@ class CheckVersionUtil {
     final latestVersionEntity = await checkRelease(false, false);
     if (latestVersionEntity != null) {
       final url =
-          '${EnvUtil.sourceDownloadHost()}/${latestVersionEntity!.latestVersion}/easyTV-${latestVersionEntity!.latestVersion}${isTV ? '-tv' : ''}.apk';
+          '${EnvUtil.sourceDownloadHost()}/${latestVersionEntity.latestVersion}/easyTV-${latestVersionEntity.latestVersion}${isTV ? '-tv' : ''}.apk';
       return url;
     }
     return null;
@@ -60,69 +60,69 @@ class CheckVersionUtil {
 
   static Future<bool?> showUpdateDialog(BuildContext context) async {
     return showDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Center(
-            child: Container(
-              width: isTV || !EnvUtil.isMobile ? 600 : 300,
-              decoration: BoxDecoration(
-                  color: const Color(0xFF2B2D30),
-                  borderRadius: BorderRadius.circular(8),
-                  gradient: const LinearGradient(
-                      colors: [Color(0xff6D6875), Color(0xffB4838D), Color(0xffE5989B)], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${S.current.findNewVersion}🚀',
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        child: IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(false);
-                          },
-                          icon: const Icon(Icons.close),
-                        ),
-                      )
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    constraints: const BoxConstraints(minHeight: 200, minWidth: 300),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '🎒 v${CheckVersionUtil.latestVersionEntity!.latestVersion}${S.current.updateContent}',
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Text('${CheckVersionUtil.latestVersionEntity!.latestMsg}'),
-                        )
-                      ],
-                    ),
-                  ),
-                  UpdateDownloadBtn(
-                      apkUrl:
-                          '${EnvUtil.sourceDownloadHost()}/${latestVersionEntity!.latestVersion}/easyTV-${latestVersionEntity!.latestVersion}${isTV ? '-tv' : ''}'
-                          '.apk'),
-                  const SizedBox(height: 30),
-                ],
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: Container(
+            width: isTV || !EnvUtil.isMobile ? 600 : 300,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2B2D30),
+              borderRadius: BorderRadius.circular(8),
+              gradient: const LinearGradient(
+                colors: [Color(0xff6D6875), Color(0xffB4838D), Color(0xffE5989B)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
-          );
-        });
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      alignment: Alignment.center,
+                      child: Text('${S.current.findNewVersion}🚀', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+                    ),
+                    Positioned(
+                      right: 0,
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
+                        icon: const Icon(Icons.close),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  constraints: const BoxConstraints(minHeight: 200, minWidth: 300),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '🎒 v${CheckVersionUtil.latestVersionEntity!.latestVersion}${S.current.updateContent}',
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                      Padding(padding: const EdgeInsets.all(20), child: Text('${CheckVersionUtil.latestVersionEntity!.latestMsg}')),
+                    ],
+                  ),
+                ),
+                UpdateDownloadBtn(
+                  apkUrl:
+                      '${EnvUtil.sourceDownloadHost()}/${latestVersionEntity!.latestVersion}/easyTV-${latestVersionEntity!.latestVersion}${isTV ? '-tv' : ''}'
+                      '.apk',
+                ),
+                const SizedBox(height: 30),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   static checkVersion(BuildContext context, [bool isShowLoading = true, isShowLatestToast = true]) async {

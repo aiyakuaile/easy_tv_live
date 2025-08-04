@@ -3,7 +3,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:sp_util/sp_util.dart';
 
-import '../entity/subScribe_model.dart';
+import '../entity/sub_scribe_model.dart';
 import '../provider/theme_provider.dart';
 import 'font_util.dart';
 import 'm3u_util.dart';
@@ -62,19 +62,13 @@ class DeviceSyncUtil {
     final textScaleFactor = context.read<ThemeProvider>().textScaleFactor;
     final fontFamily = context.read<ThemeProvider>().fontFamily;
     final fontUrl = context.read<ThemeProvider>().fontUrl;
-    final msg = {
-      'textScaleFactor': textScaleFactor,
-      'fontFamily': fontFamily,
-      'fontUrl': fontUrl,
-    };
+    final msg = {'textScaleFactor': textScaleFactor, 'fontFamily': fontFamily, 'fontUrl': fontUrl};
     return msg;
   }
 
   static Future<Map<String, dynamic>> syncPrettify(BuildContext context) async {
     final isBingBg = context.read<ThemeProvider>().isBingBg;
-    final msg = {
-      'isBingBg': isBingBg,
-    };
+    final msg = {'isBingBg': isBingBg};
     return msg;
   }
 

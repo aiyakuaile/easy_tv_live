@@ -24,7 +24,7 @@ class _VolumeBrightnessWidgetState extends State<VolumeBrightnessWidget> {
   }
 
   _loadSystemData() async {
-    _brightness = await ScreenBrightness().current;
+    _brightness = await ScreenBrightness().application;
     _volume = await FlutterVolumeController.getVolume() ?? 0.5;
     await FlutterVolumeController.updateShowSystemUI(false);
     setState(() {});
@@ -49,9 +49,8 @@ class _VolumeBrightnessWidgetState extends State<VolumeBrightnessWidget> {
             _volume = (_volume + (-details.delta.dy / 500)).clamp(0.0, 1.0);
             FlutterVolumeController.setVolume(_volume);
           } else {
-            _brightness =
-                (_brightness + (-details.delta.dy / 500)).clamp(0.0, 1.0);
-            ScreenBrightness().setScreenBrightness(_brightness);
+            _brightness = (_brightness + (-details.delta.dy / 500)).clamp(0.0, 1.0);
+            ScreenBrightness().setApplicationScreenBrightness(_brightness);
           }
           setState(() {});
         },
@@ -73,33 +72,21 @@ class _VolumeBrightnessWidgetState extends State<VolumeBrightnessWidget> {
               : Container(
                   width: 150,
                   height: 30,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                  decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(15)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        _controlType == 1
-                            ? Icons.light_mode
-                            : Icons.volume_up_outlined,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
+                      Icon(_controlType == 1 ? Icons.light_mode : Icons.volume_up_outlined, color: Colors.white, size: 20),
+                      const SizedBox(width: 5),
                       Expanded(
                         child: LinearProgressIndicator(
                           value: _controlType == 1 ? _brightness : _volume,
-                          backgroundColor: Colors.white.withOpacity(0.5),
+                          backgroundColor: Colors.white.withValues(alpha: 0.5),
                           color: Colors.redAccent,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),

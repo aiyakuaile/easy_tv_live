@@ -1,6 +1,6 @@
 import 'package:easy_tv_live/util/bing_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/src/spinning_lines.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
@@ -9,7 +9,7 @@ import '../provider/theme_provider.dart';
 class VideoHoldBg extends StatelessWidget {
   final String? toastString;
 
-  const VideoHoldBg({Key? key, required this.toastString}) : super(key: key);
+  const VideoHoldBg({super.key, required this.toastString});
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +29,7 @@ class VideoHoldBg extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.only(top: 30, bottom: 30),
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: image,
-                  ),
+                  image: DecorationImage(fit: BoxFit.cover, image: image),
                 ),
                 child: child,
               );
@@ -42,10 +39,7 @@ class VideoHoldBg extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.only(top: 30, bottom: 30),
           decoration: const BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage('assets/images/video_bg.png'),
-            ),
+            image: DecorationImage(fit: BoxFit.cover, image: AssetImage('assets/images/video_bg.png')),
           ),
           child: child,
         );

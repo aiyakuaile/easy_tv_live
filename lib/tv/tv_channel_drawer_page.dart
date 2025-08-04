@@ -142,17 +142,9 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
         final maxScrollExtent = _scrollController.position.maxScrollExtent;
         final shouldOffset = _groupIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
         if (shouldOffset < maxScrollExtent) {
-          _scrollController.animateTo(
-            max(0.0, shouldOffset),
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.linear,
-          );
+          _scrollController.animateTo(max(0.0, shouldOffset), duration: const Duration(milliseconds: 300), curve: Curves.linear);
         } else {
-          _scrollController.animateTo(
-            maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.linear,
-          );
+          _scrollController.animateTo(maxScrollExtent, duration: const Duration(milliseconds: 300), curve: Curves.linear);
         }
       }
     });
@@ -164,17 +156,9 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
         final maxScrollExtent = _scrollChannelController.position.maxScrollExtent;
         final shouldOffset = _channelIndex * _itemHeight - _viewPortHeight! + _itemHeight * 0.5;
         if (shouldOffset < maxScrollExtent) {
-          _scrollChannelController.animateTo(
-            max(0.0, shouldOffset),
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.linear,
-          );
+          _scrollChannelController.animateTo(max(0.0, shouldOffset), duration: const Duration(milliseconds: 300), curve: Curves.linear);
         } else {
-          _scrollChannelController.animateTo(
-            maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.linear,
-          );
+          _scrollChannelController.animateTo(maxScrollExtent, duration: const Duration(milliseconds: 300), curve: Curves.linear);
         }
       }
     });
@@ -258,16 +242,12 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
           _channelIndex = widget.channelListModel?.playChannelIndex ?? 0;
           _currentFocusColumn = FocusColumn.epg;
           final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
-          final currentEpgIndex =
-              _epgData!.indexWhere((element) => element.start!.compareTo(epgRangeTime) <= 0 && element.end!.compareTo(epgRangeTime) > 0);
+          final currentEpgIndex = _epgData!.indexWhere(
+            (element) => element.start!.compareTo(epgRangeTime) <= 0 && element.end!.compareTo(epgRangeTime) > 0,
+          );
           if (currentEpgIndex != -1) {
             _selEPGIndex = currentEpgIndex;
-            _epgScrollController.scrollTo(
-              index: _selEPGIndex,
-              alignment: 0.3,
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.linear,
-            );
+            _epgScrollController.scrollTo(index: _selEPGIndex, alignment: 0.3, duration: const Duration(milliseconds: 150), curve: Curves.linear);
           }
           _ensureChannelItemVisible();
         }
@@ -293,12 +273,7 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
           _selEPGIndex--;
         });
         Future.delayed(Duration(milliseconds: 300), () {
-          _epgScrollController.scrollTo(
-            index: _selEPGIndex,
-            alignment: 0.3,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.linear,
-          );
+          _epgScrollController.scrollTo(index: _selEPGIndex, alignment: 0.3, duration: const Duration(milliseconds: 300), curve: Curves.linear);
         });
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -307,28 +282,19 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
           _selEPGIndex++;
         });
         Future.delayed(Duration(milliseconds: 300), () {
-          _epgScrollController.scrollTo(
-            index: _selEPGIndex,
-            alignment: 0.3,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.linear,
-          );
+          _epgScrollController.scrollTo(index: _selEPGIndex, alignment: 0.3, duration: const Duration(milliseconds: 300), curve: Curves.linear);
         });
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
-      final currentEpgIndex =
-          _epgData!.indexWhere((element) => element.start!.compareTo(epgRangeTime) <= 0 && element.end!.compareTo(epgRangeTime) > 0);
+      final currentEpgIndex = _epgData!.indexWhere(
+        (element) => element.start!.compareTo(epgRangeTime) <= 0 && element.end!.compareTo(epgRangeTime) > 0,
+      );
       if (currentEpgIndex != -1) {
         setState(() {
           _selEPGIndex = currentEpgIndex;
         });
-        _epgScrollController.scrollTo(
-          index: currentEpgIndex,
-          alignment: 0.3,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.linear,
-        );
+        _epgScrollController.scrollTo(index: currentEpgIndex, alignment: 0.3, duration: const Duration(milliseconds: 300), curve: Curves.linear);
       }
       setState(() {
         _currentFocusColumn = FocusColumn.channel;
@@ -363,10 +329,11 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
       padding: EdgeInsets.only(left: MediaQuery.of(context).padding.left),
       width: drawWidth,
       decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.black, Colors.transparent])),
-      child: Row(children: [
-        SizedBox(
-          width: 100 * context.read<ThemeProvider>().textScaleFactor,
-          child: ListView.builder(
+      child: Row(
+        children: [
+          SizedBox(
+            width: 100 * context.read<ThemeProvider>().textScaleFactor,
+            child: ListView.builder(
               cacheExtent: _itemHeight,
               padding: const EdgeInsets.only(bottom: 100.0),
               controller: _scrollController,
@@ -374,13 +341,14 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
                 final title = widget.channelListModel!.playList![index].group!;
                 return _buildGroupItem(index, title);
               },
-              itemCount: widget.channelListModel?.playList?.length ?? 0),
-        ),
-        VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
-        if ((widget.channelListModel?.playList?.length ?? 0) > 0 &&
-            (widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel?.length ?? 0) > 0)
-          Expanded(
-            child: ListView.builder(
+              itemCount: widget.channelListModel?.playList?.length ?? 0,
+            ),
+          ),
+          VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
+          if ((widget.channelListModel?.playList?.length ?? 0) > 0 &&
+              (widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel?.length ?? 0) > 0)
+            Expanded(
+              child: ListView.builder(
                 padding: const EdgeInsets.only(bottom: 100.0),
                 cacheExtent: _itemHeight,
                 controller: _scrollChannelController,
@@ -391,43 +359,42 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
                   final serialNum = channel.serialNum!;
                   return _buildChannelItem(index, '$serialNum $name');
                 },
-                itemCount: widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel!.length),
-          ),
-        if (isShowEpgWidget)
-          SizedBox(
-            width: egpWidth,
-            child: Material(
-              color: Colors.black.withValues(alpha: 0.1),
-              child: Column(
-                children: [
-                  Container(
-                    height: 44,
-                    alignment: Alignment.center,
-                    child: const Text(
-                      '节目单',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
-                  Flexible(
-                    child: ScrollablePositionedList.builder(
-                      initialScrollIndex: _selEPGIndex,
-                      itemScrollController: _epgScrollController,
-                      initialAlignment: 0.3,
-                      physics: const ClampingScrollPhysics(),
-                      padding: isTV && EnvUtil.isMobile ? EdgeInsets.only(bottom: MediaQuery.of(context).size.height) : null,
-                      itemBuilder: (BuildContext context, int index) {
-                        final data = _epgData![index];
-                        return _buildEpgItem(data, index);
-                      },
-                      itemCount: _epgData!.length,
-                    ),
-                  ),
-                ],
+                itemCount: widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel!.length,
               ),
             ),
-          )
-      ]),
+          if (isShowEpgWidget)
+            SizedBox(
+              width: egpWidth,
+              child: Material(
+                color: Colors.black.withValues(alpha: 0.1),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 44,
+                      alignment: Alignment.center,
+                      child: const Text('节目单', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                    ),
+                    VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
+                    Flexible(
+                      child: ScrollablePositionedList.builder(
+                        initialScrollIndex: _selEPGIndex,
+                        itemScrollController: _epgScrollController,
+                        initialAlignment: 0.3,
+                        physics: const ClampingScrollPhysics(),
+                        padding: isTV && EnvUtil.isMobile ? EdgeInsets.only(bottom: MediaQuery.of(context).size.height) : null,
+                        itemBuilder: (BuildContext context, int index) {
+                          final data = _epgData![index];
+                          return _buildEpgItem(data, index);
+                        },
+                        itemCount: _epgData!.length,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -439,18 +406,20 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
       width: double.infinity,
       height: _itemHeight,
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          if (isFocused) ...[
-            Colors.greenAccent.withOpacity(0.3),
-            Colors.greenAccent.withOpacity(0.1)
-          ] else if (isSelected) ...[
-            Colors.red.withValues(alpha: 0.6),
-            Colors.red.withValues(alpha: 0.3)
-          ] else ...[
-            Colors.transparent,
-            Colors.transparent
-          ]
-        ]),
+        gradient: LinearGradient(
+          colors: [
+            if (isFocused) ...[
+              Colors.greenAccent.withValues(alpha: 0.3),
+              Colors.greenAccent.withValues(alpha: 0.1),
+            ] else if (isSelected) ...[
+              Colors.red.withValues(alpha: 0.6),
+              Colors.red.withValues(alpha: 0.3),
+            ] else ...[
+              Colors.transparent,
+              Colors.transparent,
+            ],
+          ],
+        ),
       ),
       child: Center(
         child: Text(
@@ -470,18 +439,20 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
       height: _itemHeight,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          if (isFocused) ...[
-            Colors.greenAccent.withOpacity(0.3),
-            Colors.greenAccent.withOpacity(0.1)
-          ] else if (isSelected) ...[
-            Colors.red.withValues(alpha: 0.3),
-            Colors.transparent
-          ] else ...[
-            Colors.transparent,
-            Colors.transparent
-          ]
-        ]),
+        gradient: LinearGradient(
+          colors: [
+            if (isFocused) ...[
+              Colors.greenAccent.withValues(alpha: 0.3),
+              Colors.greenAccent.withValues(alpha: 0.1),
+            ] else if (isSelected) ...[
+              Colors.red.withValues(alpha: 0.3),
+              Colors.transparent,
+            ] else ...[
+              Colors.transparent,
+              Colors.transparent,
+            ],
+          ],
+        ),
       ),
       child: Row(
         children: [
@@ -491,7 +462,7 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
               style: TextStyle(color: isFocused ? Colors.white : (isSelected ? Colors.red : Colors.white), fontWeight: FontWeight.bold),
             ),
           ),
-          if (isSelected) SpinKitWave(size: 20, color: Colors.red.withValues(alpha: 0.8))
+          if (isSelected) SpinKitWave(size: 20, color: Colors.red.withValues(alpha: 0.8)),
         ],
       ),
     );
@@ -502,21 +473,21 @@ class _TVChannelDrawerPageState extends State<TVChannelDrawerPage> {
     final bool isFocused = _currentFocusColumn == FocusColumn.epg && index == _selEPGIndex;
 
     return Container(
-      constraints: const BoxConstraints(
-        minHeight: 40,
-      ),
+      constraints: const BoxConstraints(minHeight: 40),
       padding: const EdgeInsets.all(10),
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          if (isFocused) ...[
-            Colors.greenAccent.withOpacity(0.3),
-            Colors.greenAccent.withOpacity(0.1)
-          ] else ...[
-            Colors.transparent,
-            Colors.transparent
-          ]
-        ]),
+        gradient: LinearGradient(
+          colors: [
+            if (isFocused) ...[
+              Colors.greenAccent.withValues(alpha: 0.3),
+              Colors.greenAccent.withValues(alpha: 0.1),
+            ] else ...[
+              Colors.transparent,
+              Colors.transparent,
+            ],
+          ],
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

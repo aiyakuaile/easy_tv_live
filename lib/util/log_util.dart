@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
+
 /// Log Util.
 class LogUtil {
   static const String _defTag = 'common_utils';
@@ -7,11 +9,7 @@ class LogUtil {
   static int _maxLen = 128;
   static String _tagValue = _defTag;
 
-  static void init({
-    String tag = _defTag,
-    bool isDebug = false,
-    int maxLen = 128,
-  }) {
+  static void init({String tag = _defTag, bool isDebug = false, int maxLen = 128}) {
     _tagValue = tag;
     _debugMode = isDebug;
     _maxLen = maxLen;
@@ -37,21 +35,19 @@ class LogUtil {
     String da = object?.toString() ?? 'null';
     tag = tag ?? _tagValue;
     if (da.length <= _maxLen) {
-      print('$tag$stag $da');
+      debugPrint('$tag$stag $da');
       return;
     }
-    print(
-        '$tag$stag — — — — — — — — — — — — — — — — st — — — — — — — — — — — — — — — —');
+    debugPrint('$tag$stag — — — — — — — — — — — — — — — — st — — — — — — — — — — — — — — — —');
     while (da.isNotEmpty) {
       if (da.length > _maxLen) {
-        print('$tag$stag| ${da.substring(0, _maxLen)}');
+        debugPrint('$tag$stag| ${da.substring(0, _maxLen)}');
         da = da.substring(_maxLen, da.length);
       } else {
-        print('$tag$stag| $da');
+        debugPrint('$tag$stag| $da');
         da = '';
       }
     }
-    print(
-        '$tag$stag — — — — — — — — — — — — — — — — ed — — — — — — — — — — — — — — — —');
+    debugPrint('$tag$stag — — — — — — — — — — — — — — — — ed — — — — — — — — — — — — — — — —');
   }
 }

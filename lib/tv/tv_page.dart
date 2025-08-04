@@ -241,10 +241,7 @@ class _TvPageState extends State<TvPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      drawer: TVChannelDrawerPage(
-        channelListModel: widget.channelListModel,
-        onTapChannel: widget.onTapChannel,
-      ),
+      drawer: TVChannelDrawerPage(channelListModel: widget.channelListModel, onTapChannel: widget.onTapChannel),
       drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
       drawerScrimColor: Colors.transparent,
       onDrawerChanged: (bool isOpen) {
@@ -252,52 +249,51 @@ class _TvPageState extends State<TvPage> {
           _drawerIsOpen = isOpen;
         });
       },
-      body: Builder(builder: (context) {
-        return KeyboardListener(
-          focusNode: _videoNode,
-          autofocus: true,
-          onKeyEvent: (KeyEvent e) => _focusEventHandle(context, e),
-          child: widget.toastString == 'UNKNOWN'
-              ? EmptyPage(onRefresh: () => widget.onChangeSubSource?.call())
-              : Container(
-                  alignment: Alignment.center,
-                  color: Colors.black,
-                  child: Stack(
+      body: Builder(
+        builder: (context) {
+          return KeyboardListener(
+            focusNode: _videoNode,
+            autofocus: true,
+            onKeyEvent: (KeyEvent e) => _focusEventHandle(context, e),
+            child: widget.toastString == 'UNKNOWN'
+                ? EmptyPage(onRefresh: () => widget.onChangeSubSource?.call())
+                : Container(
                     alignment: Alignment.center,
-                    children: [
-                      widget.controller?.value.isInitialized == true
-                          ? AspectRatio(
-                              aspectRatio: widget.aspectRatio,
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: VideoPlayer(widget.controller!),
-                              ),
-                            )
-                          : VideoHoldBg(toastString: _drawerIsOpen ? '' : widget.toastString),
-                      if (_drawerIsOpen) const DatePositionWidget(),
-                      if (widget.isBuffering && !_drawerIsOpen) const SpinKitSpinningLines(color: Colors.white),
-                      ValueListenableBuilder(
+                    color: Colors.black,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        widget.controller?.value.isInitialized == true
+                            ? AspectRatio(
+                                aspectRatio: widget.aspectRatio,
+                                child: SizedBox(width: double.infinity, child: VideoPlayer(widget.controller!)),
+                              )
+                            : VideoHoldBg(toastString: _drawerIsOpen ? '' : widget.toastString),
+                        if (_drawerIsOpen) const DatePositionWidget(),
+                        if (widget.isBuffering && !_drawerIsOpen) const SpinKitSpinningLines(color: Colors.white),
+                        ValueListenableBuilder(
                           valueListenable: _digitSelValue,
                           builder: (BuildContext context, String value, Widget? child) {
                             if (value.isNotEmpty) {
                               return Positioned(
-                                  top: 30,
-                                  right: 30,
-                                  child: Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(10)),
-                                      child: Text(
-                                        value,
-                                        style: TextStyle(color: Colors.white, fontSize: 50),
-                                      )));
+                                top: 30,
+                                right: 30,
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(10)),
+                                  child: Text(value, style: TextStyle(color: Colors.white, fontSize: 50)),
+                                ),
+                              );
                             }
                             return SizedBox.shrink();
-                          })
-                    ],
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }

@@ -15,7 +15,7 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:sp_util/sp_util.dart';
 
-import '../entity/subScribe_model.dart';
+import '../entity/sub_scribe_model.dart';
 import '../generated/l10n.dart';
 import '../util/env_util.dart';
 
@@ -54,10 +54,7 @@ class _SubScribePageState extends State<SubScribePage> {
 
   _bindRemoteIP() async {
     if (EnvUtil.isTV() || _remoteIP == null || _remoteIP == '') return;
-    final response = await HttpUtil().postRequest(
-      'http://$_remoteIP:$_port/ip',
-      data: {'ip': _ip},
-    );
+    final response = await HttpUtil().postRequest('http://$_remoteIP:$_port/ip', data: {'ip': _ip});
     if (response != null) {
       EasyLoading.showToast('设备已连接');
     } else {
@@ -70,12 +67,14 @@ class _SubScribePageState extends State<SubScribePage> {
 
   _addLifecycleListen() {
     if (EnvUtil.isTV()) return;
-    _appLifecycleListener = AppLifecycleListener(onStateChange: (state) {
-      LogUtil.v('addLifecycleListen::::::$state');
-      if (state == AppLifecycleState.resumed) {
-        _pasteClipboard();
-      }
-    });
+    _appLifecycleListener = AppLifecycleListener(
+      onStateChange: (state) {
+        LogUtil.v('addLifecycleListen::::::$state');
+        if (state == AppLifecycleState.resumed) {
+          _pasteClipboard();
+        }
+      },
+    );
   }
 
   _pasteClipboard() async {
@@ -84,29 +83,30 @@ class _SubScribePageState extends State<SubScribePage> {
     final clipText = clipData?.text;
     if (clipText != null && clipText.startsWith('http')) {
       final res = await showDialog<bool>(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              backgroundColor: const Color(0xff3C3F41),
-              title: Text(S.current.dialogTitle),
-              content: Text('${S.current.dataSourceContent}\n$clipText'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                  child: Text(S.current.dialogCancel),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                  child: Text(S.current.dialogConfirm),
-                ),
-              ],
-            );
-          });
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: const Color(0xff3C3F41),
+            title: Text(S.current.dialogTitle),
+            content: Text('${S.current.dataSourceContent}\n$clipText'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text(S.current.dialogCancel),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text(S.current.dialogConfirm),
+              ),
+            ],
+          );
+        },
+      );
       if (res == true) {
         await _pareUrl(clipText);
       }
@@ -271,11 +271,8 @@ class _SubScribePageState extends State<SubScribePage> {
             : [
                 IconButton(
                   onPressed: _addM3uSource,
-                  icon: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ),
-                )
+                  icon: const Icon(Icons.add, color: Colors.white),
+                ),
               ],
       ),
       body: Column(
@@ -283,9 +280,13 @@ class _SubScribePageState extends State<SubScribePage> {
           if ((Platform.isAndroid || Platform.isIOS) && !widget.isTV && _remoteIP != null)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              color: Colors.green.withOpacity(0.3),
+              color: Colors.green.withValues(alpha: 0.3),
               child: Row(
-                children: [const Text('设备连接成功，可以同步啦！'), const Spacer(), TextButton(onPressed: _showSyncBottomSheet, child: const Text('立即同步'))],
+                children: [
+                  const Text('设备连接成功，可以同步啦！'),
+                  const Spacer(),
+                  TextButton(onPressed: _showSyncBottomSheet, child: const Text('立即同步')),
+                ],
               ),
             ),
           Flexible(
@@ -294,11 +295,12 @@ class _SubScribePageState extends State<SubScribePage> {
                 SizedBox(
                   width: widget.isTV ? MediaQuery.of(context).size.width * 0.3 : MediaQuery.of(context).size.width,
                   child: ListView.separated(
-                      padding: const EdgeInsets.all(12),
-                      controller: _scrollController,
-                      itemBuilder: (context, index) {
-                        final model = _m3uList[index];
-                        return Builder(builder: (context) {
+                    padding: const EdgeInsets.all(12),
+                    controller: _scrollController,
+                    itemBuilder: (context, index) {
+                      final model = _m3uList[index];
+                      return Builder(
+                        builder: (context) {
                           return FocusCard(
                             model: model,
                             onDelete: () async {
@@ -318,43 +320,39 @@ class _SubScribePageState extends State<SubScribePage> {
                               }
                             },
                           );
-                        });
-                      },
-                      separatorBuilder: (context, index) {
-                        return const SizedBox(height: 10);
-                      },
-                      itemCount: _m3uList.length),
+                        },
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return const SizedBox(height: 10);
+                    },
+                    itemCount: _m3uList.length,
+                  ),
                 ),
                 if (widget.isTV || !EnvUtil.isMobile) const VerticalDivider(),
                 if ((widget.isTV || !EnvUtil.isMobile) && (_remoteIP == null || _remoteIP == ''))
                   Expanded(
-                      child: Container(
-                    padding: const EdgeInsets.all(30.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          S.current.tvScanTip,
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Container(
-                          decoration: const BoxDecoration(color: Colors.white),
-                          margin: const EdgeInsets.all(10),
-                          padding: const EdgeInsets.all(10),
-                          width: 150,
-                          child: _address == null
-                              ? null
-                              : PrettyQrView.data(
-                                  data: _address!,
-                                ),
-                        ),
-                        if (_address != null)
-                          Container(margin: const EdgeInsets.only(bottom: 20), child: Text(S.current.pushAddress(_address ?? ''))),
-                        Text(S.current.tvPushContent),
-                      ],
+                    child: Container(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(S.current.tvScanTip, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          Container(
+                            decoration: const BoxDecoration(color: Colors.white),
+                            margin: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
+                            width: 150,
+                            child: _address == null ? null : PrettyQrView.data(data: _address!),
+                          ),
+                          if (_address != null)
+                            Container(margin: const EdgeInsets.only(bottom: 20), child: Text(S.current.pushAddress(_address ?? ''))),
+                          Text(S.current.tvPushContent),
+                        ],
+                      ),
                     ),
-                  )),
+                  ),
                 if (widget.isTV && (_remoteIP != null && _remoteIP != ''))
                   Expanded(
                     child: ListView(
@@ -368,20 +366,23 @@ class _SubScribePageState extends State<SubScribePage> {
                           },
                         ),
                         ListTile(
-                            title: const Text('同步订阅源'),
-                            onTap: () {
-                              _syncData(1);
-                            }),
+                          title: const Text('同步订阅源'),
+                          onTap: () {
+                            _syncData(1);
+                          },
+                        ),
                         ListTile(
-                            title: const Text('同步字体设置'),
-                            onTap: () {
-                              _syncData(2);
-                            }),
+                          title: const Text('同步字体设置'),
+                          onTap: () {
+                            _syncData(2);
+                          },
+                        ),
                         ListTile(
-                            title: const Text('同步美化设置'),
-                            onTap: () {
-                              _syncData(3);
-                            }),
+                          title: const Text('同步美化设置'),
+                          onTap: () {
+                            _syncData(3);
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -391,26 +392,24 @@ class _SubScribePageState extends State<SubScribePage> {
           if (!widget.isTV)
             Padding(
               padding: const EdgeInsets.all(12),
-              child: Text(
-                S.current.pasterContent,
-                style: const TextStyle(color: Color(0xFF999999)),
-              ),
+              child: Text(S.current.pasterContent, style: const TextStyle(color: Color(0xFF999999))),
             ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 10)
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 10),
         ],
       ),
     );
   }
 
   _addM3uSource() async {
-    final _textController = TextEditingController();
+    final textController = TextEditingController();
     final res = await showModalBottomSheet<String>(
-        context: context,
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
-        builder: (context) {
-          return SingleChildScrollView(
-            child: LayoutBuilder(builder: (context, _) {
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
+      builder: (context) {
+        return SingleChildScrollView(
+          child: LayoutBuilder(
+            builder: (context, _) {
               return SizedBox(
                 height: 120 + MediaQuery.of(context).viewInsets.bottom,
                 child: Column(
@@ -425,10 +424,11 @@ class _SubScribePageState extends State<SubScribePage> {
                         automaticallyImplyLeading: false,
                         actions: [
                           TextButton(
-                              onPressed: () {
-                                Navigator.pop(context, _textController.text);
-                              },
-                              child: Text(S.current.dialogConfirm))
+                            onPressed: () {
+                              Navigator.pop(context, textController.text);
+                            },
+                            child: Text(S.current.dialogConfirm),
+                          ),
                         ],
                       ),
                     ),
@@ -436,25 +436,22 @@ class _SubScribePageState extends State<SubScribePage> {
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         child: TextField(
-                          controller: _textController,
+                          controller: textController,
                           autofocus: true,
                           maxLines: 1,
-                          decoration: InputDecoration(
-                            hintText: S.current.addFiledHintText,
-                            border: InputBorder.none,
-                          ),
+                          decoration: InputDecoration(hintText: S.current.addFiledHintText, border: InputBorder.none),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: MediaQuery.of(context).padding.bottom + 20,
-                    )
+                    SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
                   ],
                 ),
               );
-            }),
-          );
-        });
+            },
+          ),
+        );
+      },
+    );
     if (res == null || res == '') return;
     _pareUrl(res);
   }
@@ -469,14 +466,21 @@ class _SubScribePageState extends State<SubScribePage> {
     }
     if (res.startsWith('http') && hasIndex == -1) {
       LogUtil.v('添加：$res');
-      final sub = SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: res, selected: false);
+      final sub = SubScribeModel(
+        time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
+        link: res,
+        selected: false,
+      );
       _m3uList.add(sub);
       await M3uUtil.saveLocalData(_m3uList);
       setState(() {
         Future.delayed(const Duration(milliseconds: 300), () {
           if (_scrollController.positions.isNotEmpty) {
-            _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
           }
         });
       });
@@ -487,20 +491,16 @@ class _SubScribePageState extends State<SubScribePage> {
 
   _showSyncBottomSheet() async {
     final res = await showModalBottomSheet<int>(
-        context: context,
-        builder: (context) {
-          return Column(mainAxisSize: MainAxisSize.min, children: [
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
-              child: Text(
-                '数据同步',
-                style: TextStyle(fontSize: 15),
-              ),
+              child: Text('数据同步', style: TextStyle(fontSize: 15)),
             ),
-            const Divider(
-              thickness: 1,
-              height: 1,
-            ),
+            const Divider(thickness: 1, height: 1),
             ListTile(
               title: const Text('同步所有设置'),
               onTap: () {
@@ -508,22 +508,27 @@ class _SubScribePageState extends State<SubScribePage> {
               },
             ),
             ListTile(
-                title: const Text('同步订阅源'),
-                onTap: () {
-                  Navigator.pop(context, 1);
-                }),
+              title: const Text('同步订阅源'),
+              onTap: () {
+                Navigator.pop(context, 1);
+              },
+            ),
             ListTile(
-                title: const Text('同步字体设置'),
-                onTap: () {
-                  Navigator.pop(context, 2);
-                }),
+              title: const Text('同步字体设置'),
+              onTap: () {
+                Navigator.pop(context, 2);
+              },
+            ),
             ListTile(
-                title: const Text('同步美化设置'),
-                onTap: () {
-                  Navigator.pop(context, 3);
-                }),
-          ]);
-        });
+              title: const Text('同步美化设置'),
+              onTap: () {
+                Navigator.pop(context, 3);
+              },
+            ),
+          ],
+        );
+      },
+    );
     if (res == null) return;
     _syncData(res);
   }
@@ -535,7 +540,7 @@ class _SubScribePageState extends State<SubScribePage> {
       1 => await DeviceSyncUtil.syncVideoList(),
       2 => await DeviceSyncUtil.syncFont(context),
       3 => await DeviceSyncUtil.syncPrettify(context),
-      _ => {}
+      _ => {},
     };
     final response = await HttpUtil().postRequest('http://$_remoteIP:$_port/sync', data: params, isShowLoading: false);
     if (response != null) {

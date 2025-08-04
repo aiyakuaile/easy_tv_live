@@ -23,17 +23,18 @@ class TableVideoWidget extends StatefulWidget {
   final double aspectRatio;
   final bool drawerIsOpen;
   final GestureTapCallback onChangeSubSource;
-  const TableVideoWidget(
-      {super.key,
-      required this.controller,
-      required this.isBuffering,
-      required this.isPlaying,
-      required this.aspectRatio,
-      required this.drawerIsOpen,
-      required this.onChangeSubSource,
-      this.toastString,
-      this.changeChannelSources,
-      this.isLandscape = true});
+  const TableVideoWidget({
+    super.key,
+    required this.controller,
+    required this.isBuffering,
+    required this.isPlaying,
+    required this.aspectRatio,
+    required this.drawerIsOpen,
+    required this.onChangeSubSource,
+    this.toastString,
+    this.changeChannelSources,
+    this.isLandscape = true,
+  });
 
   @override
   State<TableVideoWidget> createState() => _TableVideoWidgetState();
@@ -117,18 +118,16 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                     children: [
                       AspectRatio(
                         aspectRatio: widget.aspectRatio,
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: VideoPlayer(widget.controller!),
-                        ),
+                        child: SizedBox(width: double.infinity, child: VideoPlayer(widget.controller!)),
                       ),
                       if (!widget.isPlaying && !widget.drawerIsOpen)
                         GestureDetector(
-                            onTap: () {
-                              widget.controller?.play();
-                            },
-                            child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50)),
-                      if (widget.isBuffering && !widget.drawerIsOpen) const SpinKitSpinningLines(color: Colors.white)
+                          onTap: () {
+                            widget.controller?.play();
+                          },
+                          child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 50),
+                        ),
+                      if (widget.isBuffering && !widget.drawerIsOpen) const SpinKitSpinningLines(color: Colors.white),
                     ],
                   )
                 : VideoHoldBg(toastString: widget.drawerIsOpen ? '' : widget.toastString),
@@ -139,103 +138,104 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
           const VolumeBrightnessWidget(),
           if (widget.isLandscape && !widget.drawerIsOpen)
             AnimatedPositioned(
-                left: 0,
-                right: 0,
-                bottom: _isShowMenuBar || !widget.isPlaying ? 20 : -50,
-                duration: const Duration(milliseconds: 100),
-                child: Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Row(
-                    children: [
-                      const Spacer(),
+              left: 0,
+              right: 0,
+              bottom: _isShowMenuBar || !widget.isPlaying ? 20 : -50,
+              duration: const Duration(milliseconds: 100),
+              child: Container(
+                height: 50,
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Row(
+                  children: [
+                    const Spacer(),
+                    IconButton(
+                      tooltip: '进入设置',
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.black87,
+                        side: const BorderSide(color: Colors.white),
+                      ),
+                      icon: const Icon(Icons.settings, color: Colors.white),
+                      onPressed: () async {
+                        await M3uUtil.openAddSource(context);
+                        final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
+                        if (m3uData == '') {
+                          widget.onChangeSubSource.call();
+                        } else {
+                          widget.controller?.play();
+                        }
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    IconButton(
+                      tooltip: S.current.tipChannelList,
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.black87,
+                        side: const BorderSide(color: Colors.white),
+                      ),
+                      icon: const Icon(Icons.list_alt, color: Colors.white),
+                      onPressed: () {
+                        setState(() {
+                          _isShowMenuBar = false;
+                        });
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    IconButton(
+                      tooltip: S.current.tipChangeLine,
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.black87,
+                        side: const BorderSide(color: Colors.white),
+                      ),
+                      icon: const Icon(Icons.legend_toggle, color: Colors.white),
+                      onPressed: () {
+                        setState(() {
+                          _isShowMenuBar = false;
+                        });
+                        widget.changeChannelSources?.call();
+                      },
+                    ),
+                    if (EnvUtil.isMobile) const SizedBox(width: 12),
+                    if (EnvUtil.isMobile)
                       IconButton(
-                          tooltip: '进入设置',
-                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
-                          icon: const Icon(
-                            Icons.settings,
-                            color: Colors.white,
-                          ),
-                          onPressed: () async {
-                            await M3uUtil.openAddSource(context);
-                            final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
-                            if (m3uData == '') {
-                              widget.onChangeSubSource?.call();
-                            } else {
-                              widget.controller?.play();
-                            }
-                          }),
-                      const SizedBox(width: 12),
-                      IconButton(
-                          tooltip: S.current.tipChannelList,
-                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
-                          icon: const Icon(
-                            Icons.list_alt,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isShowMenuBar = false;
-                            });
-                            Scaffold.of(context).openDrawer();
-                          }),
-                      const SizedBox(width: 12),
-                      IconButton(
-                          tooltip: S.current.tipChangeLine,
-                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
-                          icon: const Icon(
-                            Icons.legend_toggle,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isShowMenuBar = false;
-                            });
-                            widget.changeChannelSources?.call();
-                          }),
-                      if (EnvUtil.isMobile) const SizedBox(width: 12),
-                      if (EnvUtil.isMobile)
-                        IconButton(
-                          tooltip: S.current.portrait,
-                          onPressed: () async {
-                            SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-                          },
-                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
-                          icon: const Icon(
-                            Icons.screen_rotation,
-                            color: Colors.white,
-                          ),
+                        tooltip: S.current.portrait,
+                        onPressed: () async {
+                          SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+                        },
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.black87,
+                          side: const BorderSide(color: Colors.white),
                         ),
-                      if (!EnvUtil.isMobile) const SizedBox(width: 12),
-                      if (!EnvUtil.isMobile)
-                        IconButton(
-                          tooltip: S.current.fullScreen,
-                          onPressed: () async {
-                            final isFullScreen = await windowManager.isFullScreen();
-                            LogUtil.v('isFullScreen:::::$isFullScreen');
-                            windowManager.setFullScreen(!isFullScreen);
+                        icon: const Icon(Icons.screen_rotation, color: Colors.white),
+                      ),
+                    if (!EnvUtil.isMobile) const SizedBox(width: 12),
+                    if (!EnvUtil.isMobile)
+                      IconButton(
+                        tooltip: S.current.fullScreen,
+                        onPressed: () async {
+                          final isFullScreen = await windowManager.isFullScreen();
+                          LogUtil.v('isFullScreen:::::$isFullScreen');
+                          windowManager.setFullScreen(!isFullScreen);
+                        },
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.black87,
+                          side: const BorderSide(color: Colors.white),
+                        ),
+                        icon: FutureBuilder<bool>(
+                          future: windowManager.isFullScreen(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Icon(snapshot.data! ? Icons.close_fullscreen : Icons.fit_screen_outlined, color: Colors.white);
+                            } else {
+                              return const Icon(Icons.fit_screen_outlined, color: Colors.white);
+                            }
                           },
-                          style: IconButton.styleFrom(backgroundColor: Colors.black87, side: const BorderSide(color: Colors.white)),
-                          icon: FutureBuilder<bool>(
-                            future: windowManager.isFullScreen(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return Icon(
-                                  snapshot.data! ? Icons.close_fullscreen : Icons.fit_screen_outlined,
-                                  color: Colors.white,
-                                );
-                              } else {
-                                return const Icon(
-                                  Icons.fit_screen_outlined,
-                                  color: Colors.white,
-                                );
-                              }
-                            },
-                          ),
-                        )
-                    ],
-                  ),
-                )),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
           if (!widget.isLandscape)
             Positioned(
               right: 15,
@@ -248,8 +248,8 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                 style: IconButton.styleFrom(backgroundColor: Colors.black45, iconSize: 20),
                 icon: const Icon(Icons.screen_rotation, color: Colors.white),
               ),
-            )
-        ]
+            ),
+        ],
       ],
     );
   }

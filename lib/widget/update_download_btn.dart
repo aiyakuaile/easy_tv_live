@@ -37,14 +37,11 @@ class _UpdateDownloadBtnState extends State<UpdateDownloadBtn> {
                       Positioned.fill(
                         child: LinearProgressIndicator(
                           value: provider.progress,
-                          backgroundColor: Colors.redAccent.withOpacity(0.2),
+                          backgroundColor: Colors.redAccent.withValues(alpha: 0.2),
                           color: Colors.redAccent,
                         ),
                       ),
-                      Text(
-                        '下载中...${(provider.progress * 100).toStringAsFixed(1)}%',
-                        style: const TextStyle(color: Colors.white),
-                      )
+                      Text('下载中...${(provider.progress * 100).toStringAsFixed(1)}%', style: const TextStyle(color: Colors.white)),
                     ],
                   ),
                 ),
@@ -53,10 +50,11 @@ class _UpdateDownloadBtnState extends State<UpdateDownloadBtn> {
       },
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-            fixedSize: Size(btnWidth, 44),
-            backgroundColor: _isFocusDownload ? Colors.redAccent : Colors.redAccent.withOpacity(0.3),
-            elevation: _isFocusDownload ? 10 : 0,
-            overlayColor: Colors.transparent),
+          fixedSize: Size(btnWidth, 44),
+          backgroundColor: _isFocusDownload ? Colors.redAccent : Colors.redAccent.withValues(alpha: 0.3),
+          elevation: _isFocusDownload ? 10 : 0,
+          overlayColor: Colors.transparent,
+        ),
         autofocus: true,
         onFocusChange: (bool isFocus) {
           setState(() {
@@ -70,10 +68,7 @@ class _UpdateDownloadBtnState extends State<UpdateDownloadBtn> {
             Navigator.of(context).pop(true);
           }
         },
-        child: Text(
-          S.current.update,
-          style: const TextStyle(color: Colors.white),
-        ),
+        child: Text(S.current.update, style: const TextStyle(color: Colors.white)),
       ),
     );
   }

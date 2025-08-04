@@ -23,8 +23,14 @@ class HttpUtil {
     _dio = Dio(options)..interceptors.add(LogInterceptor(requestBody: true, responseBody: true, logPrint: LogUtil.v));
   }
 
-  Future<T?> postRequest<T>(String path,
-      {Object? data, Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress, bool isShowLoading = true}) async {
+  Future<T?> postRequest<T>(
+    String path, {
+    Object? data,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+    bool isShowLoading = true,
+  }) async {
     LogUtil.v('PostRequest::::::$path');
     if (isShowLoading) EasyLoading.show();
     Response? response;
@@ -38,18 +44,25 @@ class HttpUtil {
     return response?.data;
   }
 
-  Future<T?> getRequest<T>(String path,
-      {Map<String, dynamic>? queryParameters,
-      Options? options,
-      CancelToken? cancelToken,
-      ProgressCallback? onReceiveProgress,
-      bool isShowLoading = true}) async {
+  Future<T?> getRequest<T>(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+    bool isShowLoading = true,
+  }) async {
     path = extractCredentials(path, options);
     if (isShowLoading) EasyLoading.show();
     Response? response;
     try {
-      response =
-          await _dio.get<T>(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+      response = await _dio.get<T>(
+        path,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
+      );
       if (isShowLoading) EasyLoading.dismiss();
     } on DioException catch (e) {
       if (isShowLoading) EasyLoading.dismiss();
@@ -95,15 +108,11 @@ String extractCredentials(String url, Options? options) {
   final us = match?.group(2);
   if (us != null && !us.contains('/')) {
     final base64Us = base64Encode(utf8.encode(us));
-    if (us != null) {
-      if (options == null) {
-        options = Options(headers: {
-          HttpHeaders.authorizationHeader: 'Basic $base64Us',
-        });
-      } else {
-        options.headers ??= {};
-        options.headers![HttpHeaders.authorizationHeader] = 'Basic $base64Us';
-      }
+    if (options == null) {
+      options = Options(headers: {HttpHeaders.authorizationHeader: 'Basic $base64Us'});
+    } else {
+      options.headers ??= {};
+      options.headers![HttpHeaders.authorizationHeader] = 'Basic $base64Us';
     }
   }
   return url;

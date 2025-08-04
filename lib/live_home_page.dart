@@ -244,21 +244,20 @@ class _LiveHomePageState extends State<LiveHomePage> {
             isPlaying: isPlaying,
             aspectRatio: aspectRatio,
             onChangeSubSource: _parseData,
-            drawChild: ChannelDrawerPage(
-              channelListModel: _channelListModel,
-              onTapChannel: _onTapChannel,
-              isLandscape: false,
-            ),
+            drawChild: ChannelDrawerPage(channelListModel: _channelListModel, onTapChannel: _onTapChannel, isLandscape: false),
           );
         },
         landscape: (context) {
           SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
           return PopScope(
             canPop: false,
-            onPopInvoked: (didPop) {
+            onPopInvokedWithResult: (didPop, _) {
               if (!didPop) {
-                SystemChrome.setPreferredOrientations(
-                    [DeviceOrientation.portraitUp, DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+                SystemChrome.setPreferredOrientations([
+                  DeviceOrientation.portraitUp,
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight,
+                ]);
               }
             },
             child: Scaffold(
@@ -298,7 +297,8 @@ class _LiveHomePageState extends State<LiveHomePage> {
                       drawerIsOpen: _drawerIsOpen,
                       changeChannelSources: _changeChannelSources,
                       onChangeSubSource: _parseData,
-                      isLandscape: true),
+                      isLandscape: true,
+                    ),
             ),
           );
         },
@@ -310,56 +310,56 @@ class _LiveHomePageState extends State<LiveHomePage> {
     videoNode?.unfocus();
     List<String> sources = _currentChannel!.urls!;
     final selectedIndex = await showModalBottomSheet(
-        context: context,
-        useRootNavigator: true,
-        barrierColor: Colors.transparent,
-        backgroundColor: Colors.black87,
-        builder: (BuildContext context) {
-          return SingleChildScrollView(
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 40),
-              color: Colors.transparent,
-              child: Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: List.generate(sources.length, (index) {
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        FocusButton(
-                          autofocus: _sourceIndex == index,
-                          onTap: _sourceIndex == index
-                              ? null
-                              : () {
-                                  Navigator.pop(context, index);
-                                },
-                          title: S.current.lineIndex(index + 1),
-                          selected: _sourceIndex == index,
-                        ),
-                        Positioned(
-                          top: -2,
-                          right: 8,
-                          child: FutureBuilder<Color>(
-                              future: LatencyCheckerUtil.checkLatencies(sources[index]),
-                              initialData: Colors.transparent,
-                              builder: (BuildContext context, AsyncSnapshot<Color> snapshot) {
-                                return Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    color: snapshot.data,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                );
-                              }),
-                        )
-                      ],
-                    );
-                  })),
+      context: context,
+      useRootNavigator: true,
+      barrierColor: Colors.transparent,
+      backgroundColor: Colors.black87,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 40),
+            color: Colors.transparent,
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: List.generate(sources.length, (index) {
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    FocusButton(
+                      autofocus: _sourceIndex == index,
+                      onTap: _sourceIndex == index
+                          ? null
+                          : () {
+                              Navigator.pop(context, index);
+                            },
+                      title: S.current.lineIndex(index + 1),
+                      selected: _sourceIndex == index,
+                    ),
+                    Positioned(
+                      top: -2,
+                      right: 8,
+                      child: FutureBuilder<Color>(
+                        future: LatencyCheckerUtil.checkLatencies(sources[index]),
+                        initialData: Colors.transparent,
+                        builder: (BuildContext context, AsyncSnapshot<Color> snapshot) {
+                          return Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(color: snapshot.data, borderRadius: BorderRadius.circular(4)),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              }),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
     videoNode?.requestFocus();
     if (selectedIndex != null && _sourceIndex != selectedIndex) {
       _sourceIndex = selectedIndex;

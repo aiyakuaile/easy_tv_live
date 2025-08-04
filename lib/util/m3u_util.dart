@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sp_util/sp_util.dart';
 
-import '../entity/subScribe_model.dart';
+import '../entity/sub_scribe_model.dart';
 import '../generated/l10n.dart';
 import '../tv/tv_setting_page.dart';
 import 'log_util.dart';
@@ -44,7 +44,13 @@ class M3uUtil {
       }
     } else {
       m3uData = await _fetchData();
-      await saveLocalData([SubScribeModel(time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full), link: 'default', selected: true)]);
+      await saveLocalData([
+        SubScribeModel(
+          time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
+          link: 'default',
+          selected: true,
+        ),
+      ]);
     }
     final channelModels = await _parseM3u(m3uData);
     if (channelModels.playList!.isNotEmpty) {
@@ -137,24 +143,22 @@ class M3uUtil {
           if (groupStr.isNotEmpty) {
             tempGroupTitle = groupStr.split('=').last;
             tempChannelName = lineList.last;
-            final playModel = playListModel.playList!.firstWhere((model) => model.group == tempGroupTitle, orElse: () {
-              final model = PlayModel(
-                group: tempGroupTitle,
-                channel: [],
-              );
-              playListModel.playList!.add(model);
-              return model;
-            });
-            final channel = playModel.channel!.firstWhere((element) => element.title == tempChannelName, orElse: () {
-              final model = Channel(
-                id: tvgId,
-                logo: tvgLogo,
-                title: tempChannelName,
-                urls: [],
-              );
-              playModel.channel!.add(model);
-              return model;
-            });
+            final playModel = playListModel.playList!.firstWhere(
+              (model) => model.group == tempGroupTitle,
+              orElse: () {
+                final model = PlayModel(group: tempGroupTitle, channel: []);
+                playListModel.playList!.add(model);
+                return model;
+              },
+            );
+            final channel = playModel.channel!.firstWhere(
+              (element) => element.title == tempChannelName,
+              orElse: () {
+                final model = Channel(id: tvgId, logo: tvgLogo, title: tempChannelName, urls: []);
+                playModel.channel!.add(model);
+                return model;
+              },
+            );
             final lineNext = lines[i + 1];
             if (isLiveLink(lineNext)) {
               channel.urls!.add(lineNext);
@@ -168,7 +172,7 @@ class M3uUtil {
           playListModel.playList!
               .firstWhere((model) => model.group == tempGroupTitle)
               .channel!
-              .firstWhere((element) => element.title == tempChannelName)!
+              .firstWhere((element) => element.title == tempChannelName)
               .urls!
               .add(line);
         }
@@ -182,32 +186,28 @@ class M3uUtil {
           final groupTitle = lineList[0];
           final channelLink = lineList[1];
           if (isLiveLink(channelLink)) {
-            final playModel = playListModel.playList!.firstWhere((model) => model.group == tempGroup, orElse: () {
-              final model = PlayModel(
-                group: tempGroup,
-                channel: [],
-              );
-              playListModel.playList!.add(model);
-              return model;
-            });
-            final channel = playModel.channel!.firstWhere((element) => element.title == groupTitle, orElse: () {
-              final model = Channel(
-                id: groupTitle,
-                title: groupTitle,
-                urls: [],
-              );
-              playModel.channel!.add(model);
-              return model;
-            });
+            final playModel = playListModel.playList!.firstWhere(
+              (model) => model.group == tempGroup,
+              orElse: () {
+                final model = PlayModel(group: tempGroup, channel: []);
+                playListModel.playList!.add(model);
+                return model;
+              },
+            );
+            final channel = playModel.channel!.firstWhere(
+              (element) => element.title == groupTitle,
+              orElse: () {
+                final model = Channel(id: groupTitle, title: groupTitle, urls: []);
+                playModel.channel!.add(model);
+                return model;
+              },
+            );
             channel.urls!.add(channelLink);
           } else {
             tempGroup = groupTitle == '' ? '${S.current.defaultText}${i + 1}' : groupTitle;
             int index = playListModel.playList!.indexWhere((e) => e.group == tempGroup);
             if (index == -1) {
-              playListModel.playList!.add(PlayModel(
-                group: tempGroup,
-                channel: [],
-              ));
+              playListModel.playList!.add(PlayModel(group: tempGroup, channel: []));
             }
           }
         }
@@ -233,14 +233,9 @@ class M3uUtil {
           var end = Offset.zero;
           var curve = Curves.ease;
 
-          var tween = Tween(begin: begin, end: end).chain(
-            CurveTween(curve: curve),
-          );
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
+          return SlideTransition(position: animation.drive(tween), child: child);
         },
       ),
     );
