@@ -80,10 +80,7 @@ class EpgUtil {
 
   static loadEPGXML(String url) async {
     int index = 0;
-    String uStr = url;
-    if (!url.contains('/http') && !url.contains('/heads')) {
-      uStr = url.replaceAll('/h', ',h');
-    }
+    String uStr = url.replaceAll(' ', '').replaceAll('.xml/http', '.xml,http').replaceAll('.gz/http', '.gz,http');
     final urlLink = uStr.split(',');
     XmlDocument? tempXmlDocument;
     while (tempXmlDocument == null && index < urlLink.length) {
