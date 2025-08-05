@@ -67,7 +67,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
       if (_playerController != null) {
         _playerController?.removeListener(_videoListener);
         await _playerController?.pause();
-        await _playerController?.dispose();
+        if (_playerController!.value.isInitialized) {
+          await _playerController?.dispose();
+        }
         _playerController = null;
         setState(() {});
       }
@@ -80,9 +82,8 @@ class _LiveHomePageState extends State<LiveHomePage> {
             webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
           ),
         )..setVolume(1.0);
-        await _playerController!.initialize();
-        // debugPrint('MediaInfo::::::${_playerController!.getMediaInfo().toString()}');
         _playerController!.addListener(_videoListener);
+        await _playerController!.initialize();
         _playerController!.play();
         setState(() {
           toastString = S.current.loading;
@@ -113,16 +114,23 @@ class _LiveHomePageState extends State<LiveHomePage> {
     if (_playerController!.value.hasError) {
       _sourceIndex += 1;
       if (_sourceIndex > _currentChannel!.urls!.length - 1) {
-        _sourceIndex = 0;
-        setState(() {
-          toastString = S.current.playReconnect;
-        });
+        if (_playerController!.value.errorDescription != null) {
+          setState(() {
+            toastString = S.current.playError;
+          });
+        } else {
+          _sourceIndex = 0;
+          setState(() {
+            toastString = S.current.playReconnect;
+          });
+          Future.delayed(const Duration(seconds: 2), () => _playVideo());
+        }
       } else {
         setState(() {
           toastString = '${S.current.switchLine(_sourceIndex + 1)}...';
         });
+        Future.delayed(const Duration(seconds: 2), () => _playVideo());
       }
-      Future.delayed(const Duration(seconds: 2), () => _playVideo());
       return;
     }
     if (isBuffering != _playerController!.value.isBuffering) {

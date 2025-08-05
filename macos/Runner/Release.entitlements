@@ -6,5 +6,7 @@
 	<false/>
 	<key>com.apple.security.app-sandbox</key>
 	<false/>
+	<key>com.apple.security.network.client</key>
+    <true/>
 </dict>
 </plist>
