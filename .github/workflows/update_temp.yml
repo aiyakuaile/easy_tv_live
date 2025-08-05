@@ -1,0 +1,42 @@
+name: 每日更新temp文件
+
+on:
+  schedule:
+    # 北京时间7点（UTC 23点）执行
+    - cron: "0 23 * * *"
+    # 北京时间19点（UTC 11点）执行
+    - cron: "0 11 * * *"
+  workflow_dispatch:  # 保留手动触发
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库代码
+        uses: actions/checkout@v4
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖（requests库）
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: 运行更新脚本
+        run: python update_temp.py
+
+      - name: 提交并推送更改
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add temp
+          git status
+          if git diff --cached --quiet; then
+            echo "temp文件无更新，无需提交"
+          else
+            git commit -m "自动更新temp文件（$(date +'%Y-%m-%d %H:%M')）"
+            git push origin main
+          fi

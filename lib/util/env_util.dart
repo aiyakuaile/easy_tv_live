@@ -5,6 +5,7 @@ import 'package:sp_util/sp_util.dart';
 class EnvUtil {
   static bool? _isMobile;
   static const String proxy = 'https://easytv.suntengfei.top/';
+  static const String proxy2 = 'http://ghp.keleyaa.com/';
 
   static bool isTV() {
     return const bool.fromEnvironment('isTV');

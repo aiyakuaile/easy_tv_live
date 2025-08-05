@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:easy_tv_live/entity/play_channel_list_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
+import 'package:gzip/gzip.dart';
 import 'package:xml/xml.dart';
 
 /// channel_name : "CCTV1"
@@ -76,19 +79,34 @@ class EpgUtil {
   }
 
   static loadEPGXML(String url) async {
-    LogUtil.v('****start download EPG Xml ****');
     int index = 0;
-    final uStr = url.replaceAll('/h', ',h');
+    String uStr = url;
+    if (!url.contains('/http') && !url.contains('/heads')) {
+      uStr = url.replaceAll('/h', ',h');
+    }
     final urlLink = uStr.split(',');
     XmlDocument? tempXmlDocument;
     while (tempXmlDocument == null && index < urlLink.length) {
-      final res = await HttpUtil().getRequest(urlLink[index], isShowLoading: false);
-      if (res != null) {
-        LogUtil.v('****download EPG Xml success****');
-        tempXmlDocument = XmlDocument.parse(res.toString());
+      final cUrl = urlLink[index];
+      if (cUrl.endsWith('.gz')) {
+        final res = await HttpUtil().getRequest(cUrl, isShowLoading: false, options: Options(responseType: ResponseType.bytes));
+        if (res != null) {
+          final zipper = GZip();
+          final decRes = await zipper.decompress(res);
+          String strRes = utf8.decode(decRes, allowMalformed: true);
+          tempXmlDocument = XmlDocument.parse(strRes);
+        } else {
+          tempXmlDocument = null;
+          index += 1;
+        }
       } else {
-        tempXmlDocument = null;
-        index += 1;
+        final res = await HttpUtil().getRequest(cUrl, isShowLoading: false);
+        if (res != null) {
+          tempXmlDocument = XmlDocument.parse(res.toString());
+        } else {
+          tempXmlDocument = null;
+          index += 1;
+        }
       }
     }
     _programmes = tempXmlDocument?.findAllElements('programme');
@@ -101,11 +119,7 @@ class EpgUtil {
 }
 
 class EpgModel {
-  EpgModel({
-    this.channelName,
-    this.date,
-    this.epgData,
-  });
+  EpgModel({this.channelName, this.date, this.epgData});
 
   EpgModel.fromJson(dynamic json) {
     channelName = json['channel_name'];
@@ -122,16 +136,8 @@ class EpgModel {
   String? date;
   List<EpgData>? epgData;
 
-  EpgModel copyWith({
-    String? channelName,
-    String? date,
-    List<EpgData>? epgData,
-  }) =>
-      EpgModel(
-        channelName: channelName ?? this.channelName,
-        date: date ?? this.date,
-        epgData: epgData ?? this.epgData,
-      );
+  EpgModel copyWith({String? channelName, String? date, List<EpgData>? epgData}) =>
+      EpgModel(channelName: channelName ?? this.channelName, date: date ?? this.date, epgData: epgData ?? this.epgData);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -150,12 +156,7 @@ class EpgModel {
 /// title : "今日说法-2024-214"
 
 class EpgData {
-  EpgData({
-    this.desc,
-    this.end,
-    this.start,
-    this.title,
-  });
+  EpgData({this.desc, this.end, this.start, this.title});
 
   EpgData.fromJson(dynamic json) {
     desc = json['desc'];
@@ -169,18 +170,8 @@ class EpgData {
   String? start;
   String? title;
 
-  EpgData copyWith({
-    String? desc,
-    String? end,
-    String? start,
-    String? title,
-  }) =>
-      EpgData(
-        desc: desc ?? this.desc,
-        end: end ?? this.end,
-        start: start ?? this.start,
-        title: title ?? this.title,
-      );
+  EpgData copyWith({String? desc, String? end, String? start, String? title}) =>
+      EpgData(desc: desc ?? this.desc, end: end ?? this.end, start: start ?? this.start, title: title ?? this.title);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

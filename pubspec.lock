@@ -189,6 +189,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.1"
+  gzip:
+    dependency: "direct main"
+    description:
+      name: gzip
+      sha256: f463e69833d892adee182c8a38b0e27df29a8a729e0bb8873623193609405536
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.0"
   html:
     dependency: transitive
     description:

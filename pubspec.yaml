@@ -56,6 +56,7 @@ dependencies:
   network_info_plus: ^6.1.4
   mobile_scanner: ^7.0.1
   gap: ^3.0.1
+  gzip: ^0.3.0
 
 dev_dependencies:
   flutter_test:
