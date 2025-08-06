@@ -21,7 +21,7 @@ class _FocusCardState extends State<FocusCard> {
     }
   }
 
-  _calcLinkName() {
+  String _calcLinkName() {
     if (widget.model.link == 'default') {
       return S.current.defaultText;
     }
