@@ -7,11 +7,15 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:path/path.dart' as p;
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     String ipLink = 'http://192.168.1.127:8848';
     final host = Uri.parse(ipLink).host;
     debugPrint('host::::$host');
+  });
+  test('test path', (){
+    final path = 'C:/Users/Administrator/Desktop/test/test.txt';
+    debugPrint('path::::${p.basename(path)}');
   });
 }

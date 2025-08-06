@@ -59,6 +59,7 @@ dependencies:
   gzip: ^0.3.0
   file_picker: ^10.2.1
   event_bus: ^2.0.1
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:

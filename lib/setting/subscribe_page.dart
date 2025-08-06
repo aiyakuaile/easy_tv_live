@@ -265,7 +265,7 @@ class _SubScribePageState extends State<SubScribePage> {
       appBar: AppBar(
         backgroundColor: widget.isTV ? const Color(0xFF1E2022) : null,
         title: Text(S.current.subscribe),
-        centerTitle: true,
+        centerTitle: false,
         leading: widget.isTV ? const SizedBox.shrink() : null,
         actions: [
           TextButton(onPressed: _addLocalM3u, child: Text('本地添加')),

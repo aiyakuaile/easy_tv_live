@@ -140,7 +140,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
         ),
         if (_isShowOpView) ...[
           if (widget.drawerIsOpen || (!widget.drawerIsOpen && _isShowMenuBar && widget.isLandscape)) const DatePositionWidget(),
-          Builder(
+          if(widget.isLandscape) Builder(
             builder: (BuildContext context) {
               return Row(
                 children: [

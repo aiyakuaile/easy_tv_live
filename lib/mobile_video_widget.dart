@@ -119,21 +119,26 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
       ),
       body: Column(
         children: [
-          AspectRatio(
-            aspectRatio: widget.aspectRatio,
-            child: TableVideoWidget(
-              controller: widget.controller,
-              toastString: widget.toastString,
-              isLandscape: false,
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 300,
+            ),
+            child: AspectRatio(
               aspectRatio: widget.aspectRatio,
-              isBuffering: widget.isBuffering,
-              isPlaying: widget.isPlaying,
-              changeChannelSources: widget.changeChannelSources,
-              onChangeSubSource: widget.onChangeSubSource,
-              drawerIsOpen: false,
-              onPreviousChannel: widget.onPreviousChannel,
-              onNextChannel: widget.onNextChannel,
-              onSwitchSource: widget.onSwitchSource,
+              child: TableVideoWidget(
+                controller: widget.controller,
+                toastString: widget.toastString,
+                isLandscape: false,
+                aspectRatio: widget.aspectRatio,
+                isBuffering: widget.isBuffering,
+                isPlaying: widget.isPlaying,
+                changeChannelSources: widget.changeChannelSources,
+                onChangeSubSource: widget.onChangeSubSource,
+                drawerIsOpen: false,
+                onPreviousChannel: widget.onPreviousChannel,
+                onNextChannel: widget.onNextChannel,
+                onSwitchSource: widget.onSwitchSource,
+              ),
             ),
           ),
           Flexible(child: widget.toastString == 'UNKNOWN' ? EmptyPage(onRefresh: widget.onChangeSubSource) : widget.drawChild),

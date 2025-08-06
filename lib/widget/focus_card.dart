@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../entity/sub_scribe_model.dart';
 import '../generated/l10n.dart';
+import 'package:path/path.dart' as p;
 
 class FocusCard extends StatefulWidget {
   final SubScribeModel model;
@@ -18,6 +19,16 @@ class _FocusCardState extends State<FocusCard> {
     if (isFocus) {
       Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.linear);
     }
+  }
+
+  _calcLinkName() {
+    if (widget.model.link == 'default') {
+      return S.current.defaultText;
+    }
+    if(widget.model.local == true) {
+      return p.basename(widget.model.link ?? '');
+    }
+    return widget.model.link!.split('?').first.split('/').last.toString();
   }
 
   @override
@@ -42,7 +53,7 @@ class _FocusCardState extends State<FocusCard> {
                   child: const Text('本地', style: TextStyle(color: Colors.yellow, fontSize: 12)),
                 ),
               Text(
-                widget.model.link == 'default' ? widget.model.link! : widget.model.link!.split('?').first.split('/').last.toString(),
+                _calcLinkName(),
                 style: const TextStyle(fontSize: 20),
               ),
             ],
