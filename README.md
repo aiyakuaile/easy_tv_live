@@ -36,6 +36,9 @@
 
 🆗ok键：确认操作、显示频道列表
 
+### 非TV版交互
+![image_4](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_4.png)
+
 ### 字体
 支持切换的字体需要使用[easy_tv_font](https://github.com/aiyakuaile/easy_tv_font)这个项目,
 您如果想要添加其他字体，请按照这个项目的提示进行操作。

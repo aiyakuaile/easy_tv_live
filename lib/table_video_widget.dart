@@ -139,30 +139,75 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
             builder: (BuildContext context) {
               return Row(
                 children: [
-                  InkWell(
-                    onTap: () {},
-                    onHover: (bool hover) {
-                      if (!hover) return;
-                      setState(() {
-                        _isShowMenuBar = false;
-                      });
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: Container(color: Colors.white38, width: 100, height: MediaQuery.of(context).size.height),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _isShowMenuBar = false;
+                        });
+                        Scaffold.of(context).openDrawer();
+                      },
+                      child: Tooltip(
+                        message: '打开频道列表',
+                        child: SizedBox(width: 80, height: MediaQuery.of(context).size.height),
+                      ),
+                    ),
                   ),
                   Expanded(child: const VolumeBrightnessWidget()),
-                  InkWell(
-                    onTap: () {},
-                    onHover: (bool hover) {
-                      if (!hover) return;
-                      LogUtil.v('_changeChannelSources::::InkWell');
-                      setState(() {
-                        _isShowMenuBar = false;
-                      });
-                      widget.changeChannelSources?.call();
-                    },
-                    child: Container(color: Colors.white38, width: 100, height: MediaQuery.of(context).size.height),
+                  Material(
+                    color: Colors.transparent,
+                    child: SizedBox(
+                      width: 80,
+                      height: MediaQuery.of(context).size.height,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Tooltip(
+                              message: '上一个频道',
+                              child: InkWell(
+                                onTap: () {
+                                  LogUtil.v('上一个：：：：');
+                                },
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Tooltip(
+                              message: '切换线路',
+                              child: InkWell(
+                                onTap: () {
+                                  LogUtil.v('切换源：：：：');
+                                },
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Tooltip(
+                              message: '下一个节目',
+                              child: InkWell(
+                                onTap: () {
+                                  LogUtil.v('下一个：：：：');
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
+                  // InkWell(
+                  //   onTap: () {},
+                  //   onHover: (bool hover) {
+                  //     if (!hover) return;
+                  //     LogUtil.v('_changeChannelSources::::InkWell');
+                  //     setState(() {
+                  //       _isShowMenuBar = false;
+                  //     });
+                  //     widget.changeChannelSources?.call();
+                  //   },
+                  //   child: Container(color: Colors.white38, width: 100, height: MediaQuery.of(context).size.height),
+                  // ),
                 ],
               );
             },

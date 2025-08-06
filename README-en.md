@@ -35,6 +35,9 @@ EasyTV is a lightweight IPTV player that supports all platforms and Android TV l
 - Down key: Modify or add subscription sources
 - OK key: Confirm operation, display channel list
 
+### NOT TV Version Interaction
+![image_4](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_4.png)
+
 #### Fonts
 The fonts that support switching need to use the [easy_tv_font](https://github.com/aiyakuaile/easy_tv_font) project. If you want to add other fonts, please follow the instructions in this project.
 
