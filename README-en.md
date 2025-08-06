@@ -6,6 +6,16 @@
 # EasyTV
 EasyTV is a lightweight IPTV player that supports all platforms and Android TV large screens. It is simple and easy to use. Welcome to download and experience!
 
+#### TV Sources
+> The built-in channel sources of this application come from the [IPTV-API](https://github.
+> com/Guovin/iptv-api) project. Thanks for their open-source contribution and sharing.
+>Meanwhile, the built-in sources will be automatically fetched from [IPTV-API](https://github.
+> com/Guovin/iptv-api) at 7 AM and 7 PM every day.
+>Due to the poor quality of IPv4 sources, only IPv6 sources will be synchronized. Please ensure 
+> your network supports IPv6 before using the built-in sources.
+>[IPv6 test address](https://v6t.ipip.net/). If IPv6 is not supported, please contact your 
+> network provider for assistance.
+
 #### Features
 - [x] IPTV player that supports all platforms
 - [x] Ability to add live source links independently
