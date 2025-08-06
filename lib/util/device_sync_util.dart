@@ -74,6 +74,6 @@ class DeviceSyncUtil {
 
   static Future<List<Map<String, dynamic>>> _getVideoSource() async {
     final res = await M3uUtil.getLocalData();
-    return res.map((e) => e.toJson()).toList();
+    return res.where((item) => item.local != true).map((e) => e.toJson()).toList();
   }
 }

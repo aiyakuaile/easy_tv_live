@@ -178,7 +178,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   _loadData() async {
-    await _parseData();
+    await _parseData(true);
     if (mounted) {
       if (context.read<ThemeProvider>().useAutoUpdate && Platform.isAndroid) {
         final url = await CheckVersionUtil.checkVersionAndAutoUpdate();
@@ -204,10 +204,13 @@ class _LiveHomePageState extends State<LiveHomePage> {
     super.dispose();
   }
 
-  _parseData() async {
+  _parseData([bool isSkipRestSerialNum = false]) async {
     final resMap = await M3uUtil.getDefaultM3uData();
     _channelListModel = resMap;
     _sourceIndex = 0;
+    if (mounted && !isSkipRestSerialNum) {
+      context.read<ThemeProvider>().setPrePlaySerialNum(1);
+    }
     if ((_channelListModel?.playList?.isNotEmpty) ?? false) {
       if (mounted) {
         final preNum = context.read<ThemeProvider>().prePlaySerialNum;
