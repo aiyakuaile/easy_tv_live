@@ -4,14 +4,13 @@ import 'package:sp_util/sp_util.dart';
 
 class EnvUtil {
   static bool? _isMobile;
-  static const String proxy = 'https://easytv.suntengfei.top/';
-  static const String proxy2 = 'http://ghp.keleyaa.com/';
+  static const List<String> proxyList = ['', 'https://easytv.suntengfei.top/', 'http://ghp.keleyaa.com/'];
 
   static bool isTV() {
     return const bool.fromEnvironment('isTV');
   }
 
-  static bool get _isUseProxy => SpUtil.getBool('dataProxy', defValue: true)!;
+  static int get _proxyIndex => SpUtil.getInt('dataValueProxy', defValue: 1)!;
 
   static bool get isMobile {
     if (_isMobile != null) return _isMobile!;
@@ -20,7 +19,7 @@ class EnvUtil {
   }
 
   static String sourceDownloadHost() {
-    return '${_isUseProxy ? proxy : ''}https://github.com/aiyakuaile/easy_tv_live/releases/download';
+    return '${proxyList[_proxyIndex]}https://github.com/aiyakuaile/easy_tv_live/releases/download';
   }
 
   static String sourceReleaseHost() {
@@ -32,18 +31,18 @@ class EnvUtil {
   }
 
   static String videoDefaultChannelHost() {
-    return '${_isUseProxy ? proxy : ''}https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/temp';
+    return '${proxyList[_proxyIndex]}https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/temp';
   }
 
   static String checkVersionHost() {
-    return '${_isUseProxy ? proxy : ''}https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/versions.json';
+    return '${proxyList[_proxyIndex]}https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/versions.json';
   }
 
   static String fontLink() {
-    return '${_isUseProxy ? proxy : ''}https://raw.githubusercontent.com/aiyakuaile/easy_tv_font/main';
+    return '${proxyList[_proxyIndex]}https://raw.githubusercontent.com/aiyakuaile/easy_tv_font/main';
   }
 
   static String rewardLink() {
-    return '${_isUseProxy ? proxy : ''}https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/reward.txt';
+    return '${proxyList[_proxyIndex]}https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/reward.txt';
   }
 }

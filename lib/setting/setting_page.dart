@@ -19,30 +19,18 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(S.current.settings),
-      ),
+      appBar: AppBar(title: Text(S.current.settings)),
       body: ListView(
         children: [
           Column(
             children: [
-              const SizedBox(
-                height: 20,
-              ),
-              Image.asset(
-                'assets/images/logo.png',
-                width: 80,
-              ),
-              const SizedBox(
-                height: 12,
-              ),
+              const SizedBox(height: 20),
+              Image.asset('assets/images/logo.png', width: 80),
+              const SizedBox(height: 12),
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Text(
-                    S.current.appName,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
+                  Text(S.current.appName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const Positioned(
                     top: 0,
                     right: -45,
@@ -50,9 +38,9 @@ class _SettingPageState extends State<SettingPage> {
                       'v${CheckVersionUtil.version}',
                       style: TextStyle(fontSize: 12, color: Colors.redAccent, fontWeight: FontWeight.bold),
                     ),
-                  )
+                  ),
                 ],
-              )
+              ),
             ],
           ),
           ListTile(
@@ -86,10 +74,8 @@ class _SettingPageState extends State<SettingPage> {
                       style: const TextStyle(fontSize: 12, color: Colors.white),
                     ),
                   ),
-                const SizedBox(
-                  width: 10,
-                ),
-                const Icon(Icons.arrow_right)
+                const SizedBox(width: 10),
+                const Icon(Icons.arrow_right),
               ],
             ),
             onTap: () async {
@@ -140,13 +126,44 @@ class _SettingPageState extends State<SettingPage> {
               context.read<ThemeProvider>().setAutoUpdate(value);
             },
           ),
-          SwitchListTile(
+          ListTile(
             title: const Text('数据代理'),
-            value: context.watch<ThemeProvider>().useDataProxy,
             subtitle: const Text('Github访问受限的用户需开启'),
-            onChanged: (value) {
-              context.read<ThemeProvider>().setDataProxy(value);
-            },
+            trailing: DropdownButton(
+              value: context.watch<ThemeProvider>().useDataValueProxy,
+              underline: const SizedBox.shrink(),
+              items: const [
+                DropdownMenuItem(value: 0, child: Text('关闭')),
+                DropdownMenuItem(value: 1, child: Text('代理1')),
+                DropdownMenuItem(value: 2, child: Text('代理2')),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  context.read<ThemeProvider>().setDataValueProxy(value);
+                }
+              },
+            ),
+          ),
+          ListTile(
+            title: const Text('超时自动切换线路'),
+            subtitle: const Text('超过多少秒未播放则自动切换下一个线路'),
+            trailing: DropdownButton(
+              value: context.watch<ThemeProvider>().timeoutSwitchLine,
+              underline: const SizedBox.shrink(),
+              items: const [
+                DropdownMenuItem(value: 5, child: Text('5s')),
+                DropdownMenuItem(value: 10, child: Text('10s')),
+                DropdownMenuItem(value: 15, child: Text('15s')),
+                DropdownMenuItem(value: 20, child: Text('20s')),
+                DropdownMenuItem(value: 30, child: Text('30s')),
+                DropdownMenuItem(value: 60, child: Text('60s')),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  context.read<ThemeProvider>().setTimeoutSwitchLine(value);
+                }
+              },
+            ),
           ),
         ],
       ),

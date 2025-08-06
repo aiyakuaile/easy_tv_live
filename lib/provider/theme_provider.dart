@@ -9,31 +9,34 @@ class ThemeProvider extends ChangeNotifier {
   String _fontUrl = '';
   bool _isBingBg = false;
   bool _useLightVersionCheck = true;
-  bool _useDataProxy = true;
+  int _useDataValueProxy = 1;
   bool _useAutoUpdate = false;
   bool _useLeftRightSelect = false;
   int _prePlaySerialNum = 1;
+  int _timeoutSwitchLine = 15;
 
   bool get useAutoUpdate => _useAutoUpdate;
   bool get useLightVersionCheck => _useLightVersionCheck;
-  bool get useDataProxy => _useDataProxy;
+  int get useDataValueProxy => _useDataValueProxy;
   String get fontFamily => _fontFamily;
   double get textScaleFactor => _textScaleFactor;
   String get fontUrl => _fontUrl;
   bool get isBingBg => _isBingBg;
   bool get useLeftRightSelect => _useLeftRightSelect;
   int get prePlaySerialNum => _prePlaySerialNum;
+  int get timeoutSwitchLine => _timeoutSwitchLine;
 
   ThemeProvider() {
     _useAutoUpdate = SpUtil.getBool('autoUpdate', defValue: false)!;
     _useLightVersionCheck = SpUtil.getBool('lightVersionCheck', defValue: true)!;
-    _useDataProxy = SpUtil.getBool('dataProxy', defValue: true)!;
+    _useDataValueProxy = SpUtil.getInt('dataValueProxy', defValue: 1)!;
     _fontFamily = SpUtil.getString('appFontFamily', defValue: 'system')!;
     _fontUrl = SpUtil.getString('appFontUrl', defValue: '')!;
     _textScaleFactor = SpUtil.getDouble('fontScale', defValue: 1.0)!;
     _isBingBg = SpUtil.getBool('bingBg', defValue: false)!;
     _useLeftRightSelect = SpUtil.getBool('leftRightSelect', defValue: false)!;
     _prePlaySerialNum = SpUtil.getInt('prePlaySerialNum', defValue: 1)!;
+    _timeoutSwitchLine = SpUtil.getInt('timeoutSwitchLine', defValue: 15)!;
     if (_fontFamily != 'system') {
       FontUtil().loadFont(_fontUrl, _fontFamily);
     }
@@ -65,9 +68,9 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setDataProxy(bool isOpen) {
-    SpUtil.putBool('dataProxy', isOpen);
-    _useDataProxy = isOpen;
+  void setDataValueProxy(int val) {
+    SpUtil.putInt('dataValueProxy', val);
+    _useDataValueProxy = val;
     notifyListeners();
   }
 
@@ -86,6 +89,12 @@ class ThemeProvider extends ChangeNotifier {
   void setPrePlaySerialNum(int serialNum) {
     SpUtil.putInt('prePlaySerialNum', serialNum);
     _prePlaySerialNum = serialNum;
+    notifyListeners();
+  }
+
+  void setTimeoutSwitchLine(int val) {
+    SpUtil.putInt('timeoutSwitchLine', val);
+    _timeoutSwitchLine = val;
     notifyListeners();
   }
 }

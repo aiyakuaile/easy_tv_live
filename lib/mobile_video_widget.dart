@@ -20,6 +20,9 @@ class MobileVideoWidget extends StatefulWidget {
   final bool isPlaying;
   final double aspectRatio;
   final GestureTapCallback onChangeSubSource;
+  final GestureTapCallback onPreviousChannel;
+  final GestureTapCallback onNextChannel;
+  final GestureTapCallback onSwitchSource;
 
   const MobileVideoWidget({
     super.key,
@@ -30,6 +33,9 @@ class MobileVideoWidget extends StatefulWidget {
     required this.aspectRatio,
     // 数据源改变
     required this.onChangeSubSource,
+    required this.onPreviousChannel,
+    required this.onNextChannel,
+    required this.onSwitchSource,
     this.toastString,
     // 线路切换
     this.changeChannelSources,
@@ -125,6 +131,9 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
               changeChannelSources: widget.changeChannelSources,
               onChangeSubSource: widget.onChangeSubSource,
               drawerIsOpen: false,
+              onPreviousChannel: widget.onPreviousChannel,
+              onNextChannel: widget.onNextChannel,
+              onSwitchSource: widget.onSwitchSource,
             ),
           ),
           Flexible(child: widget.toastString == 'UNKNOWN' ? EmptyPage(onRefresh: widget.onChangeSubSource) : widget.drawChild),

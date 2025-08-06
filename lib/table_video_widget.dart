@@ -23,6 +23,9 @@ class TableVideoWidget extends StatefulWidget {
   final double aspectRatio;
   final bool drawerIsOpen;
   final GestureTapCallback onChangeSubSource;
+  final GestureTapCallback onPreviousChannel;
+  final GestureTapCallback onNextChannel;
+  final GestureTapCallback onSwitchSource;
   const TableVideoWidget({
     super.key,
     required this.controller,
@@ -31,6 +34,9 @@ class TableVideoWidget extends StatefulWidget {
     required this.aspectRatio,
     required this.drawerIsOpen,
     required this.onChangeSubSource,
+    required this.onPreviousChannel,
+    required this.onNextChannel,
+    required this.onSwitchSource,
     this.toastString,
     this.changeChannelSources,
     this.isLandscape = true,
@@ -141,16 +147,43 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                 children: [
                   Material(
                     color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          _isShowMenuBar = false;
-                        });
-                        Scaffold.of(context).openDrawer();
-                      },
-                      child: Tooltip(
-                        message: '打开频道列表',
-                        child: SizedBox(width: 80, height: MediaQuery.of(context).size.height),
+                    child: SizedBox(
+                      width: 80,
+                      height: MediaQuery.of(context).size.height,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                await M3uUtil.openAddSource(context);
+                                final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
+                                if (m3uData == '') {
+                                  widget.onChangeSubSource.call();
+                                } else {
+                                  widget.controller?.play();
+                                }
+                              },
+                              child: Tooltip(
+                                message: '进入设置',
+                                child: SizedBox(width: 80, height: MediaQuery.of(context).size.height),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _isShowMenuBar = false;
+                                });
+                                Scaffold.of(context).openDrawer();
+                              },
+                              child: Tooltip(
+                                message: '打开频道列表',
+                                child: SizedBox(width: 80, height: MediaQuery.of(context).size.height),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -164,10 +197,13 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                         children: [
                           Expanded(
                             child: Tooltip(
-                              message: '上一个频道',
+                              message: '上一个节目',
                               child: InkWell(
                                 onTap: () {
-                                  LogUtil.v('上一个：：：：');
+                                  setState(() {
+                                    _isShowMenuBar = false;
+                                  });
+                                  widget.onPreviousChannel();
                                 },
                               ),
                             ),
@@ -177,7 +213,11 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                               message: '切换线路',
                               child: InkWell(
                                 onTap: () {
+                                  setState(() {
+                                    _isShowMenuBar = false;
+                                  });
                                   LogUtil.v('切换源：：：：');
+                                  widget.onSwitchSource();
                                 },
                               ),
                             ),
@@ -187,7 +227,11 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                               message: '下一个节目',
                               child: InkWell(
                                 onTap: () {
+                                  setState(() {
+                                    _isShowMenuBar = false;
+                                  });
                                   LogUtil.v('下一个：：：：');
+                                  widget.onNextChannel();
                                 },
                               ),
                             ),

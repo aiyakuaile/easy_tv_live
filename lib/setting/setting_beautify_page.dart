@@ -12,11 +12,7 @@ class SettingBeautifyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1E1F22),
-      appBar: AppBar(
-        title: const Text('实验设置'),
-        backgroundColor: const Color(0xFF1E1F22),
-        leading: const SizedBox.shrink(),
-      ),
+      appBar: AppBar(title: const Text('实验设置'), backgroundColor: const Color(0xFF1E1F22), leading: const SizedBox.shrink()),
       body: Align(
         alignment: Alignment.center,
         child: Container(
@@ -58,32 +54,63 @@ class SettingBeautifyPage extends StatelessWidget {
                   context.read<ThemeProvider>().setAutoUpdate(value);
                 },
               ),
-              SwitchListTile(
+              ListTile(
                 title: const Text('数据代理'),
-                value: context.watch<ThemeProvider>().useDataProxy,
                 subtitle: const Text('Github访问受限的用户需开启'),
-                onChanged: (value) {
-                  context.read<ThemeProvider>().setDataProxy(value);
-                },
-              ),
-              Builder(builder: (ctx) {
-                final provider = context.watch<DownloadProvider>();
-                return ListTile(
-                  title: const Text('检查更新'),
-                  trailing: CheckVersionUtil.latestVersionEntity == null
-                      ? const Text('已是最新版本')
-                      : provider.isDownloading
-                          ? Text(
-                              '新版本正在下载中...${(provider.progress * 100).toStringAsFixed(1)}%',
-                            )
-                          : Text('🔴 发现新版本：v${CheckVersionUtil.latestVersionEntity?.latestVersion}'),
-                  onTap: () {
-                    if (!context.read<DownloadProvider>().isDownloading) {
-                      CheckVersionUtil.checkVersion(context, true, true);
+                trailing: DropdownButton(
+                  value: context.watch<ThemeProvider>().useDataValueProxy,
+                  underline: const SizedBox.shrink(),
+                  items: const [
+                    DropdownMenuItem(value: 0, child: Text('关闭')),
+                    DropdownMenuItem(value: 1, child: Text('代理1')),
+                    DropdownMenuItem(value: 2, child: Text('代理2')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      context.read<ThemeProvider>().setDataValueProxy(value);
                     }
                   },
-                );
-              }),
+                ),
+              ),
+              ListTile(
+                title: const Text('超时自动切换线路'),
+                subtitle: const Text('超过多少秒未播放则自动切换下一个线路'),
+                trailing: DropdownButton(
+                  value: context.watch<ThemeProvider>().timeoutSwitchLine,
+                  underline: const SizedBox.shrink(),
+                  items: const [
+                    DropdownMenuItem(value: 5, child: Text('5s')),
+                    DropdownMenuItem(value: 10, child: Text('10s')),
+                    DropdownMenuItem(value: 15, child: Text('15s')),
+                    DropdownMenuItem(value: 20, child: Text('20s')),
+                    DropdownMenuItem(value: 30, child: Text('30s')),
+                    DropdownMenuItem(value: 60, child: Text('60s')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      context.read<ThemeProvider>().setTimeoutSwitchLine(value);
+                    }
+                  },
+                ),
+              ),
+              Builder(
+                builder: (ctx) {
+                  final provider = context.watch<DownloadProvider>();
+                  return ListTile(
+                    title: const Text('检查更新'),
+                    trailing: CheckVersionUtil.latestVersionEntity == null
+                        ? const Text('已是最新版本')
+                        : provider.isDownloading
+                        ? Text('新版本正在下载中...${(provider.progress * 100).toStringAsFixed(1)}%')
+                        : Text('🔴 发现新版本：v${CheckVersionUtil.latestVersionEntity?.latestVersion}'),
+                    onTap: () {
+                      if (!context.read<DownloadProvider>().isDownloading) {
+                        CheckVersionUtil.checkVersion(context, true, true);
+                      }
+                    },
+                  );
+                },
+              ),
               if (!CheckVersionUtil.isTV)
                 ListTile(
                   title: const Text('应用主页'),

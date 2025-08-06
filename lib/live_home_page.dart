@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:easy_tv_live/provider/download_provider.dart';
@@ -56,8 +57,10 @@ class _LiveHomePageState extends State<LiveHomePage> {
   _playVideo() async {
     if (_currentChannel == null) return;
     _channelSerialNum = _currentChannel!.serialNum ?? 1;
+    int timeoutNum = 15;
     if (mounted) {
       context.read<ThemeProvider>().setPrePlaySerialNum(_channelSerialNum);
+      timeoutNum = context.read<ThemeProvider>().timeoutSwitchLine;
     }
     toastString = S.current.lineToast(_sourceIndex + 1, _currentChannel!.title ?? '');
     setState(() {});
@@ -73,22 +76,27 @@ class _LiveHomePageState extends State<LiveHomePage> {
         _playerController = null;
         setState(() {});
       }
-      Future.delayed(Duration.zero, () async {
-        _playerController = VideoPlayerController.networkUrl(
-          Uri.parse(url),
-          videoPlayerOptions: VideoPlayerOptions(
-            allowBackgroundPlayback: false,
-            mixWithOthers: false,
-            webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
-          ),
-        )..setVolume(1.0);
-        _playerController!.addListener(_videoListener);
-        await _playerController!.initialize();
-        _playerController!.play();
-        setState(() {
-          toastString = S.current.loading;
-          aspectRatio = _playerController?.value.aspectRatio ?? 1.78;
-        });
+      await Future.delayed(Duration.zero);
+      _playerController = VideoPlayerController.networkUrl(
+        Uri.parse(url),
+        videoPlayerOptions: VideoPlayerOptions(
+          allowBackgroundPlayback: false,
+          mixWithOthers: false,
+          webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
+        ),
+      )..setVolume(1.0);
+      _playerController!.addListener(_videoListener);
+      await _playerController!.initialize().timeout(
+        Duration(seconds: timeoutNum),
+        onTimeout: () {
+          LogUtil.v('视频初始化超时');
+          throw TimeoutException('Video initialization timeout', Duration(seconds: timeoutNum));
+        },
+      );
+      _playerController!.play();
+      setState(() {
+        toastString = S.current.loading;
+        aspectRatio = _playerController?.value.aspectRatio ?? 1.78;
       });
     } catch (e) {
       LogUtil.v('播放出错:::::$e');
@@ -253,6 +261,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
             aspectRatio: aspectRatio,
             onChangeSubSource: _parseData,
             drawChild: ChannelDrawerPage(channelListModel: _channelListModel, onTapChannel: _onTapChannel, isLandscape: false),
+            onPreviousChannel: _previousChannel,
+            onNextChannel: _nextChannel,
+            onSwitchSource: _switchSource,
           );
         },
         landscape: (context) {
@@ -306,6 +317,9 @@ class _LiveHomePageState extends State<LiveHomePage> {
                       changeChannelSources: _changeChannelSources,
                       onChangeSubSource: _parseData,
                       isLandscape: true,
+                      onPreviousChannel: _previousChannel,
+                      onNextChannel: _nextChannel,
+                      onSwitchSource: _switchSource,
                     ),
             ),
           );
@@ -375,5 +389,34 @@ class _LiveHomePageState extends State<LiveHomePage> {
       LogUtil.v('切换线路:====线路${_sourceIndex + 1}');
       _playVideo();
     }
+  }
+
+  _nextChannel() async {
+    final lastIndex = _channelSerialNum + 1;
+    final channel = M3uUtil.serialNumMap[lastIndex.toString()];
+    if (channel != null) {
+      _channelListModel!.playChannelIndex = channel.channelIndex;
+      _channelListModel!.playGroupIndex = channel.groupIndex;
+      _onTapChannel?.call(channel);
+    } else {
+      EasyLoading.showToast('已是最后一个节目');
+    }
+  }
+
+  _previousChannel() async {
+    final lastIndex = _channelSerialNum - 1;
+    final channel = M3uUtil.serialNumMap[lastIndex.toString()];
+    if (channel != null) {
+      _channelListModel!.playChannelIndex = channel.channelIndex;
+      _channelListModel!.playGroupIndex = channel.groupIndex;
+      _onTapChannel?.call(channel);
+    } else {
+      EasyLoading.showToast('已是第一个节目');
+    }
+  }
+
+  _switchSource() async {
+    _sourceIndex = (_sourceIndex + 1) % _currentChannel!.urls!.length;
+    _playVideo();
   }
 }
