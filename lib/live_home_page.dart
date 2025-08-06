@@ -216,8 +216,6 @@ class _LiveHomePageState extends State<LiveHomePage> {
         if (_channelListModel!.type == PlayListType.m3u) {
           if (_channelListModel?.epgUrl != null && _channelListModel?.epgUrl != '') {
             EpgUtil.loadEPGXML(_channelListModel!.epgUrl!);
-          } else {
-            EpgUtil.loadEPGXML('http://epg.51zmt.top:8000/cc.xml');
           }
         }
       }
@@ -397,7 +395,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
     if (channel != null) {
       _channelListModel!.playChannelIndex = channel.channelIndex;
       _channelListModel!.playGroupIndex = channel.groupIndex;
-      _onTapChannel?.call(channel);
+      _onTapChannel.call(channel);
     } else {
       EasyLoading.showToast('已是最后一个节目');
     }
@@ -409,7 +407,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
     if (channel != null) {
       _channelListModel!.playChannelIndex = channel.channelIndex;
       _channelListModel!.playGroupIndex = channel.groupIndex;
-      _onTapChannel?.call(channel);
+      _onTapChannel.call(channel);
     } else {
       EasyLoading.showToast('已是第一个节目');
     }

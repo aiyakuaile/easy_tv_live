@@ -393,6 +393,11 @@ class S {
   String get noEPG {
     return Intl.message('暂无节目信息', name: 'noEPG', desc: '', args: []);
   }
+
+  /// `文件不存在`
+  String get noFile {
+    return Intl.message('文件不存在', name: 'noFile', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

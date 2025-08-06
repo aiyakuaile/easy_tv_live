@@ -32,9 +32,20 @@ class _FocusCardState extends State<FocusCard> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.model.link == 'default' ? widget.model.link! : widget.model.link!.split('?').first.split('/').last.toString(),
-            style: const TextStyle(fontSize: 20),
+          Row(
+            children: [
+              if (widget.model.local == true)
+                Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                  decoration: BoxDecoration(color: const Color(0xA4A27672), borderRadius: BorderRadius.circular(4)),
+                  child: const Text('本地', style: TextStyle(color: Colors.yellow, fontSize: 12)),
+                ),
+              Text(
+                widget.model.link == 'default' ? widget.model.link! : widget.model.link!.split('?').first.split('/').last.toString(),
+                style: const TextStyle(fontSize: 20),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           Text('${S.current.createTime}：${widget.model.time}', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 14)),

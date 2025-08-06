@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:easy_tv_live/entity/play_channel_list_model.dart';
 import 'package:easy_tv_live/util/date_util.dart';
@@ -20,6 +21,8 @@ class M3uUtil {
 
   static Map<String, Channel> get serialNumMap => _serialNumMap;
 
+  static String? currentPlayChannelLink = '';
+
   // 获取默认的m3u文件
   static Future<PlayChannelListModel?> getDefaultM3uData() async {
     _serialNumMap.clear();
@@ -27,16 +30,30 @@ class M3uUtil {
     final models = await getLocalData();
     if (models.isNotEmpty) {
       final defaultModel = models.firstWhere((element) => element.selected == true, orElse: () => models.first);
-      final newRes = await HttpUtil().getRequest(defaultModel.link == 'default' ? EnvUtil.videoDefaultChannelHost() : defaultModel.link!);
-      if (newRes != null) {
-        LogUtil.v('已获取新数据::::::');
-        m3uData = newRes;
-        await SpUtil.putString('m3u_cache', m3uData);
+      currentPlayChannelLink = defaultModel.link;
+      if (defaultModel.local == true) {
+        File m3uFile = File(defaultModel.link!);
+        final isExit = await m3uFile.exists();
+        LogUtil.v('本地数据是否存在${defaultModel.link}::::::$isExit');
+        if (isExit) {
+          m3uData = await m3uFile.readAsString();
+          await SpUtil.putString('m3u_cache', m3uData);
+        } else {
+          EasyLoading.showToast(S.current.noFile);
+          return null;
+        }
       } else {
-        final oldRes = SpUtil.getString('m3u_cache', defValue: '');
-        if (oldRes != '') {
-          LogUtil.v('已获取到历史保存的数据::::::');
-          m3uData = oldRes!;
+        final newRes = await HttpUtil().getRequest(defaultModel.link == 'default' ? EnvUtil.videoDefaultChannelHost() : defaultModel.link!);
+        if (newRes != null) {
+          LogUtil.v('已获取新数据::::::');
+          m3uData = newRes;
+          await SpUtil.putString('m3u_cache', m3uData);
+        } else {
+          final oldRes = SpUtil.getString('m3u_cache', defValue: '');
+          if (oldRes != '') {
+            LogUtil.v('已获取到历史保存的数据::::::');
+            m3uData = oldRes!;
+          }
         }
       }
       if (m3uData.isEmpty) {
@@ -44,13 +61,13 @@ class M3uUtil {
       }
     } else {
       m3uData = await _fetchData();
-      await saveLocalData([
-        SubScribeModel(
-          time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
-          link: 'default',
-          selected: true,
-        ),
-      ]);
+      final defaultModel = SubScribeModel(
+        time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
+        link: 'default',
+        selected: true,
+      );
+      await saveLocalData([defaultModel]);
+      currentPlayChannelLink = defaultModel.link;
     }
     final channelModels = await _parseM3u(m3uData);
     if (channelModels.playList!.isNotEmpty) {
@@ -70,6 +87,12 @@ class M3uUtil {
       }
     }
     return channelModels;
+  }
+
+  static Future<bool> isChangeChannelLink() async {
+    final models = await getLocalData();
+    final defaultModel = models.firstWhere((element) => element.selected == true, orElse: () => models.first);
+    return currentPlayChannelLink != defaultModel.link;
   }
 
   // 获取本地m3u数据

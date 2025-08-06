@@ -82,5 +82,6 @@
   "getDefaultError": "Failed to get the default data source",
   "okRefresh": "【OK key】 Refresh",
   "refresh": "Refresh",
-  "noEPG": "NO EPG DATA"
+  "noEPG": "NO EPG DATA",
+  "noFile": "File Does Not Exist"
 }

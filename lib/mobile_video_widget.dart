@@ -1,9 +1,9 @@
 import 'package:easy_tv_live/router_keys.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
+import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
-import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -57,12 +57,10 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
         leading: IconButton(
           icon: const Icon(Icons.qr_code_scanner),
           onPressed: () async {
-            final isPlaying = widget.controller?.value.isPlaying ?? false;
-            if (isPlaying) {
-              widget.controller?.pause();
-            }
+            widget.controller?.pause();
             final res = await Navigator.of(context).pushNamed(RouterKeys.settingQrScan);
             if (res != null && res != '') {
+              widget.controller?.pause();
               await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) {
@@ -71,10 +69,11 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
                   },
                 ),
               );
-              widget.controller?.play();
-              final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
-              if (m3uData == '') {
-                widget.onChangeSubSource();
+              final isChange = await M3uUtil.isChangeChannelLink();
+              if (isChange) {
+                widget.onChangeSubSource.call();
+              } else {
+                widget.controller?.play();
               }
             }
           },
@@ -90,10 +89,11 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
                 widget.controller?.pause();
               }
               await Navigator.of(context).pushNamed(RouterKeys.subScribe);
-              widget.controller?.play();
-              final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
-              if (m3uData == '') {
-                widget.onChangeSubSource();
+              final isChange = await M3uUtil.isChangeChannelLink();
+              if (isChange) {
+                widget.onChangeSubSource.call();
+              } else {
+                widget.controller?.play();
               }
               if (!EnvUtil.isMobile) {
                 windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);

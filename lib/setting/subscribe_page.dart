@@ -8,6 +8,7 @@ import 'package:easy_tv_live/util/http_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:easy_tv_live/widget/focus_card.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -266,14 +267,10 @@ class _SubScribePageState extends State<SubScribePage> {
         title: Text(S.current.subscribe),
         centerTitle: true,
         leading: widget.isTV ? const SizedBox.shrink() : null,
-        actions: widget.isTV && EnvUtil.isMobile
-            ? null
-            : [
-                IconButton(
-                  onPressed: _addM3uSource,
-                  icon: const Icon(Icons.add, color: Colors.white),
-                ),
-              ],
+        actions: [
+          TextButton(onPressed: _addLocalM3u, child: Text('本地添加')),
+          TextButton(onPressed: _addM3uSource, child: Text('网络添加')),
+        ],
       ),
       body: Column(
         children: [
@@ -400,6 +397,39 @@ class _SubScribePageState extends State<SubScribePage> {
     );
   }
 
+  _addLocalM3u() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['m3u', 'm3u8', 'txt']);
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      LogUtil.v('添加本地订阅源::::：${file.path}');
+      final hasIndex = _m3uList.indexWhere((element) => element.link == file.path);
+      LogUtil.v('添加:hasIndex:::：$hasIndex');
+      if (hasIndex != -1) {
+        EasyLoading.showToast(S.current.addRepeat);
+        return;
+      }
+      final sub = SubScribeModel(
+        time: DateUtil.formatDate(DateTime.now(), format: DateFormats.full),
+        link: file.path,
+        selected: false,
+        local: true,
+      );
+      _m3uList.add(sub);
+      await M3uUtil.saveLocalData(_m3uList);
+      setState(() {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (_scrollController.positions.isNotEmpty) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        });
+      });
+    }
+  }
+
   _addM3uSource() async {
     final textController = TextEditingController();
     final res = await showModalBottomSheet<String>(
@@ -457,7 +487,7 @@ class _SubScribePageState extends State<SubScribePage> {
   }
 
   _pareUrl(String res) async {
-    LogUtil.v('添加::::：$res');
+    LogUtil.v('添加网络订阅源::::：$res');
     final hasIndex = _m3uList.indexWhere((element) => element.link == res);
     LogUtil.v('添加:hasIndex:::：$hasIndex');
     if (hasIndex != -1) {

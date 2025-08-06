@@ -7,7 +7,6 @@ import 'package:easy_tv_live/widget/volume_brightness_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:sp_util/sp_util.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -155,9 +154,10 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                           Expanded(
                             child: InkWell(
                               onTap: () async {
+                                widget.controller?.pause();
                                 await M3uUtil.openAddSource(context);
-                                final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
-                                if (m3uData == '') {
+                                final isChange = await M3uUtil.isChangeChannelLink();
+                                if (isChange) {
                                   widget.onChangeSubSource.call();
                                 } else {
                                   widget.controller?.play();
@@ -240,18 +240,6 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                       ),
                     ),
                   ),
-                  // InkWell(
-                  //   onTap: () {},
-                  //   onHover: (bool hover) {
-                  //     if (!hover) return;
-                  //     LogUtil.v('_changeChannelSources::::InkWell');
-                  //     setState(() {
-                  //       _isShowMenuBar = false;
-                  //     });
-                  //     widget.changeChannelSources?.call();
-                  //   },
-                  //   child: Container(color: Colors.white38, width: 100, height: MediaQuery.of(context).size.height),
-                  // ),
                 ],
               );
             },
@@ -276,9 +264,10 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
                       ),
                       icon: const Icon(Icons.settings, color: Colors.white),
                       onPressed: () async {
+                        widget.controller?.pause();
                         await M3uUtil.openAddSource(context);
-                        final m3uData = SpUtil.getString('m3u_cache', defValue: '')!;
-                        if (m3uData == '') {
+                        final isChange = await M3uUtil.isChangeChannelLink();
+                        if (isChange) {
                           widget.onChangeSubSource.call();
                         } else {
                           widget.controller?.play();

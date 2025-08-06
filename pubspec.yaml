@@ -57,6 +57,8 @@ dependencies:
   mobile_scanner: ^7.0.1
   gap: ^3.0.1
   gzip: ^0.3.0
+  file_picker: ^10.2.1
+  event_bus: ^2.0.1
 
 dev_dependencies:
   flutter_test:

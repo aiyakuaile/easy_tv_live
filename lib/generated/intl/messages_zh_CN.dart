@@ -67,6 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "netTimeOut": MessageLookupByLibrary.simpleMessage("连接超时"),
     "newVersion": m3,
     "noEPG": MessageLookupByLibrary.simpleMessage("暂无节目信息"),
+    "noFile": MessageLookupByLibrary.simpleMessage("文件不存在"),
     "okRefresh": MessageLookupByLibrary.simpleMessage("【OK键】刷新"),
     "parseError": MessageLookupByLibrary.simpleMessage("解析数据源出错"),
     "pasterContent": MessageLookupByLibrary.simpleMessage(
