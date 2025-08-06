@@ -8,7 +8,10 @@
 极简TV,一款轻量级，支持全平台及安卓电视大屏的IPTV播放器，简洁易用，欢迎下载体验！
 
 #### TV源
-本应用自带的节目源，来源自[IPTV-API](https://github.com/Guovin/iptv-api)这个项目，感谢此项目的开源与分享，推荐在应用中自主订阅```https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u```或者```https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.m3u```，来保持节目源的及时更新！最新订阅链接请前往此项目查看。
+本应用自带的节目源，来源自[IPTV-API](https://github.com/Guovin/iptv-api)这个项目，感谢此项目的开源与分享。
+同时自带节目源会每日7点和19点自动从[IPTV-API](https://github.com/Guovin/iptv-api)中获取。
+由于ipv4节目源质量不高，自带源将仅同步ipv6节目源，使用自带节目源之前，请确认您的网络已支持ipv6。
+[ipv6测试地址](https://v6t.ipip.net/)，如果不支持ipv6请联系您的网络运营商解决。
 
 #### 功能
 

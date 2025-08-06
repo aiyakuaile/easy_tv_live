@@ -135,7 +135,38 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
         ),
         if (_isShowOpView) ...[
           if (widget.drawerIsOpen || (!widget.drawerIsOpen && _isShowMenuBar && widget.isLandscape)) const DatePositionWidget(),
-          const VolumeBrightnessWidget(),
+          Builder(
+            builder: (BuildContext context) {
+              return Row(
+                children: [
+                  InkWell(
+                    onTap: () {},
+                    onHover: (bool hover) {
+                      if (!hover) return;
+                      setState(() {
+                        _isShowMenuBar = false;
+                      });
+                      Scaffold.of(context).openDrawer();
+                    },
+                    child: Container(color: Colors.white38, width: 100, height: MediaQuery.of(context).size.height),
+                  ),
+                  Expanded(child: const VolumeBrightnessWidget()),
+                  InkWell(
+                    onTap: () {},
+                    onHover: (bool hover) {
+                      if (!hover) return;
+                      LogUtil.v('_changeChannelSources::::InkWell');
+                      setState(() {
+                        _isShowMenuBar = false;
+                      });
+                      widget.changeChannelSources?.call();
+                    },
+                    child: Container(color: Colors.white38, width: 100, height: MediaQuery.of(context).size.height),
+                  ),
+                ],
+              );
+            },
+          ),
           if (widget.isLandscape && !widget.drawerIsOpen)
             AnimatedPositioned(
               left: 0,

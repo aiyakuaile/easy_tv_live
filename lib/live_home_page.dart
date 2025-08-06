@@ -315,6 +315,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   Future<void> _changeChannelSources([FocusNode? videoNode]) async {
+    LogUtil.v('_changeChannelSources:::::::::::');
     videoNode?.unfocus();
     List<String> sources = _currentChannel!.urls!;
     final selectedIndex = await showModalBottomSheet(
