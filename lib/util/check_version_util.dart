@@ -12,7 +12,7 @@ import 'http_util.dart';
 import 'log_util.dart';
 
 class CheckVersionUtil {
-  static const version = '2.9.1';
+  static const version = '2.9.3';
   static final releaseLink = EnvUtil.sourceReleaseHost();
   static final homeLink = EnvUtil.sourceHomeHost();
   static VersionEntity? latestVersionEntity;
