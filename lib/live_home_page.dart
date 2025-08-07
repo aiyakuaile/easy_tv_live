@@ -54,7 +54,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   int _channelSerialNum = 1;
 
-  _playVideo() async {
+  _playVideo(String entMsg) async {
     if (_currentChannel == null) return;
     _channelSerialNum = _currentChannel!.serialNum ?? 1;
     int timeoutNum = 15;
@@ -65,7 +65,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
     toastString = S.current.lineToast(_sourceIndex + 1, _currentChannel!.title ?? '');
     setState(() {});
     final url = _currentChannel!.urls![_sourceIndex].toString();
-    LogUtil.v('正在播放:$_sourceIndex::${_currentChannel!.toJson()}');
+    LogUtil.v('PlayVideo:【$entMsg】正在播放:$_sourceIndex::${_currentChannel!.toJson()}');
     try {
       if (_playerController != null) {
         _playerController?.removeListener(_videoListener);
@@ -111,7 +111,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
           toastString = S.current.switchLine(_sourceIndex + 1);
         });
         await Future.delayed(const Duration(seconds: 2));
-        _playVideo();
+        _playVideo('错误拦截后再次进入，并触发切换线路');
       }
     }
   }
@@ -132,14 +132,14 @@ class _LiveHomePageState extends State<LiveHomePage> {
             toastString = S.current.playReconnect;
           });
           await Future.delayed(const Duration(seconds: 2));
-          _playVideo();
+          _playVideo('videoListener事件监听进入:触发播放重连:::');
         }
       } else {
         setState(() {
           toastString = '${S.current.switchLine(_sourceIndex + 1)}...';
         });
         await Future.delayed(const Duration(seconds: 2));
-        _playVideo();
+        _playVideo('videoListener事件监听进入:触发切换线路:::');
       }
       return;
     }
@@ -164,7 +164,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
       _channelListModel!.playChannelIndex = model.channelIndex;
     }
     LogUtil.v('切换频道:::::${_currentChannel?.toJson()}');
-    _playVideo();
+    _playVideo('onTapChannel方法进入');
   }
 
   @override
@@ -390,7 +390,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
     if (selectedIndex != null && _sourceIndex != selectedIndex) {
       _sourceIndex = selectedIndex;
       LogUtil.v('切换线路:====线路${_sourceIndex + 1}');
-      _playVideo();
+      _playVideo('changeChannelSources方法进入');
     }
   }
 
@@ -420,6 +420,6 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
   _switchSource() async {
     _sourceIndex = (_sourceIndex + 1) % _currentChannel!.urls!.length;
-    _playVideo();
+    _playVideo('switchSource点击屏幕切换线路方法进入');
   }
 }
