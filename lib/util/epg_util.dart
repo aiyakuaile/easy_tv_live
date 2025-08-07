@@ -44,7 +44,7 @@ class EpgUtil {
       EpgModel epgModel = EpgModel(channelName: model.title, epgData: []);
       for (var programme in _programmes!) {
         final channel = programme.getAttribute('channel');
-        if (channel == model.id) {
+        if (channel == model.id || channel == model.title) {
           final start = programme.getAttribute('start')!;
           final dateStart = DateUtil.formatDate(DateUtil.parseCustomDateTimeString(start), format: "HH:mm");
           final stop = programme.getAttribute('stop')!;

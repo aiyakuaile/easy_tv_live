@@ -120,9 +120,7 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
       body: Column(
         children: [
           ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxHeight: 300,
-            ),
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.width * 9 / 16),
             child: AspectRatio(
               aspectRatio: widget.aspectRatio,
               child: TableVideoWidget(

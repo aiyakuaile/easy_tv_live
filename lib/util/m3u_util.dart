@@ -184,10 +184,18 @@ class M3uUtil {
             );
             final lineNext = lines[i + 1];
             if (isLiveLink(lineNext)) {
-              channel.urls!.add(lineNext);
+              if (lineNext.contains('#')) {
+                channel.urls!.addAll(lineNext.split('#'));
+              } else {
+                channel.urls!.add(lineNext);
+              }
               i += 1;
             } else if (isLiveLink(lines[i + 2])) {
-              channel.urls!.add(lines[i + 2].toString());
+              if (lines[i + 2].contains('#')) {
+                channel.urls!.addAll(lines[i + 2].split('#'));
+              } else {
+                channel.urls!.add(lines[i + 2].toString());
+              }
               i += 2;
             }
           }
@@ -225,7 +233,11 @@ class M3uUtil {
                 return model;
               },
             );
-            channel.urls!.add(channelLink);
+            if (channelLink.contains('#')) {
+              channel.urls!.addAll(channelLink.split('#'));
+            } else {
+              channel.urls!.add(channelLink);
+            }
           } else {
             tempGroup = groupTitle == '' ? '${S.current.defaultText}${i + 1}' : groupTitle;
             int index = playListModel.playList!.indexWhere((e) => e.group == tempGroup);

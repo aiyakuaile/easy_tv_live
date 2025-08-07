@@ -85,7 +85,6 @@ class _LiveHomePageState extends State<LiveHomePage> {
           webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
         ),
       )..setVolume(1.0);
-      _playerController!.addListener(_videoListener);
       await _playerController!.initialize().timeout(
         Duration(seconds: timeoutNum),
         onTimeout: () {
@@ -93,6 +92,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
           throw TimeoutException('Video initialization timeout', Duration(seconds: timeoutNum));
         },
       );
+      _playerController!.addListener(_videoListener);
       _playerController!.play();
       setState(() {
         toastString = S.current.loading;
@@ -104,40 +104,42 @@ class _LiveHomePageState extends State<LiveHomePage> {
       if (_sourceIndex > _currentChannel!.urls!.length - 1) {
         _sourceIndex = _currentChannel!.urls!.length - 1;
         setState(() {
-          toastString = S.current.playError;
+          toastString = S.current.playError(_currentChannel!.title ?? '');
         });
       } else {
         setState(() {
           toastString = S.current.switchLine(_sourceIndex + 1);
         });
-        Future.delayed(const Duration(seconds: 2), () => _playVideo());
-        return;
+        await Future.delayed(const Duration(seconds: 2));
+        _playVideo();
       }
     }
   }
 
-  _videoListener() {
+  _videoListener() async {
     if (_playerController == null) return;
     // LogUtil.v('播放状态:::::${_playerController!.value.toString()}');
-    if (_playerController!.value.hasError) {
+    if (_playerController!.value.hasError && !_playerController!.value.isCompleted) {
       _sourceIndex += 1;
       if (_sourceIndex > _currentChannel!.urls!.length - 1) {
         if (_playerController!.value.errorDescription != null) {
           setState(() {
-            toastString = S.current.playError;
+            toastString = S.current.playError(_currentChannel!.title ?? '');
           });
         } else {
           _sourceIndex = 0;
           setState(() {
             toastString = S.current.playReconnect;
           });
-          Future.delayed(const Duration(seconds: 2), () => _playVideo());
+          await Future.delayed(const Duration(seconds: 2));
+          _playVideo();
         }
       } else {
         setState(() {
           toastString = '${S.current.switchLine(_sourceIndex + 1)}...';
         });
-        Future.delayed(const Duration(seconds: 2), () => _playVideo());
+        await Future.delayed(const Duration(seconds: 2));
+        _playVideo();
       }
       return;
     }

@@ -8,7 +8,7 @@
       "channel": {}
     }
   },
-  "playError": "此视频无法播放，请更换其它频道",
+  "playError": "{channel}：无法播放，请更换其它频道",
   "switchLine": "切换线路{line} ...",
   "@switchLine": {
     "placeholders": {

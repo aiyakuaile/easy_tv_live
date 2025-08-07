@@ -45,21 +45,23 @@ void main() async {
   WakelockPlus.enable();
   LogUtil.init(isDebug: kDebugMode, tag: 'EasyTV');
   await SpUtil.getInstance();
-  fvp.registerWith(options: {
-    'platforms': ['android', 'ios', 'windows', 'linux', 'macos'],
-    'video.decoders': ['FFmpeg'],
-    'player': {
-      'cc': '0',
-      'buffer': '3000+60000',
-    }
-  });
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => ThemeProvider()),
-      ChangeNotifierProvider(create: (_) => DownloadProvider()),
-    ],
-    child: const MyApp(),
-  ));
+  fvp.registerWith(
+    options: {
+      'platforms': ['android', 'ios', 'windows', 'linux', 'macos'],
+      'video.decoders': ['FFmpeg'],
+      'player': {'cc': '0', 'buffer': '3000+60000'},
+      'global': {'logLevel': 'Error'},
+    },
+  );
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => DownloadProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
   if (Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   }
@@ -80,18 +82,19 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: '极简TV',
           theme: ThemeData(
-              brightness: Brightness.dark,
-              fontFamily: fontFamily,
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent, brightness: Brightness.dark),
-              scaffoldBackgroundColor: Colors.black,
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                scrolledUnderElevation: 0,
-                centerTitle: true,
-              ),
-              useMaterial3: true),
+            brightness: Brightness.dark,
+            fontFamily: fontFamily,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent, brightness: Brightness.dark),
+            scaffoldBackgroundColor: Colors.black,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              centerTitle: true,
+            ),
+            useMaterial3: true,
+          ),
           routes: {
             RouterKeys.subScribe: (BuildContext context) => const SubScribePage(),
             RouterKeys.setting: (BuildContext context) => const SettingPage(),
@@ -103,7 +106,7 @@ class MyApp extends StatelessWidget {
             S.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate
+            GlobalWidgetsLocalizations.delegate,
           ],
           supportedLocales: S.delegate.supportedLocales,
           localeResolutionCallback: (locale, supportedLocales) {

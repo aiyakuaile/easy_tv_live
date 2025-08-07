@@ -28,10 +28,9 @@ class S {
   static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
 
   static Future<S> load(Locale locale) {
-    final name =
-        (locale.countryCode?.isEmpty ?? false)
-            ? locale.languageCode
-            : locale.toString();
+    final name = (locale.countryCode?.isEmpty ?? false)
+        ? locale.languageCode
+        : locale.toString();
     final localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
@@ -75,13 +74,13 @@ class S {
     );
   }
 
-  /// `此视频无法播放，请更换其它频道`
-  String get playError {
+  /// `{channel}：无法播放，请更换其它频道`
+  String playError(Object channel) {
     return Intl.message(
-      '此视频无法播放，请更换其它频道',
+      '$channel：无法播放，请更换其它频道',
       name: 'playError',
       desc: '',
-      args: [],
+      args: [channel],
     );
   }
 

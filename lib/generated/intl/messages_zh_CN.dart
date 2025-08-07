@@ -28,9 +28,11 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(version) => "新版本v${version}";
 
-  static String m4(address) => "推送地址：${address}";
+  static String m4(channel) => "${channel}：无法播放，请更换其它频道";
 
-  static String m5(line) => "切换线路${line} ...";
+  static String m5(address) => "推送地址：${address}";
+
+  static String m6(line) => "切换线路${line} ...";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -73,16 +75,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "pasterContent": MessageLookupByLibrary.simpleMessage(
       "复制订阅源后，回到此页面可自动添加订阅源",
     ),
-    "playError": MessageLookupByLibrary.simpleMessage("此视频无法播放，请更换其它频道"),
+    "playError": m4,
     "playReconnect": MessageLookupByLibrary.simpleMessage("出错了，尝试重新连接..."),
     "portrait": MessageLookupByLibrary.simpleMessage("竖屏模式"),
-    "pushAddress": m4,
+    "pushAddress": m5,
     "refresh": MessageLookupByLibrary.simpleMessage("刷新"),
     "releaseHistory": MessageLookupByLibrary.simpleMessage("发布历史"),
     "setDefault": MessageLookupByLibrary.simpleMessage("设为默认"),
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "subscribe": MessageLookupByLibrary.simpleMessage("IPTV订阅"),
-    "switchLine": m5,
+    "switchLine": m6,
     "tipChangeLine": MessageLookupByLibrary.simpleMessage("切换线路"),
     "tipChannelList": MessageLookupByLibrary.simpleMessage("频道列表"),
     "tvParseParma": MessageLookupByLibrary.simpleMessage("参数错误"),

@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.9.3+10260806
+version: 2.9.5+10260807
 
 environment:
   sdk: ^3.8.1
@@ -48,7 +48,6 @@ dependencies:
   intl: ^0.20.2
   scrollable_positioned_list: ^0.3.8
   path_provider: ^2.1.5
-#  file_picker: ^8.1.2
   provider: ^6.1.5
   xml: ^6.5.0
   apk_installer: ^0.0.4

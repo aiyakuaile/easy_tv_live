@@ -28,9 +28,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(version) => "New Version v${version}";
 
-  static String m4(address) => "Push Address: ${address}";
+  static String m4(channel) =>
+      "${channel}: cannot be played, please switch to another channel";
 
-  static String m5(line) => "Switching to line ${line} ...";
+  static String m5(address) => "Push Address: ${address}";
+
+  static String m6(line) => "Switching to line ${line} ...";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -91,20 +94,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "pasterContent": MessageLookupByLibrary.simpleMessage(
       "After copying the subscription source, return to this page to automatically add the subscription source",
     ),
-    "playError": MessageLookupByLibrary.simpleMessage(
-      "This video cannot be played, please switch to another channel",
-    ),
+    "playError": m4,
     "playReconnect": MessageLookupByLibrary.simpleMessage(
       "An error occurred, trying to reconnect...",
     ),
     "portrait": MessageLookupByLibrary.simpleMessage("Portrait Mode"),
-    "pushAddress": m4,
+    "pushAddress": m5,
     "refresh": MessageLookupByLibrary.simpleMessage("Refresh"),
     "releaseHistory": MessageLookupByLibrary.simpleMessage("Release History"),
     "setDefault": MessageLookupByLibrary.simpleMessage("Set as Default"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "subscribe": MessageLookupByLibrary.simpleMessage("IPTV Subscription"),
-    "switchLine": m5,
+    "switchLine": m6,
     "tipChangeLine": MessageLookupByLibrary.simpleMessage("Switch Line"),
     "tipChannelList": MessageLookupByLibrary.simpleMessage("Channel List"),
     "tvParseParma": MessageLookupByLibrary.simpleMessage("Parameter Error"),

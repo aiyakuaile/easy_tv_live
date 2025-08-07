@@ -47,13 +47,18 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
       final playGroupIndex = widget.channelListModel!.playGroupIndex!;
       final playChannelIndex = widget.channelListModel!.playChannelIndex!;
       final channel = widget.channelListModel!.playList![playGroupIndex].channel![playChannelIndex];
+      LogUtil.v('loadEPGMsg::::::开始查找${channel.title}:${channel.id}的EPG信息');
       final res = await EpgUtil.getEpg(channel);
-      if (res == null || res.epgData == null || res.epgData!.isEmpty) return;
+      if (res == null || res.epgData == null || res.epgData!.isEmpty) {
+        LogUtil.v('loadEPGMsg::::::未查到${channel.title}:${channel.id}的EPG信息');
+        return;
+      }
       _epgData = res.epgData!;
       final epgRangeTime = DateUtil.formatDate(DateTime.now(), format: 'HH:mm');
       final selectTimeData = _epgData!.where((element) => element.start!.compareTo(epgRangeTime) < 0).last.start;
       final selIndex = _epgData!.indexWhere((element) => element.start == selectTimeData);
       _selEPGIndex = selIndex;
+      LogUtil.v('loadEPGMsg::::::${channel.title}:${channel.id}的正在播放的EPG信息：${_epgData![_selEPGIndex].title}');
       setState(() {});
     });
   }
@@ -88,8 +93,8 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
           _scrollChannelController.jumpTo(maxScrollExtent);
         }
       }
+      _loadEPGMsg();
     });
-    _loadEPGMsg();
     super.initState();
   }
 
@@ -119,99 +124,41 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
       padding: EdgeInsets.only(left: MediaQuery.of(context).padding.left),
       width: widget.isLandscape ? drawWidth : screenWidth,
       decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.black, Colors.transparent])),
-      child: Row(children: [
-        SizedBox(
-          width: 100 * context.read<ThemeProvider>().textScaleFactor,
-          child: ListView.builder(
+      child: Row(
+        children: [
+          SizedBox(
+            width: 100 * context.read<ThemeProvider>().textScaleFactor,
+            child: ListView.builder(
               cacheExtent: _itemHeight,
               padding: const EdgeInsets.only(bottom: 100.0),
               controller: _scrollController,
               itemBuilder: (context, index) {
                 final playModel = widget.channelListModel!.playList![index];
                 final title = playModel.group;
-                return Builder(builder: (context) {
-                  return Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withValues(alpha: 0.2)) : null,
-                      onTap: () {
-                        if (widget.channelListModel!.playGroupIndex != index) {
-                          widget.channelListModel!.playGroupIndex = index;
-                          widget.channelListModel!.playChannelIndex = 0;
-                          setState(() {
-                            if (playModel.channel != null && playModel.channel!.isNotEmpty) {
-                              final channel = playModel.channel!.first;
-                              widget.onTapChannel?.call(channel);
-                              _scrollChannelController.jumpTo(0);
-                            } else {
-                              EasyLoading.showToast('无频道数据');
-                            }
-                          });
-                          _loadEPGMsg();
-                          Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-                        } else {
-                          Scaffold.of(context).closeDrawer();
-                        }
-                      },
-                      onFocusChange: (focus) async {
-                        if (focus) {
-                          Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-                        }
-                      },
-                      splashColor: Colors.white.withValues(alpha: 0.3),
-                      child: Ink(
-                        width: double.infinity,
-                        height: _itemHeight,
-                        decoration: BoxDecoration(
-                          gradient: widget.channelListModel!.playGroupIndex == index
-                              ? LinearGradient(colors: [Colors.red.withValues(alpha: 0.6), Colors.red.withValues(alpha: 0.3)])
-                              : null,
-                        ),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            title!,
-                            style: TextStyle(
-                                color: widget.channelListModel!.playGroupIndex == index ? Colors.red : Colors.white, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                });
-              },
-              itemCount: widget.channelListModel?.playList?.length ?? 0),
-        ),
-        VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
-        if ((widget.channelListModel?.playList?[widget.channelListModel!.playGroupIndex!].channel?.length ?? 0) > 0)
-          Expanded(
-            child: ListView.builder(
-                padding: const EdgeInsets.only(bottom: 100.0),
-                cacheExtent: _itemHeight,
-                controller: _scrollChannelController,
-                physics: const ScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final channel = widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel![index];
-                  final name = channel.title;
-                  final serialNum = channel.serialNum;
-                  return Builder(builder: (context) {
+                return Builder(
+                  builder: (context) {
                     return Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        overlayColor: isTV && EnvUtil.isMobile ? WidgetStateProperty.all(Colors.greenAccent.withValues(alpha: 0.2)) : null,
-                        canRequestFocus: isTV && EnvUtil.isMobile,
-                        autofocus: isTV && EnvUtil.isMobile && widget.channelListModel!.playChannelIndex == index,
-                        onTap: () async {
-                          if (widget.channelListModel!.playChannelIndex == index) {
+                        overlayColor: isTV ? WidgetStateProperty.all(Colors.greenAccent.withValues(alpha: 0.2)) : null,
+                        onTap: () {
+                          if (widget.channelListModel!.playGroupIndex != index) {
+                            widget.channelListModel!.playGroupIndex = index;
+                            widget.channelListModel!.playChannelIndex = 0;
+                            setState(() {
+                              if (playModel.channel != null && playModel.channel!.isNotEmpty) {
+                                final channel = playModel.channel!.first;
+                                widget.onTapChannel?.call(channel);
+                                _scrollChannelController.jumpTo(0);
+                              } else {
+                                EasyLoading.showToast('无频道数据');
+                              }
+                            });
+                            _loadEPGMsg();
+                            Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                          } else {
                             Scaffold.of(context).closeDrawer();
-                            return;
                           }
-                          widget.onTapChannel?.call(channel);
-                          setState(() {
-                            widget.channelListModel!.playChannelIndex = index;
-                          });
-                          _loadEPGMsg();
-                          Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                         },
                         onFocusChange: (focus) async {
                           if (focus) {
@@ -222,50 +169,116 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                         child: Ink(
                           width: double.infinity,
                           height: _itemHeight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            gradient: widget.channelListModel!.playChannelIndex == index
-                                ? LinearGradient(colors: [Colors.red.withValues(alpha: 0.3), Colors.transparent])
+                            gradient: widget.channelListModel!.playGroupIndex == index
+                                ? LinearGradient(colors: [Colors.red.withValues(alpha: 0.6), Colors.red.withValues(alpha: 0.3)])
                                 : null,
                           ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '$serialNum $name',
-                                  style: TextStyle(
-                                      color: widget.channelListModel!.playChannelIndex == index ? Colors.red : Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              title!,
+                              style: TextStyle(
+                                color: widget.channelListModel!.playGroupIndex == index ? Colors.red : Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
-                              if (widget.channelListModel!.playChannelIndex == index) SpinKitWave(size: 20, color: Colors.red.withValues(alpha: 0.8))
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     );
-                  });
-                },
-                itemCount: widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel!.length),
+                  },
+                );
+              },
+              itemCount: widget.channelListModel?.playList?.length ?? 0,
+            ),
           ),
-        if (isShowEpgWidget)
-          SizedBox(
-            width: egpWidth,
-            child: Material(
-              color: Colors.black.withValues(alpha: 0.1),
-              child: Column(
-                children: [
-                  Container(
-                    height: 44,
-                    alignment: Alignment.center,
-                    child: const Text(
-                      '节目单',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+          VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
+          if ((widget.channelListModel?.playList?[widget.channelListModel!.playGroupIndex!].channel?.length ?? 0) > 0)
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.only(bottom: 100.0),
+                cacheExtent: _itemHeight,
+                controller: _scrollChannelController,
+                physics: const ScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final channel = widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel![index];
+                  final name = channel.title;
+                  final serialNum = channel.serialNum;
+                  return Builder(
+                    builder: (context) {
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          overlayColor: isTV && EnvUtil.isMobile ? WidgetStateProperty.all(Colors.greenAccent.withValues(alpha: 0.2)) : null,
+                          canRequestFocus: isTV && EnvUtil.isMobile,
+                          autofocus: isTV && EnvUtil.isMobile && widget.channelListModel!.playChannelIndex == index,
+                          onTap: () async {
+                            if (widget.channelListModel!.playChannelIndex == index) {
+                              Scaffold.of(context).closeDrawer();
+                              return;
+                            }
+                            widget.onTapChannel?.call(channel);
+                            setState(() {
+                              widget.channelListModel!.playChannelIndex = index;
+                            });
+                            _loadEPGMsg();
+                            Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                          },
+                          onFocusChange: (focus) async {
+                            if (focus) {
+                              Scrollable.ensureVisible(context, alignment: 0.5, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                            }
+                          },
+                          splashColor: Colors.white.withValues(alpha: 0.3),
+                          child: Ink(
+                            width: double.infinity,
+                            height: _itemHeight,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              gradient: widget.channelListModel!.playChannelIndex == index
+                                  ? LinearGradient(colors: [Colors.red.withValues(alpha: 0.3), Colors.transparent])
+                                  : null,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '$serialNum $name',
+                                    style: TextStyle(
+                                      color: widget.channelListModel!.playChannelIndex == index ? Colors.red : Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                if (widget.channelListModel!.playChannelIndex == index)
+                                  SpinKitWave(size: 20, color: Colors.red.withValues(alpha: 0.8)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                itemCount: widget.channelListModel!.playList![widget.channelListModel!.playGroupIndex!].channel!.length,
+              ),
+            ),
+          if (isShowEpgWidget)
+            SizedBox(
+              width: egpWidth,
+              child: Material(
+                color: Colors.black.withValues(alpha: 0.1),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 44,
+                      alignment: Alignment.center,
+                      child: const Text('节目单', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
                     ),
-                  ),
-                  VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
-                  Flexible(
-                    child: ScrollablePositionedList.builder(
+                    VerticalDivider(width: 0.1, color: Colors.white.withValues(alpha: 0.1)),
+                    Flexible(
+                      child: ScrollablePositionedList.builder(
                         initialScrollIndex: _selEPGIndex,
                         itemScrollController: _epgScrollController,
                         initialAlignment: 0.3,
@@ -275,25 +288,29 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                           final data = _epgData![index];
                           final isSelect = index == _selEPGIndex;
                           Widget child = Container(
-                            constraints: const BoxConstraints(
-                              minHeight: 40,
-                            ),
+                            constraints: const BoxConstraints(minHeight: 40),
                             padding: const EdgeInsets.all(10),
                             alignment: Alignment.centerLeft,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('${data.start}-${data.end}',
-                                    style: TextStyle(
-                                        fontWeight: isSelect ? FontWeight.bold : FontWeight.normal,
-                                        color: isSelect ? Colors.redAccent : Colors.white,
-                                        fontSize: isSelect ? 17 : 15)),
-                                Text('${data.title}',
-                                    style: TextStyle(
-                                        fontWeight: isSelect ? FontWeight.bold : FontWeight.normal,
-                                        color: isSelect ? Colors.redAccent : Colors.white,
-                                        fontSize: isSelect ? 17 : 15)),
+                                Text(
+                                  '${data.start}-${data.end}',
+                                  style: TextStyle(
+                                    fontWeight: isSelect ? FontWeight.bold : FontWeight.normal,
+                                    color: isSelect ? Colors.redAccent : Colors.white,
+                                    fontSize: isSelect ? 17 : 15,
+                                  ),
+                                ),
+                                Text(
+                                  '${data.title}',
+                                  style: TextStyle(
+                                    fontWeight: isSelect ? FontWeight.bold : FontWeight.normal,
+                                    color: isSelect ? Colors.redAccent : Colors.white,
+                                    fontSize: isSelect ? 17 : 15,
+                                  ),
+                                ),
                               ],
                             ),
                           );
@@ -311,13 +328,15 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                           }
                           return child;
                         },
-                        itemCount: _epgData!.length),
-                  ),
-                ],
+                        itemCount: _epgData!.length,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          )
-      ]),
+        ],
+      ),
     );
   }
 }

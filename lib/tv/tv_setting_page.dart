@@ -2,6 +2,7 @@ import 'package:easy_tv_live/setting/setting_font_page.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/tv/tv_appreciate_page.dart';
 import 'package:easy_tv_live/util/check_version_util.dart';
+import 'package:easy_tv_live/util/env_util.dart';
 import 'package:flutter/material.dart';
 
 import '../setting/setting_beautify_page.dart';
@@ -23,9 +24,7 @@ class _TvSettingPageState extends State<TvSettingPage> {
         SizedBox(
           width: 240,
           child: Scaffold(
-            appBar: AppBar(
-              title: const Text('设置'),
-            ),
+            appBar: AppBar(title: const Text('设置')),
             body: Column(
               children: [
                 Flexible(
@@ -35,7 +34,7 @@ class _TvSettingPageState extends State<TvSettingPage> {
                         leading: const Icon(Icons.card_giftcard),
                         title: const Text('扫码赞赏'),
                         selected: _selectedIndex == -1,
-                        autofocus: true,
+                        autofocus: EnvUtil.isTV() ? true : false,
                         onTap: () {
                           setState(() {
                             _selectedIndex = -1;
@@ -71,27 +70,17 @@ class _TvSettingPageState extends State<TvSettingPage> {
                             _selectedIndex = 2;
                           });
                         },
-                      )
+                      ),
                     ],
                   ),
                 ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Text('V${CheckVersionUtil.version}'),
-                )
+                Container(alignment: Alignment.centerLeft, padding: const EdgeInsets.only(left: 16), child: Text('V${CheckVersionUtil.version}')),
               ],
             ),
           ),
         ),
-        if (_selectedIndex == -1)
-          const Expanded(
-            child: TvAppreciatePage(),
-          ),
-        if (_selectedIndex == 0)
-          const Expanded(
-            child: SubScribePage(isTV: true),
-          ),
+        if (_selectedIndex == -1) const Expanded(child: TvAppreciatePage()),
+        if (_selectedIndex == 0) const Expanded(child: SubScribePage(isTV: true)),
         if (_selectedIndex == 1) const Expanded(child: SettingFontPage(isTV: true)),
         if (_selectedIndex == 2) const Expanded(child: SettingBeautifyPage()),
       ],
