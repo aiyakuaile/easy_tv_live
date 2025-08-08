@@ -101,6 +101,14 @@ class _SettingPageState extends State<SettingPage> {
               Navigator.pushNamed(context, RouterKeys.settingFont);
             },
           ),
+          ListTile(
+            title: const Text('远程配置'),
+            leading: const Icon(Icons.settings_remote),
+            trailing: const Icon(Icons.arrow_right),
+            onTap: () {
+              Navigator.pushNamed(context, RouterKeys.settingRemote);
+            },
+          ),
           SwitchListTile(
             autofocus: true,
             title: const Text('背景美化'),

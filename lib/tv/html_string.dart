@@ -1,4 +1,5 @@
-String getHtmlString(String ipAddress) => '''
+String getHtmlString(String ipAddress, [String source = '订阅源']) =>
+    '''
 <!DOCTYPE html>
 <html lang="zh_CN">
 <head>
@@ -84,8 +85,8 @@ String getHtmlString(String ipAddress) => '''
 </script>
 </head>
 <body>
-    <h2>添加订阅源</h2>
-    <textarea id="userInput" placeholder="请输入订阅源" oninput="autoResize(this)"></textarea>
+    <h2>添加$source</h2>
+    <textarea id="userInput" placeholder="请输入可访问的http链接" oninput="autoResize(this)"></textarea>
     <br><br>
     <button onclick="sendPostRequest()">立即推送</button>
 </body>

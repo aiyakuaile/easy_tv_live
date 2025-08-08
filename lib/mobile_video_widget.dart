@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:easy_tv_live/router_keys.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/table_video_widget.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
 import 'package:easy_tv_live/widget/empty_page.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -61,11 +64,15 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
             final res = await Navigator.of(context).pushNamed(RouterKeys.settingQrScan);
             if (res != null && res != '') {
               widget.controller?.pause();
+              final uri = Uri.parse(res.toString());
+              if (uri.host.contains('9928')) {
+                launchUrl(uri, mode: LaunchMode.externalApplication);
+                return;
+              }
               await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) {
-                    final ip = Uri.parse(res.toString()).host;
-                    return SubScribePage(remoteIp: ip, isTV: false);
+                    return SubScribePage(remoteIp: uri.host, isTV: false);
                   },
                 ),
               );
@@ -119,24 +126,21 @@ class _MobileVideoWidgetState extends State<MobileVideoWidget> {
       ),
       body: Column(
         children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.width * 9 / 16),
-            child: AspectRatio(
-              aspectRatio: widget.aspectRatio,
-              child: TableVideoWidget(
-                controller: widget.controller,
-                toastString: widget.toastString,
-                isLandscape: false,
-                aspectRatio: widget.aspectRatio,
-                isBuffering: widget.isBuffering,
-                isPlaying: widget.isPlaying,
-                changeChannelSources: widget.changeChannelSources,
-                onChangeSubSource: widget.onChangeSubSource,
-                drawerIsOpen: false,
-                onPreviousChannel: widget.onPreviousChannel,
-                onNextChannel: widget.onNextChannel,
-                onSwitchSource: widget.onSwitchSource,
-              ),
+          AspectRatio(
+            aspectRatio: max(widget.aspectRatio, 16 / 9),
+            child: TableVideoWidget(
+              controller: widget.controller,
+              toastString: widget.toastString,
+              isLandscape: false,
+              aspectRatio: max(widget.aspectRatio, 16 / 9),
+              isBuffering: widget.isBuffering,
+              isPlaying: widget.isPlaying,
+              changeChannelSources: widget.changeChannelSources,
+              onChangeSubSource: widget.onChangeSubSource,
+              drawerIsOpen: false,
+              onPreviousChannel: widget.onPreviousChannel,
+              onNextChannel: widget.onNextChannel,
+              onSwitchSource: widget.onSwitchSource,
             ),
           ),
           Flexible(child: widget.toastString == 'UNKNOWN' ? EmptyPage(onRefresh: widget.onChangeSubSource) : widget.drawChild),
