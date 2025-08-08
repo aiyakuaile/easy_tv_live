@@ -4,6 +4,7 @@ import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/setting/qr_scan_page.dart';
 import 'package:easy_tv_live/setting/reward_page.dart';
 import 'package:easy_tv_live/setting/setting_font_page.dart';
+import 'package:easy_tv_live/setting/setting_remote.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
@@ -101,6 +102,7 @@ class MyApp extends StatelessWidget {
             RouterKeys.settingFont: (BuildContext context) => const SettingFontPage(),
             RouterKeys.settingReward: (BuildContext context) => const RewardPage(),
             RouterKeys.settingQrScan: (BuildContext context) => const QrScanPage(),
+            RouterKeys.settingRemote: (BuildContext context) => const SettingRemote(),
           },
           localizationsDelegates: const [
             S.delegate,

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:easy_tv_live/provider/download_provider.dart';
 import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/util/latency_checker_util.dart';
+import 'package:easy_tv_live/util/remote_util.dart';
 import 'package:easy_tv_live/widget/focus_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -176,10 +177,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
       ..textColor = Colors.black
       ..backgroundColor = Colors.white70;
     if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden);
-    _loadData();
+    Future.delayed(Duration.zero, _loadData);
   }
 
   _loadData() async {
+    await RemoteUtil.getRemoteData(context);
     await _parseData(true);
     if (mounted) {
       if (context.read<ThemeProvider>().useAutoUpdate && Platform.isAndroid) {

@@ -1,4 +1,5 @@
 import 'package:easy_tv_live/setting/setting_font_page.dart';
+import 'package:easy_tv_live/setting/setting_remote.dart';
 import 'package:easy_tv_live/setting/subscribe_page.dart';
 import 'package:easy_tv_live/tv/tv_appreciate_page.dart';
 import 'package:easy_tv_live/util/check_version_util.dart';
@@ -71,6 +72,16 @@ class _TvSettingPageState extends State<TvSettingPage> {
                           });
                         },
                       ),
+                      ListTile(
+                        leading: const Icon(Icons.settings_remote),
+                        title: Text('远程配置'),
+                        selected: _selectedIndex == 3,
+                        onTap: () {
+                          setState(() {
+                            _selectedIndex = 3;
+                          });
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -83,6 +94,7 @@ class _TvSettingPageState extends State<TvSettingPage> {
         if (_selectedIndex == 0) const Expanded(child: SubScribePage(isTV: true)),
         if (_selectedIndex == 1) const Expanded(child: SettingFontPage(isTV: true)),
         if (_selectedIndex == 2) const Expanded(child: SettingBeautifyPage()),
+        if (_selectedIndex == 3) const Expanded(child: SettingRemote()),
       ],
     );
   }

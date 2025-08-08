@@ -7,12 +7,12 @@ import 'package:easy_tv_live/util/device_sync_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:easy_tv_live/util/m3u_util.dart';
+import 'package:easy_tv_live/util/remote_util.dart';
 import 'package:easy_tv_live/widget/focus_card.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:network_info_plus/network_info_plus.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:sp_util/sp_util.dart';
 
@@ -82,7 +82,7 @@ class _SubScribePageState extends State<SubScribePage> {
     if (EnvUtil.isTV()) return;
     final clipData = await Clipboard.getData(Clipboard.kTextPlain);
     final clipText = clipData?.text;
-    if (clipText != null && clipText.startsWith('http')) {
+    if (clipText != null && clipText.startsWith('http') && !clipText.endsWith('.json')) {
       final res = await showDialog<bool>(
         context: context,
         barrierDismissible: false,
@@ -115,36 +115,11 @@ class _SubScribePageState extends State<SubScribePage> {
     }
   }
 
-  Future<String> getCurrentIP() async {
-    String currentIP = '';
-    try {
-      for (var interface in await NetworkInterface.list()) {
-        for (var addr in interface.addresses) {
-          LogUtil.v('Name: ${interface.name}  IP Address: ${addr.address}  IPV4: ${InternetAddress.anyIPv4}');
-          if (addr.type == InternetAddressType.IPv4 && addr.address.startsWith('192')) {
-            currentIP = addr.address;
-          }
-        }
-      }
-    } catch (e) {
-      LogUtil.v(e.toString());
-    }
-    return currentIP;
-  }
-
   _localNet() async {
-    try {
-      _ip = await NetworkInfo().getWifiIP();
-    } catch (e) {
-      LogUtil.v(e.toString());
-    }
-    LogUtil.v('_ip::::$_ip');
+    _ip = await RemoteUtil.getCurrentIP();
     if (_ip == null || _ip == '') {
-      _ip = await getCurrentIP();
-      if (_ip == null || _ip == '') {
-        EasyLoading.showToast('无法获取本机IP');
-        return;
-      }
+      EasyLoading.showToast('无法获取本机IP');
+      return;
     }
     await _bindRemoteIP();
     _server = await HttpServer.bind(_ip, _port);
@@ -252,9 +227,9 @@ class _SubScribePageState extends State<SubScribePage> {
   @override
   void dispose() {
     if (_remoteIP != null) HttpUtil().postRequest('http://$_remoteIP:$_port/exit', data: {'ip': _ip}, isShowLoading: false);
-    _server?.close(force: true);
     _appLifecycleListener?.dispose();
     _scrollController.dispose();
+    _server?.close(force: true);
     super.dispose();
   }
 

@@ -29,6 +29,7 @@ EasyTV is a lightweight IPTV player that supports all platforms and Android TV l
 - [x] Automatically merge and group the same channels
 - [x] Support channel switching via number keys
 - [x] Support channel switching with up and down keys (needs to be manually enabled in '设置->实现设置->上下键切换频道')
+- [x] Remote Configuration Feature
 
 #### TV Version Interaction
 - Up key: Switch lines
@@ -37,6 +38,21 @@ EasyTV is a lightweight IPTV player that supports all platforms and Android TV l
 
 ### NOT TV Version Interaction
 ![image_4](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_4.png)
+
+#### Remote Configuration Feature
+Fields that support remote configuration can be set on the [极简TV远程配置项](https://aiyakuaile.github.io/tv-setting) page.
+After setting, you can click the `下载数据` or `复制Json` button at the bottom of the page.
+
+After obtaining the Json data, you can create a new repository on Github or Gitee, upload the Json data to the repository, and then obtain the Raw link of the uploaded file.
+
+Before adding the remote configuration link, please try it in the browser first to ensure that the link can normally request and return Json data.
+
+Then, add this link in the `远程配置` section of the app's settings page.
+
+For TV versions, you can add it via scanning the push notification, and the program will 
+automatically apply the configuration. For other versions, paste the link and click the `应用远程配置` 
+button to complete.
+>Modifying the JSON data directly will not take effect. When you need to override the app's settings, the `dtaId` field in the JSON must be changed. If you are using the [极简TV远程配置项](https://aiyakuaile.github.io/tv-setting) to generate the JSON data, you don't need to worry, as the program will automatically modify the `dtaId`.
 
 #### Fonts
 The fonts that support switching need to use the [easy_tv_font](https://github.com/aiyakuaile/easy_tv_font) project. If you want to add other fonts, please follow the instructions in this project.
