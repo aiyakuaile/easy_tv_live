@@ -18,8 +18,6 @@ EasyTV is a lightweight IPTV player that supports all platforms and Android TV l
 
 #### Features
 - [x] IPTV player that supports all platforms
-- [x] Ability to add live source links independently
-- [x] Clean and simple UI interaction
 - [x] Support for parsing .m3u files
 - [x] Support for parsing .txt files (added in v1.5.0)
 - [x] Supports Android TV (added in v2.0.0, supports Android OS 5.0+)
@@ -31,6 +29,7 @@ EasyTV is a lightweight IPTV player that supports all platforms and Android TV l
 - [x] Support channel switching with up and down keys (needs to be manually enabled in '设置->实现设置->上下键切换频道')
 - [x] Support adding local files as subscription sources (new in v2.9.5)
 - [x] Remote Configuration Feature
+- [x] Support custom [User-Agent](https://github.com/aiyakuaile/easy_tv_live/blob/main/README-en.md#user-agent)（new in v2.9.7）
 
 #### TV Version Interaction
 - Up key: Switch lines
