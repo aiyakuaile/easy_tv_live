@@ -78,6 +78,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
         setState(() {});
       }
       await Future.delayed(Duration.zero);
+      LogUtil.v('检测User-Agent::::::${_channelListModel?.uaHint}');
+      final httpHeader = <String, String>{};
+      if (_channelListModel != null && _channelListModel!.uaHint != null && _channelListModel!.uaHint!.isNotEmpty) {
+        httpHeader['User-Agent'] = _channelListModel!.uaHint!;
+      }
       _playerController = VideoPlayerController.networkUrl(
         Uri.parse(url),
         videoPlayerOptions: VideoPlayerOptions(
@@ -85,6 +90,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
           mixWithOthers: false,
           webOptions: const VideoPlayerWebOptions(controls: VideoPlayerWebOptionsControls.enabled()),
         ),
+        httpHeaders: httpHeader,
       )..setVolume(1.0);
       await _playerController!.initialize().timeout(
         Duration(seconds: timeoutNum),

@@ -55,6 +55,22 @@ automatically apply the configuration. For other versions, paste the link and cl
 button to complete.
 >Modifying the JSON data directly will not take effect. When you need to override the app's settings, the `dtaId` field in the JSON must be changed. If you are using the [极简TV远程配置项](https://aiyakuaile.github.io/tv-setting) to generate the JSON data, you don't need to worry, as the program will automatically modify the `dtaId`.
 
+
+### User-Agent
+The subscription source supports custom User-Agent. The program will parse the User-Agent settings in the following format by default in m3u files:
+```
+#UA-Hint: 请将 User-Agent 设置为 okHttp/Mod-1.0.0 ，否则无法观看
+```
+> If the User-Agent cannot be parsed correctly, please configure the subscription source according to the following format:
+> ```
+> https://xxxxxxxxxxxxx.m3u?ua=okHttp/Mod-1.0.0
+> ```
+> If the subscription source already has other parameters, please add it in the following format:
+> ```
+> https://xxxxxxxxxxxxx.m3u?other=123&ua=okHttp/Mod-1.0.0
+> ```
+> Finally, add the modified subscription source to the App. After the application parses the User-Agent, there will be a toast prompt, such as: `User-Agent=okHttp/Mod-1.0.0`
+
 #### Fonts
 The fonts that support switching need to use the [easy_tv_font](https://github.com/aiyakuaile/easy_tv_font) project. If you want to add other fonts, please follow the instructions in this project.
 

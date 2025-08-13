@@ -69,7 +69,15 @@ class M3uUtil {
       await saveLocalData([defaultModel]);
       currentPlayChannelLink = defaultModel.link;
     }
-    final channelModels = await _parseM3u(m3uData);
+    String ua = '';
+    if (currentPlayChannelLink!.startsWith('http')) {
+      Uri.parse(currentPlayChannelLink!).queryParameters.forEach((key, value) {
+        if (key == 'ua') {
+          ua = value;
+        }
+      });
+    }
+    final channelModels = await _parseM3u(m3uData, ua);
     if (channelModels.playList!.isNotEmpty) {
       int index = 1;
       for (int i = 0; i < channelModels.playList!.length; i++) {
@@ -130,9 +138,9 @@ class M3uUtil {
   }
 
   // 解析m3u文件
-  static Future<PlayChannelListModel> _parseM3u(String m3u) async {
+  static Future<PlayChannelListModel> _parseM3u(String m3u, String ua) async {
     final lines = m3u.split('\n');
-    PlayChannelListModel playListModel = PlayChannelListModel(type: PlayListType.txt, playList: []);
+    PlayChannelListModel playListModel = PlayChannelListModel(type: PlayListType.txt, playList: [], uaHint: ua);
     if (m3u.startsWith('#EXTM3U') || m3u.startsWith('#EXTINF')) {
       playListModel.type = PlayListType.m3u;
       String tempGroupTitle = '';
@@ -206,6 +214,10 @@ class M3uUtil {
               .firstWhere((element) => element.title == tempChannelName)
               .urls!
               .add(line);
+        } else if (line.startsWith('#UA-Hint')) {
+          if (ua.isEmpty) {
+            playListModel.uaHint = line.split(' ').firstWhere((item) => item.contains('/'));
+          }
         }
       }
     } else {
@@ -252,7 +264,7 @@ class M3uUtil {
     if (playListModel.playList!.isEmpty) {
       EasyLoading.showError(S.current.parseError);
     }
-
+    if (playListModel.uaHint!.isNotEmpty) EasyLoading.showToast('User-Agent=${playListModel.uaHint}');
     return playListModel;
   }
 

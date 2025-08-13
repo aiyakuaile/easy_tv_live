@@ -1,20 +1,12 @@
-enum PlayListType {
-  m3u,
-  txt,
-}
+enum PlayListType { m3u, txt }
 
 class PlayChannelListModel {
-  PlayChannelListModel({
-    this.epgUrl,
-    this.type,
-    this.playList,
-    this.playGroupIndex = 0,
-    this.playChannelIndex = 0,
-  });
+  PlayChannelListModel({this.epgUrl, this.type, this.playList, this.playGroupIndex = 0, this.playChannelIndex = 0, this.uaHint});
 
   PlayChannelListModel.fromJson(dynamic json) {
     playGroupIndex = 0;
     playChannelIndex = 0;
+    uaHint = json['uaHint'];
     epgUrl = json['epgUrl'];
     type = PlayListType.values[json['type']];
     if (json['playList'] != null) {
@@ -30,13 +22,12 @@ class PlayChannelListModel {
   PlayListType? type;
   int? playGroupIndex;
   int? playChannelIndex;
+  // 自定义UA
+  String? uaHint;
 }
 
 class PlayModel {
-  PlayModel({
-    this.group,
-    this.channel,
-  });
+  PlayModel({this.group, this.channel});
 
   PlayModel.fromJson(dynamic json) {
     group = json['group'];
@@ -51,14 +42,7 @@ class PlayModel {
   String? group;
   List<Channel>? channel;
 
-  PlayModel copyWith({
-    String? group,
-    List<Channel>? channel,
-  }) =>
-      PlayModel(
-        group: group ?? this.group,
-        channel: channel ?? this.channel,
-      );
+  PlayModel copyWith({String? group, List<Channel>? channel}) => PlayModel(group: group ?? this.group, channel: channel ?? this.channel);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -71,15 +55,7 @@ class PlayModel {
 }
 
 class Channel {
-  Channel({
-    this.id,
-    this.logo,
-    this.title,
-    this.urls,
-    this.serialNum,
-    this.groupIndex,
-    this.channelIndex,
-  });
+  Channel({this.id, this.logo, this.title, this.urls, this.serialNum, this.groupIndex, this.channelIndex});
 
   Channel.fromJson(dynamic json) {
     id = json['id'];
@@ -98,24 +74,15 @@ class Channel {
   int? groupIndex;
   int? channelIndex;
 
-  Channel copyWith({
-    String? id,
-    String? logo,
-    String? title,
-    List<String>? urls,
-    int? serialNum,
-    int? groupIndex,
-    int? channelIndex,
-  }) =>
-      Channel(
-        id: id ?? this.id,
-        logo: logo ?? this.logo,
-        title: title ?? this.title,
-        urls: urls ?? this.urls,
-        serialNum: serialNum ?? this.serialNum,
-        groupIndex: groupIndex ?? this.groupIndex,
-        channelIndex: channelIndex ?? this.channelIndex,
-      );
+  Channel copyWith({String? id, String? logo, String? title, List<String>? urls, int? serialNum, int? groupIndex, int? channelIndex}) => Channel(
+    id: id ?? this.id,
+    logo: logo ?? this.logo,
+    title: title ?? this.title,
+    urls: urls ?? this.urls,
+    serialNum: serialNum ?? this.serialNum,
+    groupIndex: groupIndex ?? this.groupIndex,
+    channelIndex: channelIndex ?? this.channelIndex,
+  );
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

@@ -29,6 +29,7 @@
 - [x] 支持上下键换台(需要在'设置->实验设置->上下键切换频道'中手动打开)
 - [x] 支持添加本地文件为订阅源(v2.9.5新增)
 - [x] 远程配置数据源(v2.9.6新增)
+- [x] 支持自定义[User-Agent](https://github.com/aiyakuaile/easy_tv_live?tab=readme-ov-file#User-Agent)(v2.9.7新增)
 
 ### TV版交互
 
@@ -54,6 +55,23 @@
 > TV端可以通过扫码推送添加后，程序会自动应用配置。其他端粘贴链接后，点击`应用远程配置`按钮，即可完成。
 > >直接修改Json数据是不会生效的，当需要覆盖应用的设置时，Json字段中的`dtaId`必须改变。如果你使用的是[极简TV远程配置项](https://aiyakuaile.github.io/tv-setting)
 来生成的Json数据的，则无需担心，程序会自动修改`dtaId`
+
+
+### User-Agent
+订阅源支持自定义User-Agent，程序会默认解析m3u文件中，如下格式的User-Agent设置
+```
+#UA-Hint: 请将 User-Agent 设置为 okHttp/Mod-1.0.0 ，否则无法观看
+```
+> 如果无法正常解析出User-Agent，请按照如何格式配置订阅源：
+> ```
+> https://xxxxxxxxxxxxx.m3u?ua=okHttp/Mod-1.0.0
+> ```
+> 如果订阅源已经有其他参数了，请按照如下格式添加：
+> ```
+> https://xxxxxxxxxxxxx.m3u?other=123&ua=okHttp/Mod-1.0.0
+> ```
+> 最后把修改后的订阅源添加到App中。应用解析到User-Agent后，会有一个toast提示，如：`User-Agent=okHttp/Mod-1.0.0`
+
 
 ### 字体
 支持切换的字体需要使用[easy_tv_font](https://github.com/aiyakuaile/easy_tv_font)这个项目,
