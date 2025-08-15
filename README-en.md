@@ -21,7 +21,7 @@ EasyTV is a lightweight IPTV player that supports all platforms and Android TV l
 - [x] Automatically merge and group the same channels
 - [x] Support channel switching via number keys
 - [x] Support channel switching with up and down keys (needs to be manually enabled in '设置->实现设置->上下键切换频道')
-- [x] Support [Basic Authentication](https://github.com/aiyakuaile/easy_tv_live/blob/main/README-en.md#readme-ov-file#Basic-Authentication) for requesting subscription sources (new in v2.9.1)
+- [x] Support [Basic Authentication](https://github.com/aiyakuaile/easy_tv_live/blob/main/README-en.md#Basic-Authentication) for requesting subscription sources (new in v2.9.1)
 - [x] Support adding local files as subscription sources (new in v2.9.5)
 - [x] Remote Configuration Feature
 - [x] Support custom [User-Agent](https://github.com/aiyakuaile/easy_tv_live/blob/main/README-en.md#user-agent)（new in v2.9.7）
