@@ -20,7 +20,7 @@ class HttpUtil {
   }
 
   HttpUtil._() {
-    _dio = Dio(options)..interceptors.add(LogInterceptor(requestBody: true, responseBody: false, logPrint: LogUtil.v));
+    _dio = Dio(options)..interceptors.add(LogInterceptor(requestBody: true, requestHeader: true, responseBody: true, logPrint: LogUtil.v));
   }
 
   Future<T?> postRequest<T>(
@@ -52,7 +52,6 @@ class HttpUtil {
     ProgressCallback? onReceiveProgress,
     bool isShowLoading = true,
   }) async {
-    path = extractCredentials(path, options);
     if (isShowLoading) EasyLoading.show();
     Response? response;
     try {
