@@ -5,7 +5,7 @@ on:
     # 北京时间7点（UTC 23点）执行
     - cron: "0 23 * * *"
     # 北京时间19点（UTC 11点）执行
-    - cron: "0 11 * * *"
+    # - cron: "0 11 * * *"
   workflow_dispatch:  # 保留手动触发
 
 jobs:
