@@ -3,7 +3,7 @@ import requests
 
 # 目标地址
 # TARGET_URL = "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv6/result.m3u"
-TARGET_URL = "https://raw.githubusercontent.com/mursor1985/LIVE/refs/heads/main/iptv.m3u"
+TARGET_URL = "https://iptv-org.github.io/iptv/countries/cn.m3u"
 # 要写入的本地文件路径（项目中的temp文件）
 LOCAL_FILE = "temp"
 

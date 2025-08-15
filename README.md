@@ -8,8 +8,8 @@
 极简TV,一款轻量级，支持全平台及安卓电视大屏的IPTV播放器，简洁易用，欢迎下载体验！
 
 #### TV源
-> 本应用自带的节目源，来源自[IPTV-LIVE](https://github.com/mursor1985/LIVE)这个项目，感谢此项目的开源与分享。
-同时自带节目源会每日7点和19点自动从[IPTV-LIVE](https://github.com/mursor1985/LIVE)中同步。
+> 本应用自带的节目源，来源自[IPTV-ORG](https://github.com/iptv-org/iptv)这个项目，感谢此项目的开源与分享。
+同时自带节目源会每日7点和19点自动从[IPTV-ORG](https://github.com/iptv-org/iptv)中同步。
 
 #### 功能
 
