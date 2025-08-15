@@ -102,18 +102,13 @@ class HttpUtil {
 }
 
 String extractCredentials(String url, Options? options) {
-  if (!url.contains('@')) return url;
-  final regex = RegExp(r'^(https?):\/\/([^:\/]+:[^@]+)@');
-  final match = regex.firstMatch(url);
-  final us = match?.group(2);
-  if (us != null && !us.contains('/')) {
-    final base64Us = base64Encode(utf8.encode(us));
-    if (options == null) {
-      options = Options(headers: {HttpHeaders.authorizationHeader: 'Basic $base64Us'});
-    } else {
-      options.headers ??= {};
-      options.headers![HttpHeaders.authorizationHeader] = 'Basic $base64Us';
-    }
+  final uri = Uri.parse(url);
+  if (uri.hasAuthority && uri.userInfo.isNotEmpty) {
+    final base64Us = base64Encode(utf8.encode(uri.userInfo));
+    options = options ?? Options();
+    options.headers ??= {};
+    options.headers![HttpHeaders.authorizationHeader] = 'Basic $base64Us';
+    return url.replaceFirst('${uri.userInfo}@', '');
   }
   return url;
 }

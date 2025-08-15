@@ -23,6 +23,7 @@
 - [x] 相同频道自动合并，自动分组
 - [x] 支持数字换台
 - [x] 支持上下键换台(需要在'设置->实验设置->上下键切换频道'中手动打开)
+- [x] 支持[Basic认证](https://github.com/aiyakuaile/easy_tv_live?tab=readme-ov-file#User-Agent)请求订阅源(v2.9.1新增)
 - [x] 支持添加本地文件为订阅源(v2.9.5新增)
 - [x] 远程配置数据源(v2.9.6新增)
 - [x] 支持自定义[User-Agent](https://github.com/aiyakuaile/easy_tv_live?tab=readme-ov-file#User-Agent)(v2.9.7新增)
@@ -68,7 +69,12 @@
 > ```
 > 最后把修改后的订阅源添加到App中。应用解析到User-Agent后，会有一个toast提示，如：`User-Agent=okHttp/Mod-1.0.0`
 
-
+### Basic认证
+订阅源支持Basic认证请求，请求格式如下
+```
+https://username:password@xxxxxxxxx.m3u
+例如：https://aiyakuaile:a123456@baidu.com/easy_tv_live/live.m3u
+```
 ### 字体
 支持切换的字体需要使用[easy_tv_font](https://github.com/aiyakuaile/easy_tv_font)这个项目,
 您如果想要添加其他字体，请按照这个项目的提示进行操作。
