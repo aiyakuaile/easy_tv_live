@@ -49,7 +49,7 @@ void main() async {
   fvp.registerWith(
     options: {
       'platforms': ['android', 'ios', 'windows', 'linux', 'macos'],
-      'video.decoders': ['FFmpeg'],
+      'video.decoders': ['D3D11', 'NVDEC', 'FFmpeg'],
       'player': {'cc': '0', 'buffer': '3000+60000'},
       'global': {'logLevel': 'Error'},
     },
