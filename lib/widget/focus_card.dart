@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 
 import '../entity/sub_scribe_model.dart';
 import '../generated/l10n.dart';
-import 'package:path/path.dart' as p;
 
 class FocusCard extends StatefulWidget {
   final SubScribeModel model;
@@ -25,7 +25,13 @@ class _FocusCardState extends State<FocusCard> {
     if (widget.model.link == 'default') {
       return S.current.defaultText;
     }
-    if(widget.model.local == true) {
+    if (widget.model.link!.contains('?')) {
+      final tl = Uri.parse(widget.model.link!).queryParameters['tl'];
+      if (tl != null) {
+        return tl;
+      }
+    }
+    if (widget.model.local == true) {
       return p.basename(widget.model.link ?? '');
     }
     return widget.model.link!.split('?').first.split('/').last.toString();
@@ -52,10 +58,7 @@ class _FocusCardState extends State<FocusCard> {
                   decoration: BoxDecoration(color: const Color(0xA4A27672), borderRadius: BorderRadius.circular(4)),
                   child: const Text('本地', style: TextStyle(color: Colors.yellow, fontSize: 12)),
                 ),
-              Text(
-                _calcLinkName(),
-                style: const TextStyle(fontSize: 20),
-              ),
+              Text(_calcLinkName(), style: const TextStyle(fontSize: 20)),
             ],
           ),
           const SizedBox(height: 12),
