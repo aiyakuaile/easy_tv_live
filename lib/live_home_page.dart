@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:window_manager/window_manager.dart';
 
 import 'channel_drawer_page.dart';
 import 'entity/play_channel_list_model.dart';
@@ -65,7 +64,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
     }
     toastString = S.current.lineToast(_sourceIndex + 1, _currentChannel!.title ?? '');
     setState(() {});
-    final url = _currentChannel!.urls![_sourceIndex].toString();
+    final url = _currentChannel!.urls![_sourceIndex > _currentChannel!.urls!.length - 1 ? 0 : _sourceIndex].toString();
     LogUtil.v('PlayVideo:【$entMsg】正在播放:$_sourceIndex::${_currentChannel!.toJson()}');
     try {
       if (_playerController != null) {
@@ -182,7 +181,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
       ..indicatorColor = Colors.black
       ..textColor = Colors.black
       ..backgroundColor = Colors.white70;
-    if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+    // if (!EnvUtil.isMobile) windowManager.setTitleBarStyle(TitleBarStyle.hidden);
     Future.delayed(Duration.zero, _loadData);
   }
 
@@ -299,39 +298,58 @@ class _LiveHomePageState extends State<LiveHomePage> {
                   _drawerIsOpen = isOpened;
                 });
               },
-              body: toastString == 'UNKNOWN'
-                  ? InkWell(
-                      canRequestFocus: false,
-                      onTap: _parseData,
-                      onHover: (bool isHover) {
-                        if (isHover) {
-                          windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
-                        } else {
-                          windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
-                        }
-                      },
-                      child: EmptyPage(
-                        onRefresh: _parseData,
-                        onEnterSetting: () async {
-                          await M3uUtil.openAddSource(context);
-                          _parseData();
-                        },
-                      ),
-                    )
-                  : TableVideoWidget(
-                      toastString: toastString,
-                      controller: _playerController,
-                      isBuffering: isBuffering,
-                      isPlaying: isPlaying,
-                      aspectRatio: aspectRatio,
-                      drawerIsOpen: _drawerIsOpen,
-                      changeChannelSources: _changeChannelSources,
-                      onChangeSubSource: _parseData,
-                      isLandscape: true,
-                      onPreviousChannel: _previousChannel,
-                      onNextChannel: _nextChannel,
-                      onSwitchSource: _switchSource,
+              body: Builder(
+                builder: (context) {
+                  return CallbackShortcuts(
+                    bindings: <ShortcutActivator, VoidCallback>{
+                      const SingleActivator(LogicalKeyboardKey.arrowUp): _previousChannel,
+                      const SingleActivator(LogicalKeyboardKey.arrowDown): _nextChannel,
+                      const SingleActivator(LogicalKeyboardKey.arrowLeft): () => _pushChannelDrawer(context),
+                      const SingleActivator(LogicalKeyboardKey.arrowRight): () => _switchSource(),
+                      const SingleActivator(LogicalKeyboardKey.arrowRight, alt: true): () => _changeChannelSources(),
+                      if (Platform.isMacOS) const SingleActivator(LogicalKeyboardKey.comma, meta: true): () => _pushSettingPage(context),
+                      if (Platform.isWindows || Platform.isLinux)
+                        const SingleActivator(LogicalKeyboardKey.comma, control: true): () => _pushSettingPage(context),
+                    },
+                    child: Focus(
+                      autofocus: true,
+                      child: toastString == 'UNKNOWN'
+                          ? InkWell(
+                              canRequestFocus: false,
+                              onTap: _parseData,
+                              // onHover: (bool isHover) {
+                              //   if (isHover) {
+                              //     windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+                              //   } else {
+                              //     windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+                              //   }
+                              // },
+                              child: EmptyPage(
+                                onRefresh: _parseData,
+                                onEnterSetting: () async {
+                                  await M3uUtil.openAddSource(context);
+                                  _parseData();
+                                },
+                              ),
+                            )
+                          : TableVideoWidget(
+                              toastString: toastString,
+                              controller: _playerController,
+                              isBuffering: isBuffering,
+                              isPlaying: isPlaying,
+                              aspectRatio: aspectRatio,
+                              drawerIsOpen: _drawerIsOpen,
+                              changeChannelSources: _changeChannelSources,
+                              onChangeSubSource: _parseData,
+                              isLandscape: true,
+                              onPreviousChannel: _previousChannel,
+                              onNextChannel: _nextChannel,
+                              onSwitchSource: _switchSource,
+                            ),
                     ),
+                  );
+                },
+              ),
             ),
           );
         },
@@ -403,6 +421,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   _nextChannel() async {
+    if (toastString == 'UNKNOWN') return;
     final lastIndex = _channelSerialNum + 1;
     final channel = M3uUtil.serialNumMap[lastIndex.toString()];
     if (channel != null) {
@@ -415,6 +434,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   _previousChannel() async {
+    if (toastString == 'UNKNOWN') return;
     final lastIndex = _channelSerialNum - 1;
     final channel = M3uUtil.serialNumMap[lastIndex.toString()];
     if (channel != null) {
@@ -427,7 +447,29 @@ class _LiveHomePageState extends State<LiveHomePage> {
   }
 
   _switchSource() async {
+    if (toastString == 'UNKNOWN') return;
     _sourceIndex = (_sourceIndex + 1) % _currentChannel!.urls!.length;
+    if (_currentChannel!.urls!.length == 1) {
+      EasyLoading.showToast('🤣没有更多线路！');
+    }
     _playVideo('switchSource点击屏幕切换线路方法进入');
+  }
+
+  _pushSettingPage(BuildContext context) async {
+    LogUtil.v('设置：：：：');
+    _playerController?.pause();
+    await M3uUtil.openAddSource(context);
+    final isChange = await M3uUtil.isChangeChannelLink();
+    if (isChange) {
+      _parseData();
+    } else {
+      _playerController?.play();
+    }
+  }
+
+  _pushChannelDrawer(BuildContext context) {
+    if (toastString == 'UNKNOWN') return;
+    LogUtil.v('节目菜单：：：：');
+    Scaffold.of(context).openDrawer();
   }
 }

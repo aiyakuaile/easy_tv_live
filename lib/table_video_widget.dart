@@ -50,6 +50,7 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
 
   bool _isShowOpView = true;
 
+  // Timer? _timer;
   @override
   void initState() {
     super.initState();
@@ -59,19 +60,20 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
   @override
   void dispose() {
     if (!EnvUtil.isMobile) windowManager.removeListener(this);
+    // _timer?.cancel();
     super.dispose();
   }
 
-  @override
-  void onWindowEnterFullScreen() {
-    super.onWindowEnterFullScreen();
-    windowManager.setTitleBarStyle(TitleBarStyle.normal, windowButtonVisibility: true);
-  }
-
-  @override
-  void onWindowLeaveFullScreen() {
-    windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
-  }
+  // @override
+  // void onWindowEnterFullScreen() {
+  //   super.onWindowEnterFullScreen();
+  //   windowManager.setTitleBarStyle(TitleBarStyle.normal, windowButtonVisibility: true);
+  // }
+  //
+  // @override
+  // void onWindowLeaveFullScreen() {
+  //   windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+  // }
 
   @override
   void onWindowResize() async {
@@ -87,6 +89,47 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
       _isShowOpView = true;
       setState(() {});
     }
+  }
+
+  _pushSettingPage(BuildContext context) async {
+    widget.controller?.pause();
+    await M3uUtil.openAddSource(context);
+    final isChange = await M3uUtil.isChangeChannelLink();
+    if (isChange) {
+      widget.onChangeSubSource.call();
+    } else {
+      widget.controller?.play();
+    }
+  }
+
+  _pushChannelDrawer(BuildContext context) {
+    setState(() {
+      _isShowMenuBar = false;
+    });
+    Scaffold.of(context).openDrawer();
+  }
+
+  _nextChannel() {
+    setState(() {
+      _isShowMenuBar = false;
+    });
+    LogUtil.v('下一个：：：：');
+    widget.onNextChannel();
+  }
+
+  _previousChannel() {
+    setState(() {
+      _isShowMenuBar = false;
+    });
+    widget.onPreviousChannel();
+  }
+
+  _toggleLine() {
+    setState(() {
+      _isShowMenuBar = false;
+    });
+    LogUtil.v('切换源：：：：');
+    widget.onSwitchSource();
   }
 
   @override
@@ -108,11 +151,13 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
             }
           },
           onHover: (bool isHover) {
-            if (isHover) {
-              windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
-            } else {
-              windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
-            }
+            // if (isHover) {
+            //   _timer?.cancel();
+            //   windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: true);
+            //   _timer = Timer(const Duration(seconds: 8), () {
+            //     windowManager.setTitleBarStyle(TitleBarStyle.hidden, windowButtonVisibility: false);
+            //   });
+            // }
           },
           child: Container(
             alignment: Alignment.center,
@@ -140,110 +185,74 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
         ),
         if (_isShowOpView) ...[
           if (widget.drawerIsOpen || (!widget.drawerIsOpen && _isShowMenuBar && widget.isLandscape)) const DatePositionWidget(),
-          if(widget.isLandscape) Builder(
-            builder: (BuildContext context) {
-              return Row(
-                children: [
-                  Material(
-                    color: Colors.transparent,
-                    child: SizedBox(
-                      width: 80,
-                      height: MediaQuery.of(context).size.height,
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                widget.controller?.pause();
-                                await M3uUtil.openAddSource(context);
-                                final isChange = await M3uUtil.isChangeChannelLink();
-                                if (isChange) {
-                                  widget.onChangeSubSource.call();
-                                } else {
-                                  widget.controller?.play();
-                                }
-                              },
-                              child: Tooltip(
-                                message: '进入设置',
-                                child: SizedBox(width: 80, height: MediaQuery.of(context).size.height),
+          if (widget.isLandscape)
+            Builder(
+              builder: (BuildContext context) {
+                return Row(
+                  children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: SizedBox(
+                        width: 80,
+                        height: MediaQuery.of(context).size.height,
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: () => _pushSettingPage(context),
+                                child: Tooltip(
+                                  message: '进入设置',
+                                  child: SizedBox(width: 80, height: MediaQuery.of(context).size.height),
+                                ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  _isShowMenuBar = false;
-                                });
-                                Scaffold.of(context).openDrawer();
-                              },
-                              child: Tooltip(
-                                message: '打开频道列表',
-                                child: SizedBox(width: 80, height: MediaQuery.of(context).size.height),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () => _pushChannelDrawer(context),
+                                child: Tooltip(
+                                  message: '打开频道列表',
+                                  child: SizedBox(width: 80, height: MediaQuery.of(context).size.height),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(child: const VolumeBrightnessWidget()),
-                  Material(
-                    color: Colors.transparent,
-                    child: SizedBox(
-                      width: 80,
-                      height: MediaQuery.of(context).size.height,
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Tooltip(
-                              message: '上一个节目',
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _isShowMenuBar = false;
-                                  });
-                                  widget.onPreviousChannel();
-                                },
+                    Expanded(child: const VolumeBrightnessWidget()),
+                    Material(
+                      color: Colors.transparent,
+                      child: SizedBox(
+                        width: 80,
+                        height: MediaQuery.of(context).size.height,
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Tooltip(
+                                message: '上一个节目',
+                                child: InkWell(onTap: _previousChannel),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: Tooltip(
-                              message: '切换线路',
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _isShowMenuBar = false;
-                                  });
-                                  LogUtil.v('切换源：：：：');
-                                  widget.onSwitchSource();
-                                },
+                            Expanded(
+                              child: Tooltip(
+                                message: '切换线路',
+                                child: InkWell(onTap: _toggleLine),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: Tooltip(
-                              message: '下一个节目',
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _isShowMenuBar = false;
-                                  });
-                                  LogUtil.v('下一个：：：：');
-                                  widget.onNextChannel();
-                                },
+                            Expanded(
+                              child: Tooltip(
+                                message: '下一个节目',
+                                child: InkWell(onTap: _nextChannel),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            },
-          ),
+                  ],
+                );
+              },
+            ),
           if (widget.isLandscape && !widget.drawerIsOpen)
             AnimatedPositioned(
               left: 0,

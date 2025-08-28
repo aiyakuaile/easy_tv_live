@@ -166,6 +166,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                           }
                         },
                         splashColor: Colors.white.withValues(alpha: 0.3),
+                        canRequestFocus: true,
                         child: Ink(
                           width: double.infinity,
                           height: _itemHeight,
@@ -211,7 +212,7 @@ class _ChannelDrawerPageState extends State<ChannelDrawerPage> {
                         color: Colors.transparent,
                         child: InkWell(
                           overlayColor: isTV && EnvUtil.isMobile ? WidgetStateProperty.all(Colors.greenAccent.withValues(alpha: 0.2)) : null,
-                          canRequestFocus: isTV && EnvUtil.isMobile,
+                          canRequestFocus: true,
                           autofocus: isTV && EnvUtil.isMobile && widget.channelListModel!.playChannelIndex == index,
                           onTap: () async {
                             if (widget.channelListModel!.playChannelIndex == index) {
