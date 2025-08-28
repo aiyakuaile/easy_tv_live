@@ -330,6 +330,8 @@ jobs:
           # 复制应用文件
           cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
           cp deb-package/usr/share/applications/easytv-live.desktop AppDir/usr/share/applications/
+          # AppImage需要在根目录有desktop文件
+          cp deb-package/usr/share/applications/easytv-live.desktop AppDir/
           
           # 创建AppRun脚本
           cat > AppDir/AppRun << 'EOF'
