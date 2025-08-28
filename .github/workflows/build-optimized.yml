@@ -99,10 +99,17 @@ jobs:
             build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
             build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
 
-  build_ios_macos_intel:
+  build_ios_macos:
     if: (github.event.inputs.build_ios == 'true' || github.event.inputs.build_macos != 'false' || github.event.inputs.build_macos == '' || github.event_name != 'workflow_dispatch')
-    runs-on: macos-13  # Intel runner
+    runs-on: macos-latest
     timeout-minutes: 60
+    strategy:
+      matrix:
+        include:
+          - arch: intel
+            target: x86_64
+          - arch: apple
+            target: arm64
     steps:
       - uses: actions/checkout@v4
       
@@ -124,18 +131,27 @@ jobs:
           path: |
             ~/.pub-cache
             ~/Library/Caches/CocoaPods
-          key: ${{ runner.os }}-intel-deps-${{ hashFiles('**/pubspec.yaml', '**/Podfile.lock') }}
+          key: ${{ runner.os }}-${{ matrix.arch }}-deps-${{ hashFiles('**/pubspec.yaml', '**/Podfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-intel-deps-
+            ${{ runner.os }}-${{ matrix.arch }}-deps-
             
       - run: flutter pub get
 
       - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+        run: |
+          # 查找可用的Xcode版本并选择最新的
+          XCODE_PATH=$(find /Applications -name "Xcode*.app" -maxdepth 1 | sort -V | tail -1)
+          if [ -n "$XCODE_PATH" ]; then
+            echo "Found Xcode at: $XCODE_PATH"
+            sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          else
+            echo "Using default Xcode"
+            sudo xcode-select --print-path
+          fi
 
-      # Build iOS (only if requested)
+      # Build iOS (only if requested and intel arch)
       - name: Build iOS
-        if: github.event.inputs.build_ios == 'true'
+        if: github.event.inputs.build_ios == 'true' && matrix.arch == 'intel'
         run: |
           flutter build ios --dart-define=isTV=false --release --no-codesign
           cd build/ios/iphoneos
@@ -143,69 +159,29 @@ jobs:
           mv Runner.app Payload/
           zip -r easyTV-${{ github.ref_name }}.ipa Payload
 
-      # Build macOS Intel
-      - name: Build macOS Intel
+      # Build macOS with specific architecture
+      - name: Build macOS ${{ matrix.arch }}
         if: github.event.inputs.build_macos != 'false' || github.event.inputs.build_macos == '' || github.event_name != 'workflow_dispatch'
         run: |
+          # 设置架构环境变量
+          export FLUTTER_BUILD_MODE=release
+          if [ "${{ matrix.arch }}" = "intel" ]; then
+            export ARCHS="x86_64"
+          else
+            export ARCHS="arm64"
+          fi
+          
           flutter build macos --dart-define=isTV=false --release
           cd build/macos/Build/Products/Release
-          zip -r easyTV-${{ github.ref_name }}-macos-intel.zip *.app
+          zip -r easyTV-${{ github.ref_name }}-macos-${{ matrix.arch }}.zip *.app
 
-      - name: Upload ios-macos-intel artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ios-macos-intel-artifact
+          name: macos-${{ matrix.arch }}-artifact
           path: |
             build/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
-            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos-intel.zip
-
-  build_macos_apple:
-    if: github.event.inputs.build_macos != 'false' || github.event.inputs.build_macos == '' || github.event_name != 'workflow_dispatch'
-    runs-on: macos-14  # Apple Silicon runner
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.32.8'
-          cache: true
-          
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            ~/Library/Caches/CocoaPods
-          key: ${{ runner.os }}-apple-deps-${{ hashFiles('**/pubspec.yaml', '**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-apple-deps-
-            
-      - run: flutter pub get
-
-      - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
-
-      # Build macOS Apple Silicon
-      - name: Build macOS Apple Silicon
-        run: |
-          flutter build macos --dart-define=isTV=false --release
-          cd build/macos/Build/Products/Release
-          zip -r easyTV-${{ github.ref_name }}-macos-apple.zip *.app
-
-      - name: Upload macos-apple artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-apple-artifact
-          path: |
-            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos-apple.zip
+            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos-${{ matrix.arch }}.zip
 
   build_linux_x64:
     if: github.event.inputs.build_linux != 'false' || github.event.inputs.build_linux == '' || github.event_name != 'workflow_dispatch'
@@ -231,8 +207,8 @@ jobs:
             
       - run: |
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev
-          sudo apt-get install -y libasound2-dev
+          sudo apt-get install -y cmake ninja-build libgtk-3-dev libasound2-dev
+          sudo apt-get install -y pkg-config libblkid-dev liblzma-dev
           
       - run: flutter config --enable-linux-desktop
       - run: flutter pub get
@@ -510,7 +486,7 @@ jobs:
             portable/easyTV-${{ github.ref_name }}-windows.zip
 
   create_release:
-    needs: [ build_linux_x64, build_linux_arm64, build_windows, build_android_and_tv, build_ios_macos_intel, build_macos_apple ]
+    needs: [ build_linux_x64, build_linux_arm64, build_windows, build_android_and_tv, build_ios_macos ]
     if: always() && startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
