@@ -1,0 +1,568 @@
+name: Build Multi-Platform (Optimized)
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ '*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      build_android:
+        description: 'Build Android'
+        required: false
+        default: true
+        type: boolean
+      build_ios:
+        description: 'Build iOS'
+        required: false
+        default: false
+        type: boolean
+      build_macos:
+        description: 'Build macOS'
+        required: false
+        default: true
+        type: boolean
+      build_windows:
+        description: 'Build Windows'
+        required: false
+        default: true
+        type: boolean
+      build_linux:
+        description: 'Build Linux'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  FLUTTER_VERSION: '3.24.3'
+  JAVA_VERSION: '17'
+
+jobs:
+  # 准备阶段 - 检查代码和依赖
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.changes.outputs.should_build }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]] || [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          else
+            # 检查是否有相关文件变更
+            if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '\.(dart|yaml|yml|json)$|^(lib|android|ios|macos|windows|linux)/'; then
+              echo "should_build=true" >> $GITHUB_OUTPUT
+            else
+              echo "should_build=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(grep 'version:' pubspec.yaml | sed 's/version: //' | tr -d ' ')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  # Android 构建
+  build-android:
+    needs: prepare
+    if: needs.prepare.outputs.should_build == 'true' && (github.event.inputs.build_android != 'false' || github.event.inputs.build_android == '' || github.event_name != 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/pubspec.yaml', '**/build.gradle', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos
+
+      - name: Build APK
+        run: |
+          flutter build apk --release --split-per-abi
+          flutter build apk --release --target-platform android-arm64
+
+      - name: Build App Bundle
+        run: flutter build appbundle --release
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-builds-${{ needs.prepare.outputs.version }}
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            build/app/outputs/bundle/release/*.aab
+          retention-days: 30
+
+  # iOS 构建
+  build-ios:
+    needs: prepare
+    if: needs.prepare.outputs.should_build == 'true' && github.event.inputs.build_ios == 'true'
+    runs-on: macos-14
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/pubspec.yaml', '**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+
+      - name: Build iOS (no codesign)
+        run: |
+          flutter build ios --release --no-codesign
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -destination generic/platform=iOS -archivePath build/Runner.xcarchive archive CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload iOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-builds-${{ needs.prepare.outputs.version }}
+          path: |
+            ios/build/Runner.xcarchive
+          retention-days: 30
+
+  # macOS Intel 构建
+  build-macos-intel:
+    needs: prepare
+    if: needs.prepare.outputs.should_build == 'true' && (github.event.inputs.build_macos != 'false' || github.event.inputs.build_macos == '' || github.event_name != 'workflow_dispatch')
+    runs-on: macos-13  # Intel runner
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-intel-deps-${{ hashFiles('**/pubspec.yaml', '**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-intel-deps-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+
+      - name: Enable macOS desktop
+        run: flutter config --enable-macos-desktop
+
+      - name: Build macOS Intel
+        run: flutter build macos --release --dart-define=isTV=false
+
+      - name: Create Intel ZIP
+        run: |
+          cd build/macos/Build/Products/Release
+          zip -r "Easy-TV-Live-${{ needs.prepare.outputs.version }}-macos-intel.zip" *.app
+
+      - name: Create Intel DMG
+        run: |
+          brew install create-dmg
+          create-dmg \
+            --volname "Easy TV Live Intel" \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --icon "Easy TV Live.app" 200 190 \
+            --hide-extension "Easy TV Live.app" \
+            --app-drop-link 600 185 \
+            "Easy-TV-Live-${{ needs.prepare.outputs.version }}-macos-intel.dmg" \
+            "build/macos/Build/Products/Release/"
+
+      - name: Upload macOS Intel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-intel-builds-${{ needs.prepare.outputs.version }}
+          path: |
+            build/macos/Build/Products/Release/Easy-TV-Live-*-macos-intel.zip
+            Easy-TV-Live-*-macos-intel.dmg
+          retention-days: 30
+
+  # macOS Apple Silicon 构建
+  build-macos-apple:
+    needs: prepare
+    if: needs.prepare.outputs.should_build == 'true' && (github.event.inputs.build_macos != 'false' || github.event.inputs.build_macos == '' || github.event_name != 'workflow_dispatch')
+    runs-on: macos-14  # Apple Silicon runner
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-apple-deps-${{ hashFiles('**/pubspec.yaml', '**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-apple-deps-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+
+      - name: Enable macOS desktop
+        run: flutter config --enable-macos-desktop
+
+      - name: Build macOS Apple Silicon
+        run: flutter build macos --release --dart-define=isTV=false
+
+      - name: Create Apple Silicon ZIP
+        run: |
+          cd build/macos/Build/Products/Release
+          zip -r "Easy-TV-Live-${{ needs.prepare.outputs.version }}-macos-apple.zip" *.app
+
+      - name: Create Apple Silicon DMG
+        run: |
+          brew install create-dmg
+          create-dmg \
+            --volname "Easy TV Live Apple" \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --icon "Easy TV Live.app" 200 190 \
+            --hide-extension "Easy TV Live.app" \
+            --app-drop-link 600 185 \
+            "Easy-TV-Live-${{ needs.prepare.outputs.version }}-macos-apple.dmg" \
+            "build/macos/Build/Products/Release/"
+
+      - name: Upload macOS Apple Silicon artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-apple-builds-${{ needs.prepare.outputs.version }}
+          path: |
+            build/macos/Build/Products/Release/Easy-TV-Live-*-macos-apple.zip
+            Easy-TV-Live-*-macos-apple.dmg
+          retention-days: 30
+
+  # Windows 构建
+  build-windows:
+    needs: prepare
+    if: needs.prepare.outputs.should_build == 'true' && (github.event.inputs.build_windows != 'false' || github.event.inputs.build_windows == '' || github.event_name != 'workflow_dispatch')
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~\AppData\Local\Pub\Cache
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Build Windows
+        run: flutter build windows --release
+
+      - name: Create Windows installer
+        run: |
+          # 创建简单的压缩包，可以后续集成 Inno Setup 或 NSIS
+          Compress-Archive -Path "build\windows\x64\runner\Release\*" -DestinationPath "Easy-TV-Live-${{ needs.prepare.outputs.version }}-windows-x64.zip"
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-builds-${{ needs.prepare.outputs.version }}
+          path: |
+            build/windows/x64/runner/Release/
+            Easy-TV-Live-*.zip
+          retention-days: 30
+
+  # Linux x64 构建 (Ubuntu/Debian)
+  build-linux-x64:
+    needs: prepare
+    if: needs.prepare.outputs.should_build == 'true' && (github.event.inputs.build_linux != 'false' || github.event.inputs.build_linux == '' || github.event_name != 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+          key: ${{ runner.os }}-x64-deps-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-x64-deps-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+
+      - name: Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+
+      - name: Build Linux x64
+        run: flutter build linux --release --dart-define=isTV=false
+
+      - name: Create Linux x64 packages
+        run: |
+          cd build/linux/x64/release/bundle
+          
+          # 创建 tar.gz 包
+          tar -czf ../../../../../Easy-TV-Live-${{ needs.prepare.outputs.version }}-linux-x64.tar.gz .
+          
+          # 创建 AppImage 目录结构
+          cd ../../../../../
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+          
+          # 复制应用文件
+          cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
+          
+          # 创建 desktop 文件
+          cat > AppDir/usr/share/applications/easy-tv-live.desktop << EOF
+          [Desktop Entry]
+          Type=Application
+          Name=Easy TV Live
+          Exec=easy_tv_live
+          Icon=easy-tv-live
+          Categories=AudioVideo;
+          EOF
+          
+          # 创建 AppRun 脚本
+          cat > AppDir/AppRun << 'EOF'
+          #!/bin/bash
+          HERE="$(dirname "$(readlink -f "${0}")")"
+          exec "${HERE}/usr/bin/easy_tv_live" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+          
+          # 下载并使用 appimagetool
+          wget -O appimagetool https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool
+          ./appimagetool AppDir Easy-TV-Live-${{ needs.prepare.outputs.version }}-linux-x64.AppImage
+
+      - name: Upload Linux x64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64-builds-${{ needs.prepare.outputs.version }}
+          path: |
+            Easy-TV-Live-*-linux-x64.tar.gz
+            Easy-TV-Live-*-linux-x64.AppImage
+          retention-days: 30
+
+  # Linux ARM64 构建
+  build-linux-arm64:
+    needs: prepare
+    if: needs.prepare.outputs.should_build == 'true' && (github.event.inputs.build_linux != 'false' || github.event.inputs.build_linux == '' || github.event_name != 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Linux ARM64 in container
+        run: |
+          docker run --rm --platform linux/arm64 \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            ubuntu:22.04 bash -c "
+              apt-get update && \
+              apt-get install -y curl git unzip xz-utils zip libglu1-mesa clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev && \
+              
+              # 安装 Flutter
+              git clone https://github.com/flutter/flutter.git -b stable --depth 1 /opt/flutter && \
+              export PATH=/opt/flutter/bin:\$PATH && \
+              flutter doctor && \
+              flutter config --enable-linux-desktop && \
+              
+              # 构建应用
+              flutter pub get && \
+              flutter pub run build_runner build --delete-conflicting-outputs && \
+              flutter gen-l10n && \
+              flutter build linux --release --dart-define=isTV=false && \
+              
+              # 创建包
+              cd build/linux/x64/release/bundle && \
+              tar -czf /workspace/Easy-TV-Live-${{ needs.prepare.outputs.version }}-linux-arm64.tar.gz .
+            "
+
+      - name: Upload Linux ARM64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-arm64-builds-${{ needs.prepare.outputs.version }}
+          path: |
+            Easy-TV-Live-*-linux-arm64.tar.gz
+          retention-days: 30
+
+  # 发布阶段
+  release:
+    needs: [prepare, build-android, build-macos-intel, build-macos-apple, build-windows, build-linux-x64, build-linux-arm64]
+    if: always() && needs.prepare.outputs.should_build == 'true' && startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/**/*.apk
+            artifacts/**/*.aab
+            artifacts/**/*.dmg
+            artifacts/**/*.zip
+            artifacts/**/*.tar.gz
+            artifacts/**/*.AppImage
+          draft: true
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 通知阶段
+  notify:
+    needs: [prepare, build-android, build-macos-intel, build-macos-apple, build-windows, build-linux-x64, build-linux-arm64]
+    if: always() && needs.prepare.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Summary
+        run: |
+          echo "## 构建摘要" >> $GITHUB_STEP_SUMMARY
+          echo "版本: ${{ needs.prepare.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "触发事件: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 构建状态" >> $GITHUB_STEP_SUMMARY
+          echo "- Android: ${{ needs.build-android.result || '跳过' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- iOS: ${{ needs.build-ios.result || '跳过' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- macOS Intel: ${{ needs.build-macos-intel.result || '跳过' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- macOS Apple: ${{ needs.build-macos-apple.result || '跳过' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Windows: ${{ needs.build-windows.result || '跳过' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Linux x64: ${{ needs.build-linux-x64.result || '跳过' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Linux ARM64: ${{ needs.build-linux-arm64.result || '跳过' }}" >> $GITHUB_STEP_SUMMARY
