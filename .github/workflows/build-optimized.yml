@@ -240,7 +240,7 @@ jobs:
           # 创建desktop文件
           cat > deb-package/usr/share/applications/easytv-live.desktop << EOF
           [Desktop Entry]
-          Version=1.0.0
+          Version=1.0
           Type=Application
           Name=Easy TV Live
           Comment=Easy TV Live Application
