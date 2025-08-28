@@ -240,7 +240,7 @@ jobs:
           # 创建desktop文件
           cat > deb-package/usr/share/applications/easytv-live.desktop << EOF
           [Desktop Entry]
-          Version=${{ github.ref_name }}
+          Version=1.0.0
           Type=Application
           Name=Easy TV Live
           Comment=Easy TV Live Application
@@ -290,7 +290,7 @@ jobs:
           # 创建rpm spec文件
           cat > rpm-package/SPECS/easytv-live.spec << EOF
           Name: easytv-live
-          Version: ${{ github.ref_name }}
+          Version: 1.0.0
           Release: 1
           Summary: Easy TV Live Application
           License: MIT
@@ -340,9 +340,13 @@ jobs:
           EOF
           chmod +x AppDir/AppRun
           
-          # 下载并使用appimagetool
+          # 安装FUSE并下载appimagetool
+          sudo apt-get install -y fuse libfuse2
           wget -O appimagetool https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x appimagetool
+          
+          # 尝试使用FUSE运行，如果失败则使用提取模式
+          ./appimagetool AppDir packages/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage || \
           ./appimagetool --appimage-extract-and-run AppDir packages/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
 
       - name: Upload linux-x64 artifact
