@@ -343,7 +343,7 @@ jobs:
           # 下载并使用appimagetool
           wget -O appimagetool https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x appimagetool
-          ./appimagetool AppDir packages/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
+          ./appimagetool --appimage-extract-and-run AppDir packages/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
 
       - name: Upload linux-x64 artifact
         uses: actions/upload-artifact@v4
