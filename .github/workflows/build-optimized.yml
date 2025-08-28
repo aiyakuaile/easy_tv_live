@@ -14,7 +14,7 @@ on:
       build_ios:
         description: 'Build iOS'
         required: false
-        default: false
+        default: true
         type: boolean
       build_macos:
         description: 'Build macOS'
