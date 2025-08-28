@@ -65,6 +65,9 @@ jobs:
           flutter-version: '3.32.8'
       - run: flutter pub get
 
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+
       # Build iOS
       - name: Build iOS
         run: |
