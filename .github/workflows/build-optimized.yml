@@ -254,7 +254,7 @@ jobs:
           # 创建DEBIAN控制文件
           cat > deb-package/DEBIAN/control << EOF
           Package: easytv-live
-          Version: ${{ github.ref_name }}
+          Version: 1.0.0-test
           Section: video
           Priority: optional
           Architecture: amd64
