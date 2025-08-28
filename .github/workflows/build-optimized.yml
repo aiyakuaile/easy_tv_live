@@ -333,6 +333,13 @@ jobs:
           # AppImage需要在根目录有desktop文件
           cp deb-package/usr/share/applications/easytv-live.desktop AppDir/
           
+          # 复制图标文件
+          if [ -f "assets/images/app_logo.png" ]; then
+            cp assets/images/app_logo.png AppDir/easytv-live.png
+          else
+            echo "Warning: app_logo.png not found in assets/images/"
+          fi
+          
           # 创建AppRun脚本
           cat > AppDir/AppRun << 'EOF'
           #!/bin/bash
