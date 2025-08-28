@@ -280,12 +280,12 @@ jobs:
           mkdir -p rpm-package/BUILD
           mkdir -p rpm-package/RPMS
           mkdir -p rpm-package/SOURCES
-          mkdir -p rpm-package/BUILDROOT/easytv-live-${{ github.ref_name }}-1.x86_64/usr/bin
-          mkdir -p rpm-package/BUILDROOT/easytv-live-${{ github.ref_name }}-1.x86_64/usr/share/applications
+          mkdir -p rpm-package/BUILDROOT/easytv-live-1.0.0-1.x86_64/usr/bin
+          mkdir -p rpm-package/BUILDROOT/easytv-live-1.0.0-1.x86_64/usr/share/applications
           
           # 复制文件到rpm构建目录
-          cp -r build/linux/x64/release/bundle/* rpm-package/BUILDROOT/easytv-live-${{ github.ref_name }}-1.x86_64/usr/bin/
-          cp deb-package/usr/share/applications/easytv-live.desktop rpm-package/BUILDROOT/easytv-live-${{ github.ref_name }}-1.x86_64/usr/share/applications/
+          cp -r build/linux/x64/release/bundle/* rpm-package/BUILDROOT/easytv-live-1.0.0-1.x86_64/usr/bin/
+          cp deb-package/usr/share/applications/easytv-live.desktop rpm-package/BUILDROOT/easytv-live-1.0.0-1.x86_64/usr/share/applications/
           
           # 创建rpm spec文件
           cat > rpm-package/SPECS/easytv-live.spec << EOF
