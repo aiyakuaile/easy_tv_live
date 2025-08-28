@@ -133,10 +133,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: "97a943524074a1e8e858aa154d09e38a4168a9ad765d6cac66606fd906b86875"
+      sha256: e7e16c9d15c36330b94ca0e2ad8cb61f93cd5282d0158c09805aed13b5452f22
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "10.2.2"
+    version: "10.3.2"
   flutter:
     dependency: "direct main"
     description: flutter
