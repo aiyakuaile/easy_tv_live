@@ -8,7 +8,8 @@ class FocusCard extends StatefulWidget {
   final SubScribeModel model;
   final GestureTapCallback? onDelete;
   final GestureTapCallback? onUse;
-  const FocusCard({super.key, required this.model, required this.onDelete, this.onUse});
+  final ValueChanged<String>? onEdit;
+  const FocusCard({super.key, required this.model, required this.onDelete, this.onUse,this.onEdit});
 
   @override
   State<FocusCard> createState() => _FocusCardState();
@@ -68,6 +69,71 @@ class _FocusCardState extends State<FocusCard> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Spacer(),
+              if(widget.model.link != 'default' && widget.model.local != true) TextButton(
+                onPressed: () async {
+                  final sureNode = FocusNode();
+                  final newLink = await showDialog<String>(
+                    context: context,
+                    builder: (context) {
+                      final controller = TextEditingController(text: widget.model.link);
+                      return AlertDialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        backgroundColor: const Color(0xFF393B40),
+                        title: Text(S.current.edit, style: const TextStyle(color: Colors.white, fontSize: 20)),
+                        content: SingleChildScrollView(
+                          child: TextField(
+                            autofocus: true,
+                            controller: controller,
+                            maxLines: null,
+                            textInputAction: TextInputAction.done,
+                            style: const TextStyle(color: Colors.white),
+                            scrollPadding: const EdgeInsets.only(bottom: 200),
+                            decoration: InputDecoration(
+                              hintText: S.current.addFiledHintText,
+                              hintStyle: const TextStyle(color: Colors.white70),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.white30),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onSubmitted: (value){
+                              sureNode.requestFocus();
+                            },
+                            onEditingComplete: () {
+                              sureNode.requestFocus();
+                            },
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            autofocus: false,
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(S.current.dialogCancel, style: const TextStyle(fontSize: 14)),
+                          ),
+                          TextButton(
+                            autofocus: false,
+                            focusNode: sureNode,
+                            onPressed: () {
+                              Navigator.pop(context, controller.text.trim());
+                            },
+                            child: Text(S.current.dialogConfirm, style: const TextStyle(fontSize: 14)),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                  if (newLink != null && newLink.isNotEmpty) {
+                    widget.onEdit?.call(newLink);
+                  }
+                },
+                child: Text(S.current.edit),
+              ),
               if (widget.model.selected != true && widget.model.link != 'default')
                 TextButton(
                   onFocusChange: _onFocusChange,
@@ -106,7 +172,7 @@ class _FocusCardState extends State<FocusCard> {
               TextButton(
                 onFocusChange: _onFocusChange,
                 onPressed: widget.model.selected != true ? widget.onUse : () {},
-                child: Text(widget.model.selected != true ? S.current.setDefault : S.current.inUse),
+                child: Text(widget.model.selected == true ? S.current.inUse : S.current.setDefault),
               ),
             ],
           ),

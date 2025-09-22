@@ -83,5 +83,6 @@
   "okRefresh": "【OK键】刷新",
   "refresh": "刷新",
   "noEPG": "暂无节目信息",
-  "noFile": "文件不存在"
+  "noFile": "文件不存在",
+  "edit": "编辑"
 }

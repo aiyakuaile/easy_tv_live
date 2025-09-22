@@ -77,9 +77,8 @@ class _TableVideoWidgetState extends State<TableVideoWidget> with WindowListener
 
   @override
   void onWindowResize() async {
-    LogUtil.v('onWindowResize:::::${widget.isLandscape}');
     final size = await windowManager.getSize();
-    await windowManager.setAspectRatio(16 / 9);
+    await windowManager.setAspectRatio(16/9);
     if (size.width < 600) {
       if (!_isShowOpView) return;
       _isShowOpView = false;

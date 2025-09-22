@@ -399,6 +399,11 @@ class S {
   String get noFile {
     return Intl.message('文件不存在', name: 'noFile', desc: '', args: []);
   }
+
+  /// `编辑`
+  String get edit {
+    return Intl.message('编辑', name: 'edit', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

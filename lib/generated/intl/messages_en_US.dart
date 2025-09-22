@@ -63,6 +63,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Are you sure you want to delete this subscription?",
     ),
     "dialogTitle": MessageLookupByLibrary.simpleMessage("Friendly Reminder"),
+    "edit": MessageLookupByLibrary.simpleMessage("Edit"),
     "findNewVersion": MessageLookupByLibrary.simpleMessage("New version found"),
     "fullScreen": MessageLookupByLibrary.simpleMessage("Full Screen Toggle"),
     "getDefaultError": MessageLookupByLibrary.simpleMessage(

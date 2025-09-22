@@ -48,7 +48,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
   bool isBuffering = false;
 
   bool isPlaying = false;
-  double aspectRatio = 1.78;
+  double aspectRatio = 16/9;
 
   bool _drawerIsOpen = false;
 
@@ -102,7 +102,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
       _playerController!.play();
       setState(() {
         toastString = S.current.loading;
-        aspectRatio = _playerController?.value.aspectRatio ?? 1.78;
+        aspectRatio = _playerController?.value.aspectRatio ?? 16/9;
       });
     } catch (e) {
       LogUtil.v('播放出错:::::$e');

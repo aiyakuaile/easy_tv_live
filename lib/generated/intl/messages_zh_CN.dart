@@ -52,6 +52,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "dialogConfirm": MessageLookupByLibrary.simpleMessage("确定"),
     "dialogDeleteContent": MessageLookupByLibrary.simpleMessage("确定删除此订阅吗？"),
     "dialogTitle": MessageLookupByLibrary.simpleMessage("温馨提示"),
+    "edit": MessageLookupByLibrary.simpleMessage("编辑"),
     "findNewVersion": MessageLookupByLibrary.simpleMessage("发现新版本"),
     "fullScreen": MessageLookupByLibrary.simpleMessage("全屏切换"),
     "getDefaultError": MessageLookupByLibrary.simpleMessage("获取默认数据源失败"),

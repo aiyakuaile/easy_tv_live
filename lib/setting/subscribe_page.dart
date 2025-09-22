@@ -291,6 +291,11 @@ class _SubScribePageState extends State<SubScribePage> {
                                 setState(() {});
                               }
                             },
+                            onEdit: (val) async {
+                              model.link = val;
+                              await M3uUtil.saveLocalData(_m3uList);
+                              setState(() {});
+                            },
                           );
                         },
                       );

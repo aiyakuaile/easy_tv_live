@@ -83,5 +83,6 @@
   "okRefresh": "【OK key】 Refresh",
   "refresh": "Refresh",
   "noEPG": "NO EPG DATA",
-  "noFile": "File Does Not Exist"
+  "noFile": "File Does Not Exist",
+  "edit": "Edit"
 }
