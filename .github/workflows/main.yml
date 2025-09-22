@@ -81,7 +81,7 @@
        # Build macOS
        - name: Build macOS
          run: |
-           flutter build macos --dart-define=isTV=false --release
+           flutter build macos --dart-define=isTV=false --release --macos-deployment-target=10.15
            cd build/macos/Build/Products/Release
            zip -r easyTV-${{ github.ref_name }}-macos.zip *.app
 
