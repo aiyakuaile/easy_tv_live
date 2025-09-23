@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_android_and_tv:
+  build_android_and_tv_ios_macos:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,7 +18,32 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.32.8'
+
       - run: flutter pub get
+
+      # Build macOS
+      - name: Build macOS
+        run: |
+          flutter build macos --dart-define=isTV=false --release
+          cd build/macos/Build/Products/Release
+          zip -r easyTV-${{ github.ref_name }}-macos.zip *.app
+
+      # Build iOS
+      - name: Build iOS
+        run: |
+          flutter build ios --dart-define=isTV=false --release --no-codesign
+          cd build/ios/iphoneos
+          mkdir Payload
+          mv Runner.app Payload/
+          zip -r easyTV-${{ github.ref_name }}.ipa Payload
+
+      - name: Upload ios-macos artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-macos-artifact
+          path: |
+            build/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
+            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
 
       - name: Decode keystore
         run: |
@@ -52,46 +77,7 @@ jobs:
           path: |
             build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
             build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
-
-  build_ios_macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.32.8'
-      - run: flutter pub get
-
-      - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_26.0.1.app/Contents/Developer
-
-      # Build iOS
-      - name: Build iOS
-        run: |
-          flutter build ios --dart-define=isTV=false --release --no-codesign
-          cd build/ios/iphoneos
-          mkdir Payload
-          mv Runner.app Payload/
-          zip -r easyTV-${{ github.ref_name }}.ipa Payload
-
-      # Build macOS
-      - name: Build macOS
-        run: |
-          flutter build macos --dart-define=isTV=false --release
-          cd build/macos/Build/Products/Release
-          zip -r easyTV-${{ github.ref_name }}-macos.zip *.app
-
-      - name: Upload ios-macos artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-macos-artifact
-          path: |
-            build/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
-            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
+            
 
   build_linux:
     if: github.event.inputs.build_linux != 'false' || github.event.inputs.build_linux == '' || github.event_name != 'workflow_dispatch'
@@ -303,7 +289,7 @@ jobs:
             build/windows/x64/runner/Release/easyTV-${{ github.ref_name }}-windows.zip
 
   create_release:
-    needs: [ build_linux, build_windows, build_android_and_tv, build_ios_macos ]
+    needs: [ build_linux, build_windows, build_android_and_tv_ios_macos ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
