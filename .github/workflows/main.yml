@@ -41,6 +41,7 @@ jobs:
         run: |
           flutter build ios --dart-define=isTV=true --release --no-codesign
           cd build/ios/iphoneos
+          rm -rf Payload
           mkdir Payload
           mv Runner.app Payload/
           zip -r easyTV-${{ github.ref_name }}-apple-tv.ipa Payload
