@@ -65,6 +65,14 @@ The subscription source supports custom User-Agent. The program will parse the U
 > ```
 > Finally, add the modified subscription source to the App. After the application parses the User-Agent, there will be a toast prompt, such as: `User-Agent=okHttp/Mod-1.0.0`
 
+### Custom Display Title for Subscription Sources
+The subscription source supports custom display titles. You need to configure it as follows:
+ ```
+ https://xxxxxxxxxxxxx.m3u?tl=your-title
+ or
+ https://xxxxxxxxxxxxx.m3u?other=123&tl=your-title
+ ```
+
 ### Basic-Authentication
 The subscription source supports Basic Authentication requests. The request format is as follows:
 ```

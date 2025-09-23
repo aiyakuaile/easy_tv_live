@@ -69,6 +69,14 @@
 > ```
 > 最后把修改后的订阅源添加到App中。应用解析到User-Agent后，会有一个toast提示，如：`User-Agent=okHttp/Mod-1.0.0`
 
+### 自定义订阅源的显示标题
+订阅源支持自定义显示标题，需要按照以下方式进行配置
+ ```
+ https://xxxxxxxxxxxxx.m3u?tl=自定义标题
+  > 或者
+ https://xxxxxxxxxxxxx.m3u?other=123&tl=自定义标题
+ ```
+
 ### Basic认证
 订阅源支持Basic认证请求，请求格式如下
 ```
