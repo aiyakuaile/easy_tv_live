@@ -37,12 +37,21 @@ jobs:
           mv Runner.app Payload/
           zip -r easyTV-${{ github.ref_name }}.ipa Payload
 
+      - name: Build AppleTV OS
+        run: |
+          flutter build ios --dart-define=isTV=true --release --no-codesign
+          cd build/ios/iphoneos
+          mkdir Payload
+          mv Runner.app Payload/
+          zip -r easyTV-${{ github.ref_name }}-apple-tv.ipa Payload
+
       - name: Upload ios-macos artifact
         uses: actions/upload-artifact@v4
         with:
           name: ios-macos-artifact
           path: |
             build/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
+            build/ios/iphoneos/easyTV-${{ github.ref_name }}-apple-tv.ipa
             build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
 
       - name: Decode keystore
@@ -80,7 +89,7 @@ jobs:
             
 
   build_linux:
-    if: false
+    if: true
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -265,7 +274,7 @@ jobs:
             packages/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
 
   build_windows:
-    if: false
+    if: true
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -321,6 +330,7 @@ jobs:
           files: |
             ./release/easyTV-${{ github.ref_name }}.apk
             ./release/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
+            ./release/ios/iphoneos/easyTV-${{ github.ref_name }}-apple-tv.ipa
             ./release/easyTV-${{ github.ref_name }}-tv.apk
             ./release/easyTV-${{ github.ref_name }}-linux-x64.tar.gz
             ./release/easyTV-${{ github.ref_name }}-linux-amd64.deb
