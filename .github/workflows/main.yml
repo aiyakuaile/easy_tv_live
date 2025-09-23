@@ -80,7 +80,7 @@ jobs:
             
 
   build_linux:
-    if: github.event.inputs.build_linux != 'false' || github.event.inputs.build_linux == '' || github.event_name != 'workflow_dispatch'
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -265,6 +265,7 @@ jobs:
             packages/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
 
   build_windows:
+    if: false
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
