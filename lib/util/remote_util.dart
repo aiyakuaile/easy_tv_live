@@ -5,7 +5,7 @@ import 'package:easy_tv_live/entity/remote_model.dart';
 import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:sp_util/sp_util.dart';

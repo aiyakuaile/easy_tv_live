@@ -6,7 +6,7 @@ import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/http_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:sp_util/sp_util.dart';
 
 import '../entity/sub_scribe_model.dart';

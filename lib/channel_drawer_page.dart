@@ -6,7 +6,7 @@ import 'package:easy_tv_live/util/date_util.dart';
 import 'package:easy_tv_live/util/epg_util.dart';
 import 'package:easy_tv_live/util/log_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';

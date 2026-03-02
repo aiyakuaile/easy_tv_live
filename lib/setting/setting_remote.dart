@@ -6,7 +6,7 @@ import 'package:easy_tv_live/tv/html_string.dart';
 import 'package:easy_tv_live/util/env_util.dart';
 import 'package:easy_tv_live/util/remote_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:gap/gap.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';

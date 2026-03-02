@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:easy_tv_live/widget/update_download_btn.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_easyloading_plus/flutter_easyloading_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../generated/l10n.dart';
