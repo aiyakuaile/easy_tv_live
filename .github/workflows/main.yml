@@ -313,26 +313,27 @@ jobs:
         with:
           path: release
           merge-multiple: true
-- name: display Release dir
-  run: |
-    realpath release
-    find release -type f -name "easyTV*" | head -20
-    pwd
 
-- name: Flatten release artifacts
-  run: |
-    # 移动所有平台的构建文件到 release 根目录
-    mv release/packages/* release/ 2>/dev/null || true
-    mv release/build/ios/iphoneos/* release/ 2>/dev/null || true
-    mv release/build/macos/Build/Products/Release/* release/ 2>/dev/null || true
-    mv release/build/app/outputs/flutter-apk/* release/ 2>/dev/null || true
-    mv release/build/windows/x64/runner/Release/* release/ 2>/dev/null || true
-    # 清理空目录
-    rm -rf release/packages release/build 2>/dev/null || true
-    # 显示最终文件列表
-    ls -lh release/
+      - name: Display Release dir
+        run: |
+          realpath release
+          find release -type f -name "easyTV*" | head -20
+          pwd
 
-- name: Upload artifacts to Release
+      - name: Flatten release artifacts
+        run: |
+          # 移动所有平台的构建文件到 release 根目录
+          mv release/packages/* release/ 2>/dev/null || true
+          mv release/build/ios/iphoneos/* release/ 2>/dev/null || true
+          mv release/build/macos/Build/Products/Release/* release/ 2>/dev/null || true
+          mv release/build/app/outputs/flutter-apk/* release/ 2>/dev/null || true
+          mv release/build/windows/x64/runner/Release/* release/ 2>/dev/null || true
+          # 清理空目录
+          rm -rf release/packages release/build 2>/dev/null || true
+          # 显示最终文件列表
+          ls -lh release/
+
+      - name: Upload artifacts to Release
         uses: softprops/action-gh-release@v2
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -341,14 +342,14 @@ jobs:
           release_name: ${{ github.ref_name }}
           draft: true
           prerelease: false
-files: |
-          ./release/easyTV-${{ github.ref_name }}.apk
-          ./release/easyTV-${{ github.ref_name }}.ipa
-          ./release/easyTV-${{ github.ref_name }}-apple-tv.ipa
-          ./release/easyTV-${{ github.ref_name }}-tv.apk
-          ./release/easyTV-${{ github.ref_name }}-linux-x64.tar.gz
-          ./release/easyTV-${{ github.ref_name }}-linux-amd64.deb
-          ./release/easyTV-${{ github.ref_name }}-linux-x86_64.rpm
-          ./release/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
-          ./release/easyTV-${{ github.ref_name }}-windows.zip
-          ./release/easyTV-${{ github.ref_name }}-macos.zip
+          files: |
+            ./release/easyTV-${{ github.ref_name }}.apk
+            ./release/easyTV-${{ github.ref_name }}.ipa
+            ./release/easyTV-${{ github.ref_name }}-apple-tv.ipa
+            ./release/easyTV-${{ github.ref_name }}-tv.apk
+            ./release/easyTV-${{ github.ref_name }}-linux-x64.tar.gz
+            ./release/easyTV-${{ github.ref_name }}-linux-amd64.deb
+            ./release/easyTV-${{ github.ref_name }}-linux-x86_64.rpm
+            ./release/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
+            ./release/easyTV-${{ github.ref_name }}-windows.zip
+            ./release/easyTV-${{ github.ref_name }}-macos.zip
