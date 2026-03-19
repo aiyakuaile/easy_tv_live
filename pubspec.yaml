@@ -59,7 +59,6 @@ dependencies:
   file_picker: ^10.3.10
   event_bus: ^2.0.1
   path: ^1.9.1
-  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
