@@ -1,4 +1,4 @@
-package com.suntengfei.easy_tv_live
+package com.aiyakuaile.tvlive
 
 import io.flutter.embedding.android.FlutterActivity
 

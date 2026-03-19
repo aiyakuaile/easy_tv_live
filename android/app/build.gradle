@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace = "com.suntengfei.easy_tv_live"
+    namespace = "com.aiyakuaile.tvlive"
     compileSdk = 36
 //    ndkVersion = flutter.ndkVersion
 
@@ -38,8 +38,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.easy.tvlive"
-        minSdkVersion = flutter.minSdkVersion
+        applicationId = "com.aiyakuaile.tvlive"
+        minSdkVersion = 24
         targetSdk = 35
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
