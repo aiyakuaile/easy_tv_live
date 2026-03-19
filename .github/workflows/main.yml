@@ -26,7 +26,7 @@ jobs:
         run: |
           flutter build macos --dart-define=isTV=false --release
           cd build/macos/Build/Products/Release
-          /usr/bin/zip -r easyTV-${{ github.ref_name }}-macos.zip *.app
+          zip -r easyTV-${{ github.ref_name }}-macos.zip *.app
 
       # Build iOS
       - name: Build iOS
@@ -35,7 +35,7 @@ jobs:
           cd build/ios/iphoneos
           mkdir Payload
           mv Runner.app Payload/
-          /usr/bin/zip -r easyTV-${{ github.ref_name }}.ipa Payload
+          zip -r easyTV-${{ github.ref_name }}.ipa Payload
 
       - name: Build AppleTV OS
         run: |
@@ -44,7 +44,16 @@ jobs:
           rm -rf Payload
           mkdir Payload
           mv Runner.app Payload/
-          /usr/bin/zip -r easyTV-${{ github.ref_name }}-apple-tv.ipa Payload
+          zip -r easyTV-${{ github.ref_name }}-apple-tv.ipa Payload
+
+      - name: Upload ios-macos artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-macos-artifact
+          path: |
+            build/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
+            build/ios/iphoneos/easyTV-${{ github.ref_name }}-apple-tv.ipa
+            build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
 
       - name: Decode keystore
         run: |
@@ -57,6 +66,8 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
+      - name: Rename Android APK
+        run: mv build/app/outputs/splits/apk/release/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
 
       # Build Android TV
       - name: Build Android APK TV
@@ -66,23 +77,16 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
 
-      - name: Prepare release artifacts
-        run: |
-          mkdir -p release
-          # iOS & macOS
-          cp build/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa release/
-          cp build/ios/iphoneos/easyTV-${{ github.ref_name }}-apple-tv.ipa release/
-          cp build/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip release/
-          # Android
-          cp build/app/outputs/splits/apk/release/app-arm64-v8a-release.apk release/easyTV-${{ github.ref_name }}.apk
-          cp build/app/outputs/splits/apk/release/app-arm64-v8a-release.apk release/easyTV-${{ github.ref_name }}-tv.apk
-          ls -lh release/
+      - name: Rename Android APK
+        run: mv build/app/outputs/splits/apk/release/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
 
-      - name: Upload macos-ios-android artifact
+      - name: Upload android_and_tv artifact
         uses: actions/upload-artifact@v4
         with:
-          name: all-artifacts
-          path: release/
+          name: android-and-tv-artifact
+          path: |
+            build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}.apk
+            build/app/outputs/flutter-apk/easyTV-${{ github.ref_name }}-tv.apk
             
 
   build_linux:
@@ -260,17 +264,40 @@ jobs:
           ./appimagetool AppDir packages/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage || \
           ./appimagetool --appimage-extract-and-run AppDir packages/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
 
-      - name: Upload linux artifact
+      - name: Upload linux-x64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-x64-artifact
-          path: packages/
+          path: |
+            packages/easyTV-${{ github.ref_name }}-linux-x64.tar.gz
+            packages/easyTV-${{ github.ref_name }}-linux-amd64.deb
+            packages/easyTV-${{ github.ref_name }}-linux-x86_64.rpm
+            packages/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
+
+  build_windows:
+    if: true
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.4'
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - name: Build Windows
+        run: |
+          flutter build windows --dart-define=isTV=false --release
+          cp windows/system32/* build/windows/x64/runner/Release/
+          ls -l build/windows/x64/runner/Release
+          cd build/windows/x64/runner/Release
+          7z a easyTV-${{ github.ref_name }}-windows.zip *
 
       - name: Upload windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-artifact
-          path: build/windows/x64/runner/Release/easyTV-${{ github.ref_name }}-windows.zip
+          path: |
+            build/windows/x64/runner/Release/easyTV-${{ github.ref_name }}-windows.zip
 
   create_release:
     needs: [ build_linux, build_windows, build_android_and_tv_ios_macos ]
@@ -281,20 +308,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download all artifacts
+      - name: Download artifact artifact
         uses: actions/download-artifact@v4
         with:
           path: release
           merge-multiple: true
-
-      - name: Prepare linux & windows
+      - name: display Release dir
         run: |
-          # Linux packages
-          mv release/packages/* release/ 2>/dev/null || true
-          rm -rf release/packages
-          # Windows zip
-          find release -name "easyTV-*.zip" -exec mv {} release/ \; 2>/dev/null || true
-          ls -lh release/
+          realpath release  
+          ls -l release
+          pwd
 
       - name: Upload artifacts to Release
         uses: softprops/action-gh-release@v2
@@ -307,12 +330,12 @@ jobs:
           prerelease: false
           files: |
             ./release/easyTV-${{ github.ref_name }}.apk
+            ./release/ios/iphoneos/easyTV-${{ github.ref_name }}.ipa
+            ./release/ios/iphoneos/easyTV-${{ github.ref_name }}-apple-tv.ipa
             ./release/easyTV-${{ github.ref_name }}-tv.apk
-            ./release/easyTV-${{ github.ref_name }}.ipa
-            ./release/easyTV-${{ github.ref_name }}-apple-tv.ipa
-            ./release/easyTV-${{ github.ref_name }}-macos.zip
             ./release/easyTV-${{ github.ref_name }}-linux-x64.tar.gz
             ./release/easyTV-${{ github.ref_name }}-linux-amd64.deb
             ./release/easyTV-${{ github.ref_name }}-linux-x86_64.rpm
             ./release/easyTV-${{ github.ref_name }}-linux-x86_64.AppImage
             ./release/easyTV-${{ github.ref_name }}-windows.zip
+            ./release/macos/Build/Products/Release/easyTV-${{ github.ref_name }}-macos.zip
