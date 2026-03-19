@@ -6,6 +6,9 @@ on:
       - '*'
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build_android_and_tv_ios_macos:
     runs-on: macos-latest
