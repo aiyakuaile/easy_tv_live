@@ -1,32 +1,21 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader("UTF-8") { reader ->
-        localProperties.load(reader)
-    }
+    localPropertiesFile.withInputStream { localProperties.load(it) }
 }
 
-def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
-if (flutterVersionCode == null) {
-    flutterVersionCode = "1"
-}
-
-def flutterVersionName = localProperties.getProperty("flutter.versionName")
-if (flutterVersionName == null) {
-    flutterVersionName = "1.0"
-}
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
+def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
 
 android {
-    namespace = "com.suntengfei.easy_tv_live"
-    compileSdk = 35
-//    ndkVersion = flutter.ndkVersion
+    namespace = "com.aiyakuaile.tvlive"
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -38,8 +27,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.easy.tvlive"
-        minSdk = 21
+        applicationId = "com.aiyakuaile.tvlive"
+        minSdkVersion = 24
         targetSdk = 35
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
@@ -47,20 +36,16 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("../../keystore.jks")
-            storePassword System.getenv("KEYSTORE_PASSWORD")
-            keyAlias System.getenv("KEY_ALIAS")
-            keyPassword System.getenv("KEY_ALIAS_PASSWORD")
+            storeFile = file("../../keystore.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_ALIAS_PASSWORD")
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.debug
             signingConfig = signingConfigs.release
-            ndk {
-                abiFilters "arm64-v8a", "armeabi-v7a"
-            }
         }
     }
 }

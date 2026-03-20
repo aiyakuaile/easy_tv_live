@@ -1,7 +1,6 @@
 import 'package:easy_tv_live/provider/download_provider.dart';
 import 'package:easy_tv_live/provider/theme_provider.dart';
 import 'package:easy_tv_live/util/check_version_util.dart';
-import 'package:easy_tv_live/util/env_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,16 +27,6 @@ class SettingBeautifyPage extends StatelessWidget {
                   context.read<ThemeProvider>().setBingBg(value);
                 },
               ),
-              if (EnvUtil.isTV())
-                SwitchListTile(
-                  autofocus: false,
-                  title: const Text('上下键切换频道'),
-                  value: context.watch<ThemeProvider>().useLeftRightSelect,
-                  subtitle: const Text('开启后原先的设置页面和线路选择页面改成左右键打开'),
-                  onChanged: (value) {
-                    context.read<ThemeProvider>().setLeftRightSelect(value);
-                  },
-                ),
               SwitchListTile(
                 title: const Text('更新提示免打扰'),
                 value: context.watch<ThemeProvider>().useLightVersionCheck,

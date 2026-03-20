@@ -6,30 +6,39 @@
 # EasyTV
 EasyTV is a lightweight IPTV player that supports all platforms and Android TV large screens. It is simple and easy to use. Welcome to download and experience!
 
+#### ⚠️Breaking Changes
+> Due to limitations of the development framework, starting from version v3.0, the Android platform only supports `Android 7.0` and above, the iOS platform only supports `iOS 15.6` and above, and the macOS platform only supports `macOS 11.0` and above. Please install version v2.9.9 for systems below these versions. Users on other platforms may try at their own risk.
+>
+> Due to changes in system compatibility in version v3.0, to avoid overwriting old versions and to distinguish them, v3.0 adopts a new product logo and can coexist with old versions.
+
 #### TV Sources
-> The built-in channel sources of this application come from the [IPTV-ORG](https://github.com/iptv-org/iptv) project. Thanks for their open-source contribution and sharing.
->Meanwhile, the built-in sources will be automatically fetched from [IPTV-ORG](https://github.com/iptv-org/iptv) at 7 AM and 7 PM every day.
+> The built-in program sources of this application come from the [IPTV-ORG](https://github.com/iptv-org/iptv) project. Thanks to this project for its open source contribution and sharing.
+> The built-in sources will automatically sync from [IPTV-ORG](https://github.com/iptv-org/iptv) daily at 7:00 and 19:00. This application does not guarantee the accessibility of third-party subscription sources; it is recommended to add your own subscription sources.
 
 #### Features
 - [x] IPTV player that supports all platforms
 - [x] Support for parsing .m3u files
 - [x] Support for parsing .txt files (added in v1.5.0)
-- [x] Supports Android TV (added in v2.0.0, supports Android OS 5.0+)
-- [x] Desktop support (added in v2.6.0)
 - [x] Support switching fonts and font sizes
 - [x] Support using Bing daily images as video backgrounds
 - [x] Automatically merge and group the same channels
 - [x] Support channel switching via number keys
-- [x] Support channel switching with up and down keys (needs to be manually enabled in '设置->实现设置->上下键切换频道')
 - [x] Support [Basic Authentication](https://github.com/aiyakuaile/easy_tv_live/blob/main/README-en.md#Basic-Authentication) for requesting subscription sources (new in v2.9.1)
 - [x] Support adding local files as subscription sources (new in v2.9.5)
 - [x] Remote Configuration Feature
 - [x] Support custom [User-Agent](https://github.com/aiyakuaile/easy_tv_live/blob/main/README-en.md#user-agent)（new in v2.9.7）
 
 #### TV Version Interaction
-- Up key: Switch lines
-- Down key: Modify or add subscription sources
-- OK key: Confirm operation, display channel list
+
+⬆️ Up Arrow: Switch Channel
+
+⬇️ Down Arrow: Switch Channel
+
+⬅️ Left Arrow: Enter Settings
+
+➡️ Right Arrow: Switch Source Line
+
+🆗 OK Button: Confirm operation, display channel list
 
 ### NOT TV Version Interaction
 ![image_4](https://raw.githubusercontent.com/aiyakuaile/easy_tv_live/main/img_4.png)
