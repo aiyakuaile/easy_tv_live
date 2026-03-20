@@ -25,7 +25,6 @@ class ThemeProvider extends ChangeNotifier {
   double get textScaleFactor => _textScaleFactor;
   String get fontUrl => _fontUrl;
   bool get isBingBg => _isBingBg;
-  bool get useLeftRightSelect => _useLeftRightSelect;
   int get prePlaySerialNum => _prePlaySerialNum;
   int get timeoutSwitchLine => _timeoutSwitchLine;
   bool get isOpenRemoteControl => _remoteControlLink != null && _remoteControlLink!.isNotEmpty;
@@ -39,7 +38,6 @@ class ThemeProvider extends ChangeNotifier {
     _fontUrl = SpUtil.getString('appFontUrl', defValue: '')!;
     _textScaleFactor = SpUtil.getDouble('fontScale', defValue: 1.0)!;
     _isBingBg = SpUtil.getBool('bingBg', defValue: false)!;
-    _useLeftRightSelect = SpUtil.getBool('leftRightSelect', defValue: true)!;
     _prePlaySerialNum = SpUtil.getInt('prePlaySerialNum', defValue: 1)!;
     _timeoutSwitchLine = SpUtil.getInt('timeoutSwitchLine', defValue: 15)!;
     _remoteControlLink = SpUtil.getString('remoteControlLink', defValue: '');
