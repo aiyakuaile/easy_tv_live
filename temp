@@ -9,8 +9,8 @@ CCTV-4 中文国际（亚）,http://tvbox6.icu/tv/migu.php?id=cctv4$LR•IPV4『
 CCTV-4 中文国际（亚）,http://148.135.93.213:81/live.php?id=CCTV4
 CCTV-5 体育,http://112.27.235.94:8000/hls/6/index.m3u8#http://43.251.226.89:8080/play/6.m3u8#http://120.76.248.139/live/bfgd/4200000246.m3u8#http://tvbox6.icu/tv/migu.php?id=cctv5p$LR•IPV4『线路72』
 CCTV-5 体育,http://43.251.226.89:8080/play/5.m3u8#http://tvbox6.icu/tv/migu.php?id=cctv5$LR•IPV4『线路167』
-CCTV-5 体育,http://148.135.93.213:81/live.php?id=CCTV5
 CCTV-5 体育,http://148.135.93.213:81/live.php?id=CCTV5p
+CCTV-5 体育,http://148.135.93.213:81/live.php?id=CCTV5
 CCTV-6 电影,http://43.251.226.89:8080/play/7.m3u8#http://tvbox6.icu/tv/migu.php?id=cctv6$LR•IPV4『线路133』#http://112.27.235.94:8000/hls/7/index.m3u8#http://xxwx.yoesun.com/xxw/1905电影网.php?id=cctv6
 CCTV-6 电影,http://148.135.93.213:81/live.php?id=CCTV6
 CCTV-7 国防军事,http://43.251.226.89:8080/play/8.m3u8#http://tvbox6.icu/tv/migu.php?id=cctv7$LR•IPV4『线路146』
@@ -33,6 +33,7 @@ CCTV-15 音乐,http://43.251.226.89:8080/play/16.m3u8#http://tvbox6.icu/tv/migu.
 CCTV-15 音乐,http://148.135.93.213:81/live.php?id=CCTV15
 CCTV-16 奥林匹克,http://39.152.103.17:8089/tsfile/live/1015_1.m3u8
 CCTV-16 奥林匹克,http://148.135.93.213:81/live.php?id=CCTV16
+CCTV-17 农业农村,http://tvbox6.icu/tv/migu.php?id=cctv17$LR•IPV4『线路102』#http://120.76.248.139/live/bfgd/4200000204.m3u8
 CCTV-17 农业农村,http://148.135.93.213:81/live.php?id=CCTV17
 卫视频道,#genre#
 广东卫视,http://tvbox6.icu/tv/migu.php?id=gdws$LR•IPV4『线路85』#http://183.215.134.239:19901/tsfile/live/0125_1.m3u8?key=txiptv&playlive=1&authid=0$LR•IPV4『线路116』#http://183.215.134.239:19901/tsfile/live/0125_1.m3u8?key=txiptv&playlive=1&authid=0#http://222.169.85.8:9901/tsfile/live/0125_1.m3u8?key=txiptv&playlive=1&authid=0#http://hlsztemgsplive.miguvideo.com:8080/ws_w/2018/gdws/gdws711/1000/index.m3u8?msisdn=20260209040208b7fdef1503cd41b3a15efc83c4616146&mdspid=&spid=699054&netType=0&sid=2202428795&pid=2028597139&timestamp=20260209040208&Channel_ID=0116_2600000900-99000-201600010010027&ProgramID=608831231&ParentNodeID=-99&assertID=2202428795&client_ip=218.28.233.106&SecurityKey=20260209040208&promotionId=&mvid=2202428795&mcid=500020&playurlVersion=WX-A1-9.1.1.3-RELEASE&userid=&jmhm=&videocodec=h264&appCode=miguvideo_android&bean=mgspad&tid=android&conFee=0&encrypt=a52d374097b5f15c689423533a043ba9
@@ -67,7 +68,9 @@ CCTV-17 农业农村,http://148.135.93.213:81/live.php?id=CCTV17
 河北卫视,http://tvpull.careryun.com/tv/hbws.m3u8
 河南卫视,http://tvpull.dxhmt.cn:9081/tv/11425-1.m3u8#http://tvbox6.icu/tv/migu.php?id=hnws$LR•IPV4『线路60』#http://1.94.31.214/php/hntv.php?id=hnws#https://t.freetv.fun/live/he-nan-wei-shi-13.php#http://tvcdn.stream3.hndt.com/tv/65c4a6d5017e1000b2b6ea2500000000_transios/playlist.m3u8?wsSecret=88295ad4c23801b4db8f2e9c29bc4789&wsTime=1770595078
 河南卫视,http://tvpull.careryun.com/tv/cn_hnws.m3u8
+吉林卫视,http://tvbox6.icu/tv/migu.php?id=jlws$LR•IPV4『线路65』
 吉林卫视,http://tvpull.careryun.com/tv/jlws.m3u8
+江苏卫视,http://tvbox6.icu/tv/migu.php?id=jsws$LR•IPV4『线路87』
 江苏卫视,http://tvpull.careryun.com/tv/jsws.m3u8
 江苏卫视,http://148.135.93.213:81/live.php?id=江苏卫视
 江西卫视,http://tvbox6.icu/tv/migu.php?id=jxws$LR•IPV4『线路77』#http://183.215.134.239:19901/tsfile/live/0138_1.m3u8?key=txiptv&playlive=1&authid=0$LR•IPV4『线路106』#http://183.215.134.239:19901/tsfile/live/0138_1.m3u8?key=txiptv&playlive=1&authid=0
