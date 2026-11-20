@@ -2,7 +2,7 @@
 import requests
 
 # 目标地址
-TARGET_URL = "https://raw.giteeusercontent.com/yunkaixx/tv/raw/master/live.txt"
+TARGET_URL = "https://gh-proxy.com/raw.githubusercontent.com/vbskycn/iptv/refs/heads/master/tv/iptv4.m3u"
 # TARGET_URL = "https://iptv-org.github.io/iptv/countries/cn.m3u"
 # 要写入的本地文件路径（项目中的temp文件）
 LOCAL_FILE = "temp"
